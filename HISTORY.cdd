@@ -1,6 +1,11 @@
-libcdd, cdd & cdd+ HISTORY file    (as of February 25, 2001)
+libcdd, cdd & cdd+ HISTORY file    (as of February 27, 2001)
 
 *** libcdd version (date) / changes ***
+
+Version 091c (February 27, 2001) /
+ - Bug to terminate before the completion of computation
+   (to produce a segmentation fault) is fixed.  This
+   bug was reported by Hugh Anderson.
 
 Version 091b (February 26, 2001) /
  - Numerous memory leak bugs with GMP exact arithmetic, 

@@ -1,6 +1,6 @@
 /* cddlib.c: cdd library  (library version of cdd)
    written by Komei Fukuda, fukuda@ifor.math.ethz.ch
-   Version 0.91b, Feb. 26, 2001
+   Version 0.91c, Feb. 27, 2001
    Standard ftp site: ftp.ifor.math.ethz.ch, Directory: pub/fukuda/cdd
 */
 
@@ -81,9 +81,7 @@ void DDMain(dd_ConePtr cone)
      fprintf(stderr,"(Initially added rows ) = ");
      set_fwrite(stderr,cone->InitialHalfspaces);
   }
-  while (cone->CompStatus!=AllFound && 
-         cone->CompStatus!=RegionEmpty &&
-         cone->Iteration <= cone->m) {
+  while (cone->Iteration <= cone->m) {
     SelectNextHalfspace(cone, cone->WeaklyAddedHalfspaces, &hh);
     if (set_member(hh,cone->NonequalitySet)){  /* Skip the row hh */
       if (debug) {
