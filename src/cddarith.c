@@ -1,6 +1,6 @@
-/* cddarith.c:  Floating Point Arithmetic Procedures for cddlib.c
+/* cddarith.c:  Main Procedures for cddlib
    written by Komei Fukuda, fukuda@ifor.math.ethz.ch
-   Version 0.90, May 21, 2000
+   Version 0.90a, May 30, 2000
 */
 
 /* cdd.c : C-Implementation of the double description method for
@@ -85,7 +85,7 @@ void SetInequalitySets(dd_ConePtr cone)
   set_emptyset(cone->GroundSet);
   set_emptyset(cone->EqualitySet);
   set_emptyset(cone->NonequalitySet);  
-  for (i = 1; i <= (cone->m); i++){
+  for (i = 1; i <= (cone->parent->m); i++){
     set_addelem(cone->GroundSet, i);
     if (cone->parent->EqualityIndex[i]==1) set_addelem(cone->EqualitySet,i);
     if (cone->parent->EqualityIndex[i]==-1) set_addelem(cone->NonequalitySet,i);

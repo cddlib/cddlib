@@ -2,6 +2,10 @@ libcdd, cdd & cdd+ HISTORY file    (as of May 21, 2000)
 
 *** libcdd version (date) / changes ***
 
+
+Version 090a (May 30, 2000) /
+ - a small bug fix for cddarith.c.  The bug is reported by Shawn Rusaw.
+
 Version 090 (May 28, 2000) /
  - Major revision over the previous versions.  It can be now compiled
    with GMP rational (-DGMPRATIONAL) as well as the standard C double.
