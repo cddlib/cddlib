@@ -1,67 +1,76 @@
-(*^
+(************** Content-type: application/mathematica **************
 
-::[	Information =
+                    Mathematica-Compatible Notebook
 
-	"This is a Mathematica Notebook file.  It contains ASCII text, and can be
-	transferred by email, ftp, or other text-file transfer utility.  It should
-	be read or edited using a copy of Mathematica or MathReader.  If you 
-	received this as email, use your mail application or copy/paste to save 
-	everything from the line containing (*^ down to the line containing ^*)
-	into a plain text file.  On some systems you may have to give the file a 
-	name ending with ".ma" to allow Mathematica to recognize it as a Notebook.
-	The line below identifies what version of Mathematica created this file,
-	but it can be opened using any other version as well.";
+This notebook can be used with any Mathematica-compatible
+application, such as Mathematica, MathReader or Publicon. The data
+for the notebook starts with the line containing stars above.
 
-	FrontEndVersion = "NeXT Mathematica Notebook Front End Version 2.2";
+To get the notebook into a Mathematica-compatible application, do
+one of the following:
 
-	NeXTStandardFontEncoding; 
-	
-	fontset = title, inactive, noPageBreakBelow, noPageBreakInGroup, nohscroll, preserveAspect, groupLikeTitle, center, M7, L1, e8,  24, "Times"; ;
-	fontset = subtitle, inactive, noPageBreakBelow, noPageBreakInGroup, nohscroll, preserveAspect, groupLikeTitle, center, M7, L1, e6,  18, "Times"; ;
-	fontset = subsubtitle, inactive, noPageBreakBelow, noPageBreakInGroup, nohscroll, preserveAspect, groupLikeTitle, center, M7, L1, e6,  14, "Times"; ;
-	fontset = section, inactive, noPageBreakBelow, nohscroll, preserveAspect, groupLikeSection, grayBox, M22, L1, a20,  18, "Times"; ;
-	fontset = subsection, inactive, noPageBreakBelow, nohscroll, preserveAspect, groupLikeSection, blackBox, M19, L1, a15,  14, "Times"; ;
-	fontset = subsubsection, inactive, noPageBreakBelow, nohscroll, preserveAspect, groupLikeSection, whiteBox, M18, bold, L1, a12,  12, "Times"; ;
-	fontset = text, inactive, nohscroll, noKeepOnOnePage, preserveAspect, M7, L1,  12;
-	fontset = smalltext, inactive, nohscroll, noKeepOnOnePage, preserveAspect, M7, L1,  10, "Times"; ;
-	fontset = input, noPageBreakInGroup, nowordwrap, preserveAspect, groupLikeInput, M42, N23, bold, L-4,  12, "Courier"; ;
-	fontset = output, output, inactive, noPageBreakInGroup, nowordwrap, preserveAspect, groupLikeOutput, M42, N23, L-4,  9, "Courier"; ;
-	fontset = message, inactive, noPageBreakInGroup, nowordwrap, preserveAspect, groupLikeOutput, M42, N23, R32768, L-4,  12, "Courier"; ;
-	fontset = print, inactive, noPageBreakInGroup, nowordwrap, preserveAspect, groupLikeOutput, M42, N23, L-4,  12, "Courier"; ;
-	fontset = info, inactive, noPageBreakInGroup, nowordwrap, preserveAspect, groupLikeOutput, M42, N23, B32768, L-4,  12, "Courier"; ;
-	fontset = postscript, PostScript, formatAsPostScript, output, inactive, noPageBreakInGroup, nowordwrap, preserveAspect, groupLikeGraphics, M7, l34, w282, h287, L1,  12, "Courier"; ;
-	fontset = name, inactive, noPageBreakInGroup, nohscroll, noKeepOnOnePage, preserveAspect, M7, B32768, L1,  10, "Times"; ;
-	fontset = header, inactive, nohscroll, noKeepOnOnePage, preserveAspect, M7, L1,  12;
-	fontset = leftheader, inactive,  12;
-	fontset = footer, inactive, nohscroll, noKeepOnOnePage, preserveAspect, center, M7, L1,  12;
-	fontset = leftfooter, inactive,  12;
-	fontset = help, inactive, nohscroll, noKeepOnOnePage, preserveAspect, M7, L1,  10, "Times"; ;
-	fontset = clipboard, inactive, nohscroll, noKeepOnOnePage, preserveAspect, M7, L1,  12;
-	fontset = completions, inactive, nohscroll, noKeepOnOnePage, preserveAspect, M7, L1,  12, "Courier"; ;
-	fontset = special1, inactive, nohscroll, noKeepOnOnePage, preserveAspect, M7, L1,  12;
-	fontset = special2, inactive, nohscroll, noKeepOnOnePage, preserveAspect, M7, L1,  12;
-	fontset = special3, inactive, nohscroll, noKeepOnOnePage, preserveAspect, M7, L1,  12;
-	fontset = special4, inactive, nohscroll, noKeepOnOnePage, preserveAspect, M7, L1,  12;
-	fontset = special5, inactive, nohscroll, noKeepOnOnePage, preserveAspect, M7, L1,  12;
-	paletteColors = 128; currentKernel; 
-]
-:[font = title; inactive; preserveAspect]
-Mathematica and cddmathlink
-Using cddmathlink to compute complex convex hulls and drawing with Mathematica
-by Komei Fukuda
-with 
-a nice zonotope example
-of Russell Towle
- (April 17, 2001)
-;[s]
-4:0,0;11,1;95,2;106,3;187,-1;
-4:1,21,16,Times,2,24,0,0,0;1,21,16,Times,0,24,0,0,0;1,21,16,Times,2,24,0,0,0;1,21,16,Times,0,24,0,0,0;
-:[font = input; initialization; Cclosed; preserveAspect; startGroup]
-*)
-Off[General::spell1];Off[General::spell]
-(*
-:[font = input; initialization; preserveAspect]
-*)
+* Save the data starting with the line of stars above into a file
+  with a name ending in .nb, then open the file inside the
+  application;
+
+* Copy the data starting with the line of stars above to the
+  clipboard, then use the Paste menu command inside the application.
+
+Data for notebooks contains only printable 7-bit ASCII and can be
+sent directly in email or through ftp in text mode.  Newlines can be
+CR, LF or CRLF (Unix, Macintosh or MS-DOS style).
+
+NOTE: If you modify the data for this notebook not in a Mathematica-
+compatible application, you must delete the line below containing
+the word CacheID, otherwise Mathematica-compatible applications may
+try to use invalid cache data.
+
+For more information on notebooks and Mathematica-compatible 
+applications, contact Wolfram Research:
+  web: http://www.wolfram.com
+  email: info@wolfram.com
+  phone: +1-217-398-0700 (U.S.)
+
+Notebook reader applications are available free of charge from 
+Wolfram Research.
+*******************************************************************)
+
+(*CacheID: 232*)
+
+
+(*NotebookFileLineBreakTest
+NotebookFileLineBreakTest*)
+(*NotebookOptionsPosition[    148963,      16022]*)
+(*NotebookOutlinePosition[    149846,      16054]*)
+(*  CellTagsIndexPosition[    149802,      16050]*)
+(*WindowFrame->Normal*)
+
+
+
+Notebook[{
+
+
+Cell[TextData[{
+  StyleBox["Mathematica",
+    FontWeight->"Plain",
+    FontSlant->"Italic"],
+  StyleBox[" and cddmathlink\nUsing cddmathlink to compute complex convex \
+hulls and drawing with ",
+    FontWeight->"Plain"],
+  StyleBox["Mathematica",
+    FontWeight->"Plain",
+    FontSlant->"Italic"],
+  StyleBox["\nby Komei Fukuda\nwith \na nice zonotope example\nof Russell \
+Towle\n (April 17, 2001)",
+    FontWeight->"Plain"]
+}], "Title",
+  ImageRegion->{{0, 1}, {0, 1}}],
+
+Cell[CellGroupData[{Cell["Off[General::spell1];Off[General::spell]", "Input",
+  InitializationCell->True,
+  ImageRegion->{{0, 1}, {0, 1}}],
+
+Cell["\<\
 
 (* Russell Towle's codes to create projections (zonotopes) of
 hypercubes.  *)
@@ -85,116 +94,162 @@ setStar[vlist_] := (*discard collinear vectors*)
                         AppendTo[selected,v]] ],
          vlist];
 
-    Print[Length[selected]," zonal directions."];
+    Print[Length[selected],\" zonal directions.\"];
     gStar=selected] (*gStar is global, list of non-collinear vectors*)
 
+\
+\>", "Input",
+  InitializationCell->True,
+  ImageRegion->{{0, 1}, {0, 1}}],
 
-(*
-:[font = input; initialization; preserveAspect; startGroup]
-*)
+Cell[CellGroupData[{Cell["\<\
 (* Here I set to a directory where I store
 the packages I need *)
 
-SetDirectory["~/Math"]
-(*
-:[font = output; output; inactive; preserveAspect; endGroup]
-"/Users/fukuda/Math"
-;[o]
-/Users/fukuda/Math
-:[font = input; initialization; preserveAspect; startGroup]
-*)
-cddml=Install["~/Math/cddmathlink"]
-(*
-:[font = output; output; inactive; initialization; preserveAspect; endGroup]
-LinkObject["~/Math/cddmathlink", 6, 6]
-;[o]
-LinkObject[~/Math/cddmathlink, 6, 6]
-:[font = input; initialization; preserveAspect]
-*)
-Needs["ExtendGraphics`View3D`"];
-(*
-:[font = input; initialization; preserveAspect]
-*)
-<<UnfoldPolytope.m
-(*
-:[font = input; initialization; preserveAspect]
-*)
-<<Combinatorica5.m
-(*
-:[font = input; initialization; preserveAspect]
-*)
-<<PolytopeSkeleton.m
-(*
-:[font = input; initialization; preserveAspect]
-*)
-<<IOPolyhedra.m
-(*
-:[font = input; initialization; preserveAspect]
-*)
+SetDirectory[\"~/Math\"]\
+\>", "Input",
+  InitializationCell->True,
+  ImageRegion->{{0, 1}, {0, 1}}],
+
+Cell[OutputFormData["\<\
+\"/Users/fukuda/Math\"\
+\>", "\<\
+/Users/fukuda/Math\
+\
+\>"], "Output",
+  ImageRegion->{{0, 1}, {0, 1}}]}, Open]],
+
+Cell[CellGroupData[{Cell["cddml=Install[\"~/Math/cddmathlink\"]", "Input",
+  InitializationCell->True,
+  ImageRegion->{{0, 1}, {0, 1}}],
+
+Cell[OutputFormData["\<\
+LinkObject[\"~/Math/cddmathlink\", 6, 6]\
+\>", \
+"\<\
+LinkObject[~/Math/cddmathlink, 6, 6]\
+\>"], "Output",
+  InitializationCell->True,
+  ImageRegion->{{0, 1}, {0, 1}}]}, Open]],
+
+Cell["Needs[\"ExtendGraphics`View3D`\"];", "Input",
+  InitializationCell->True,
+  ImageRegion->{{0, 1}, {0, 1}}],
+
+Cell["<<UnfoldPolytope.m", "Input",
+  InitializationCell->True,
+  ImageRegion->{{0, 1}, {0, 1}}],
+
+Cell["<<Combinatorica5.m", "Input",
+  InitializationCell->True,
+  ImageRegion->{{0, 1}, {0, 1}}],
+
+Cell["<<PolytopeSkeleton.m", "Input",
+  InitializationCell->True,
+  ImageRegion->{{0, 1}, {0, 1}}],
+
+Cell["<<IOPolyhedra.m", "Input",
+  InitializationCell->True,
+  ImageRegion->{{0, 1}, {0, 1}}],
+
+Cell["\<\
 (*the vectors which determine an n-merous polar zonohedron*)
 (*3<=n, 0<=pitch<=90 degrees*)
 
 vectors[n_Integer,pitch_]:=
 Table[N[{Cos[Degree pitch] Cos[2Pi i/n],
-	Cos[Degree pitch] Sin[2Pi i/n],
-	-Sin[Degree pitch]},15],
-	{i,n}]      (* modified by KF, precision 15 added *)
-(*
-:[font = input; initialization; preserveAspect]
-*)
+\tCos[Degree pitch] Sin[2Pi i/n],
+\t-Sin[Degree pitch]},15],
+\t{i,n}]      (* modified by KF, precision 15 added *)\
+\>", "Input",
+  InitializationCell->True,
+  ImageRegion->{{0, 1}, {0, 1}}],
+
+Cell["\<\
 (*the pitch at which a polar zonohedron is
 an isometric shadow of an n-cube*)
 
 N[1/Degree * ArcTan[(1/2)^(1/2)],15];
+\
+\>", "Input",
+  InitializationCell->True,
+  ImageRegion->{{0, 1}, {0, 1}}],
 
-(*
-:[font = input; initialization; preserveAspect]
-*)
+Cell["\<\
 (*Here, we obtain the vectors for an isometric projection of
 a d-cube into cyclic symmetry*)
 
 dim=8;
 gen=Zonotope[vectors[dim, N[ 1/Degree * ArcTan[(1/2)^(1/2)],15 ] ] ];
-genc = Chop[gen,10^(-12)];
-(*
-:[font = input; initialization; preserveAspect; startGroup]
-*)
+genc = Chop[gen,10^(-12)];\
+\>", "Input",
+  InitializationCell->True,
+  ImageRegion->{{0, 1}, {0, 1}}],
+
+Cell[CellGroupData[{Cell["\<\
 extlist=Map[Prepend[#,1]&,genc];
-{n,d}=Dimensions[extlist]
-(*
-:[font = output; output; inactive; initialization; preserveAspect; endGroup; endGroup]
-{256, 4}
-;[o]
-{256, 4}
-:[font = input; Cclosed; preserveAspect; startGroup]
+{n,d}=Dimensions[extlist]\
+\>", "Input",
+  InitializationCell->True,
+  ImageRegion->{{0, 1}, {0, 1}}],
+
+Cell[OutputFormData["\<\
+{256, 4}\
+\>", "\<\
+{256, 4}\
+\>"], "Output",
+  InitializationCell->True,
+  ImageRegion->{{0, 1}, {0, 1}}]}, Open]]}, Open]],
+
+Cell[CellGroupData[{Cell["\<\
 {{inelist,equalities}, icd, iad,ecd,ead}=
-	AllFacetsWithAdjacency[n,d,Flatten[extlist]];
-:[font = input; preserveAspect; startGroup]
-{m,d}=Dimensions[inelist]
-:[font = output; output; inactive; preserveAspect; endGroup]
-{56, 4}
-;[o]
-{56, 4}
-:[font = input; preserveAspect; startGroup]
-facets=Map[(Part[genc,#]) &, icd];
-:[font = input; preserveAspect; startGroup]
-Length[facets]
-:[font = output; output; inactive; preserveAspect; endGroup]
-56
-;[o]
-56
-:[font = input; preserveAspect]
-facets1=OrderFacets[facets];
-:[font = input; preserveAspect; startGroup]
-viewpt={2, -2.4, 1}
-:[font = output; output; inactive; preserveAspect; endGroup]
-{2, -2.4, 1}
-;[o]
-{2, -2.4, 1}
-:[font = input; preserveAspect; startGroup]
+\tAllFacetsWithAdjacency[n,d,Flatten[extlist]];\
+\>", "Input",
+  ImageRegion->{{0, 1}, {0, 1}}],
+
+Cell[CellGroupData[{Cell["{m,d}=Dimensions[inelist]", "Input",
+  ImageRegion->{{0, 1}, {0, 1}}],
+
+Cell[OutputFormData["\<\
+{56, 4}\
+\>", "\<\
+{56, 4}\
+\>"], "Output",
+  ImageRegion->{{0, 1}, {0, 1}}]}, Open]],
+
+Cell[CellGroupData[{Cell["facets=Map[(Part[genc,#]) &, icd];", "Input",
+  ImageRegion->{{0, 1}, {0, 1}}],
+
+Cell[CellGroupData[{Cell["Length[facets]", "Input",
+  ImageRegion->{{0, 1}, {0, 1}}],
+
+Cell[OutputFormData["\<\
+56\
+\>", "\<\
+56\
+\>"], "Output",
+  ImageRegion->{{0, 1}, {0, 1}}]}, Open]],
+
+Cell["facets1=OrderFacets[facets];", "Input",
+  ImageRegion->{{0, 1}, {0, 1}}],
+
+Cell[CellGroupData[{Cell["viewpt={2, -2.4, 1}", "Input",
+  ImageRegion->{{0, 1}, {0, 1}}],
+
+Cell[OutputFormData["\<\
+{2, -2.4, 1}\
+\>", "\<\
+{2, -2.4, 1}\
+\>"], "Output",
+  ImageRegion->{{0, 1}, {0, 1}}]}, Open]],
+
+Cell[CellGroupData[{Cell["\<\
 Show[poly=Graphics3D[Polygon /@ facets1],Boxed->False,
-ViewPoint->viewpt];
-:[font = postscript; PostScript; formatAsPostScript; output; inactive; preserveAspect; pictureLeft = 34; pictureWidth = 269; pictureHeight = 285; endGroup]
+ViewPoint->viewpt];\
+\>", "Input",
+  ImageRegion->{{0, 1}, {0, 1}}],
+
+Cell[GraphicsData["PostScript", "\<\
 %!
 %%Creator: Mathematica
 %%AspectRatio: 1.05969 
@@ -1011,14 +1066,23 @@ p
 P
 % End of Graphics
 MathPictureEnd
+\
+\>"], "Graphics",
+  ImageSize->{269, 285},
+  ImageMargins->{{34, Inherited}, {Inherited, Inherited}},
+  ImageRegion->{{0, 1}, {0, 1}},
+  ImageCacheValid->False]}, Open]],
 
-:[font = input; preserveAspect; startGroup]
+Cell[CellGroupData[{Cell["\<\
 Show[poly0=
-	Graphics3D[
-	Join[{PointSize[0.02]},
-		Point /@ genc]
-	],Boxed->True,ViewPoint->viewpt];
-:[font = postscript; PostScript; formatAsPostScript; output; inactive; preserveAspect; pictureLeft = 34; pictureWidth = 266; pictureHeight = 282; endGroup; endGroup]
+\tGraphics3D[
+\tJoin[{PointSize[0.02]},
+\t\tPoint /@ genc]
+\t],Boxed->True,ViewPoint->viewpt];\
+\>", "Input",
+  ImageRegion->{{0, 1}, {0, 1}}],
+
+Cell[GraphicsData["PostScript", "\<\
 %!
 %%Creator: Mathematica
 %%AspectRatio: 1.05969 
@@ -2149,26 +2213,41 @@ p
 P
 % End of Graphics
 MathPictureEnd
+\
+\>"], "Graphics",
+  ImageSize->{266, 282},
+  ImageMargins->{{34, Inherited}, {Inherited, Inherited}},
+  ImageRegion->{{0, 1}, {0, 1}},
+  ImageCacheValid->False]}, Open]]}, Open]],
 
-:[font = input; preserveAspect]
+Cell["\<\
 amat=-Map[Drop[#,1]&, inelist];
 bvec=Map[First[#]&, inelist];
+\
+\>", "Input",
+  ImageRegion->{{0, 1}, {0, 1}}],
 
-:[font = input; preserveAspect]
+Cell["\<\
 skel3D[vp_]:= 
-	Graphics3D[
-		VisibleSkeleton[genc, ecd, ead, 
-     	{amat, bvec}, vp]
+\tGraphics3D[
+\t\tVisibleSkeleton[genc, ecd, ead, 
+     \t{amat, bvec}, vp]
      ]; 
+\
+\>", "Input",
+  ImageRegion->{{0, 1}, {0, 1}}],
 
-:[font = input; preserveAspect; startGroup]
+Cell[CellGroupData[{Cell["\<\
 uvp={20,20,20};
 Show[skel3D[uvp], 
-		Boxed->False, 
- 		ViewPoint -> getMmaViewPoint[uvp,skel3D[uvp]],
- 		SphericalRegion->True
- 	]
-:[font = postscript; PostScript; formatAsPostScript; output; inactive; preserveAspect; pictureLeft = 34; pictureWidth = 282; pictureHeight = 282]
+\t\tBoxed->False, 
+ \t\tViewPoint -> getMmaViewPoint[uvp,skel3D[uvp]],
+ \t\tSphericalRegion->True
+ \t]\
+\>", "Input",
+  ImageRegion->{{0, 1}, {0, 1}}],
+
+Cell[GraphicsData["PostScript", "\<\
 %!
 %%Creator: Mathematica
 %%AspectRatio: 1 
@@ -2936,21 +3015,37 @@ p
 P
 % End of Graphics
 MathPictureEnd
+\
+\>"], "Graphics",
+  ImageSize->{282, 282},
+  ImageMargins->{{34, Inherited}, {Inherited, Inherited}},
+  ImageRegion->{{0, 1}, {0, 1}},
+  ImageCacheValid->False],
 
-:[font = output; output; inactive; preserveAspect; endGroup]
-Graphics3D["<<>>"]
-;[o]
--Graphics3D-
-:[font = input; preserveAspect; startGroup; animationSpeed = 497; infiniteLoop; loopDistance = 17]
+Cell[OutputFormData["\<\
+Graphics3D[\"<<>>\"]\
+\>", "\<\
+-Graphics3D-\
+\>"], \
+"Output",
+  ImageRegion->{{0, 1}, {0, 1}}]}, Open]],
+
+Cell[CellGroupData[{Cell["\<\
 Do[ vp=circle[a,10,2];
-	Show[skel3D[getUserViewPoint[vp, skel3D[{0,0,0}]]], 
-		Boxed->False, 
- 		ViewPoint -> vp, SphericalRegion->True
- 	],
- 	{a,Pi/11,Pi,Pi/18}
+\tShow[skel3D[getUserViewPoint[vp, skel3D[{0,0,0}]]], 
+\t\tBoxed->False, 
+ \t\tViewPoint -> vp, SphericalRegion->True
+ \t],
+ \t{a,Pi/11,Pi,Pi/18}
  ]
+\
+\>", "Input",
+  ImageRegion->{{0, 1}, {0, 1}},
+  AnimationDisplayTime->8.28333,
+  AnimationCycleOffset->1.0625,
+  AnimationCycleRepetitions->Infinity],
 
-:[font = postscript; PostScript; formatAsPostScript; output; inactive; preserveAspect; pictureLeft = 34; pictureWidth = 282; pictureHeight = 282; animationSpeed = 23]
+Cell[GraphicsData["PostScript", "\<\
 %!
 %%Creator: Mathematica
 %%AspectRatio: 1 
@@ -3705,8 +3800,15 @@ p
 P
 % End of Graphics
 MathPictureEnd
+\
+\>"], "Graphics",
+  ImageSize->{282, 282},
+  ImageMargins->{{34, Inherited}, {Inherited, Inherited}},
+  ImageRegion->{{0, 1}, {0, 1}},
+  AnimationDisplayTime->0.383333,
+  ImageCacheValid->False],
 
-:[font = postscript; PostScript; formatAsPostScript; output; inactive; preserveAspect; pictureLeft = 34; pictureWidth = 282; pictureHeight = 282; animationSpeed = 23]
+Cell[GraphicsData["PostScript", "\<\
 %!
 %%Creator: Mathematica
 %%AspectRatio: 1 
@@ -4461,8 +4563,15 @@ p
 P
 % End of Graphics
 MathPictureEnd
+\
+\>"], "Graphics",
+  ImageSize->{282, 282},
+  ImageMargins->{{34, Inherited}, {Inherited, Inherited}},
+  ImageRegion->{{0, 1}, {0, 1}},
+  AnimationDisplayTime->0.383333,
+  ImageCacheValid->False],
 
-:[font = postscript; PostScript; formatAsPostScript; output; inactive; preserveAspect; pictureLeft = 34; pictureWidth = 282; pictureHeight = 282; animationSpeed = 23]
+Cell[GraphicsData["PostScript", "\<\
 %!
 %%Creator: Mathematica
 %%AspectRatio: 1 
@@ -5219,8 +5328,15 @@ p
 P
 % End of Graphics
 MathPictureEnd
+\
+\>"], "Graphics",
+  ImageSize->{282, 282},
+  ImageMargins->{{34, Inherited}, {Inherited, Inherited}},
+  ImageRegion->{{0, 1}, {0, 1}},
+  AnimationDisplayTime->0.383333,
+  ImageCacheValid->False],
 
-:[font = postscript; PostScript; formatAsPostScript; output; inactive; preserveAspect; pictureLeft = 34; pictureWidth = 282; pictureHeight = 282; animationSpeed = 23]
+Cell[GraphicsData["PostScript", "\<\
 %!
 %%Creator: Mathematica
 %%AspectRatio: 1 
@@ -5975,8 +6091,15 @@ p
 P
 % End of Graphics
 MathPictureEnd
+\
+\>"], "Graphics",
+  ImageSize->{282, 282},
+  ImageMargins->{{34, Inherited}, {Inherited, Inherited}},
+  ImageRegion->{{0, 1}, {0, 1}},
+  AnimationDisplayTime->0.383333,
+  ImageCacheValid->False],
 
-:[font = postscript; PostScript; formatAsPostScript; output; inactive; preserveAspect; pictureLeft = 34; pictureWidth = 282; pictureHeight = 282; animationSpeed = 23]
+Cell[GraphicsData["PostScript", "\<\
 %!
 %%Creator: Mathematica
 %%AspectRatio: 1 
@@ -6731,8 +6854,15 @@ p
 P
 % End of Graphics
 MathPictureEnd
+\
+\>"], "Graphics",
+  ImageSize->{282, 282},
+  ImageMargins->{{34, Inherited}, {Inherited, Inherited}},
+  ImageRegion->{{0, 1}, {0, 1}},
+  AnimationDisplayTime->0.383333,
+  ImageCacheValid->False],
 
-:[font = postscript; PostScript; formatAsPostScript; output; inactive; preserveAspect; pictureLeft = 34; pictureWidth = 282; pictureHeight = 282; animationSpeed = 23]
+Cell[GraphicsData["PostScript", "\<\
 %!
 %%Creator: Mathematica
 %%AspectRatio: 1 
@@ -7485,8 +7615,15 @@ p
 P
 % End of Graphics
 MathPictureEnd
+\
+\>"], "Graphics",
+  ImageSize->{282, 282},
+  ImageMargins->{{34, Inherited}, {Inherited, Inherited}},
+  ImageRegion->{{0, 1}, {0, 1}},
+  AnimationDisplayTime->0.383333,
+  ImageCacheValid->False],
 
-:[font = postscript; PostScript; formatAsPostScript; output; inactive; preserveAspect; pictureLeft = 34; pictureWidth = 282; pictureHeight = 282; animationSpeed = 23]
+Cell[GraphicsData["PostScript", "\<\
 %!
 %%Creator: Mathematica
 %%AspectRatio: 1 
@@ -8241,8 +8378,15 @@ p
 P
 % End of Graphics
 MathPictureEnd
+\
+\>"], "Graphics",
+  ImageSize->{282, 282},
+  ImageMargins->{{34, Inherited}, {Inherited, Inherited}},
+  ImageRegion->{{0, 1}, {0, 1}},
+  AnimationDisplayTime->0.383333,
+  ImageCacheValid->False],
 
-:[font = postscript; PostScript; formatAsPostScript; output; inactive; preserveAspect; pictureLeft = 34; pictureWidth = 282; pictureHeight = 282; animationSpeed = 23]
+Cell[GraphicsData["PostScript", "\<\
 %!
 %%Creator: Mathematica
 %%AspectRatio: 1 
@@ -8997,8 +9141,15 @@ p
 P
 % End of Graphics
 MathPictureEnd
+\
+\>"], "Graphics",
+  ImageSize->{282, 282},
+  ImageMargins->{{34, Inherited}, {Inherited, Inherited}},
+  ImageRegion->{{0, 1}, {0, 1}},
+  AnimationDisplayTime->0.383333,
+  ImageCacheValid->False],
 
-:[font = postscript; PostScript; formatAsPostScript; output; inactive; preserveAspect; pictureLeft = 34; pictureWidth = 282; pictureHeight = 282; animationSpeed = 23]
+Cell[GraphicsData["PostScript", "\<\
 %!
 %%Creator: Mathematica
 %%AspectRatio: 1 
@@ -9753,8 +9904,15 @@ p
 P
 % End of Graphics
 MathPictureEnd
+\
+\>"], "Graphics",
+  ImageSize->{282, 282},
+  ImageMargins->{{34, Inherited}, {Inherited, Inherited}},
+  ImageRegion->{{0, 1}, {0, 1}},
+  AnimationDisplayTime->0.383333,
+  ImageCacheValid->False],
 
-:[font = postscript; PostScript; formatAsPostScript; output; inactive; preserveAspect; pictureLeft = 34; pictureWidth = 282; pictureHeight = 282; animationSpeed = 23]
+Cell[GraphicsData["PostScript", "\<\
 %!
 %%Creator: Mathematica
 %%AspectRatio: 1 
@@ -10509,8 +10667,15 @@ p
 P
 % End of Graphics
 MathPictureEnd
+\
+\>"], "Graphics",
+  ImageSize->{282, 282},
+  ImageMargins->{{34, Inherited}, {Inherited, Inherited}},
+  ImageRegion->{{0, 1}, {0, 1}},
+  AnimationDisplayTime->0.383333,
+  ImageCacheValid->False],
 
-:[font = postscript; PostScript; formatAsPostScript; output; inactive; preserveAspect; pictureLeft = 34; pictureWidth = 282; pictureHeight = 282; animationSpeed = 23]
+Cell[GraphicsData["PostScript", "\<\
 %!
 %%Creator: Mathematica
 %%AspectRatio: 1 
@@ -11265,8 +11430,15 @@ p
 P
 % End of Graphics
 MathPictureEnd
+\
+\>"], "Graphics",
+  ImageSize->{282, 282},
+  ImageMargins->{{34, Inherited}, {Inherited, Inherited}},
+  ImageRegion->{{0, 1}, {0, 1}},
+  AnimationDisplayTime->0.383333,
+  ImageCacheValid->False],
 
-:[font = postscript; PostScript; formatAsPostScript; output; inactive; preserveAspect; pictureLeft = 34; pictureWidth = 282; pictureHeight = 282; animationSpeed = 23]
+Cell[GraphicsData["PostScript", "\<\
 %!
 %%Creator: Mathematica
 %%AspectRatio: 1 
@@ -12023,8 +12195,15 @@ p
 P
 % End of Graphics
 MathPictureEnd
+\
+\>"], "Graphics",
+  ImageSize->{282, 282},
+  ImageMargins->{{34, Inherited}, {Inherited, Inherited}},
+  ImageRegion->{{0, 1}, {0, 1}},
+  AnimationDisplayTime->0.383333,
+  ImageCacheValid->False],
 
-:[font = postscript; PostScript; formatAsPostScript; output; inactive; preserveAspect; pictureLeft = 34; pictureWidth = 282; pictureHeight = 282; animationSpeed = 23]
+Cell[GraphicsData["PostScript", "\<\
 %!
 %%Creator: Mathematica
 %%AspectRatio: 1 
@@ -12779,8 +12958,15 @@ p
 P
 % End of Graphics
 MathPictureEnd
+\
+\>"], "Graphics",
+  ImageSize->{282, 282},
+  ImageMargins->{{34, Inherited}, {Inherited, Inherited}},
+  ImageRegion->{{0, 1}, {0, 1}},
+  AnimationDisplayTime->0.383333,
+  ImageCacheValid->False],
 
-:[font = postscript; PostScript; formatAsPostScript; output; inactive; preserveAspect; pictureLeft = 34; pictureWidth = 282; pictureHeight = 282; animationSpeed = 23]
+Cell[GraphicsData["PostScript", "\<\
 %!
 %%Creator: Mathematica
 %%AspectRatio: 1 
@@ -13535,8 +13721,15 @@ p
 P
 % End of Graphics
 MathPictureEnd
+\
+\>"], "Graphics",
+  ImageSize->{282, 282},
+  ImageMargins->{{34, Inherited}, {Inherited, Inherited}},
+  ImageRegion->{{0, 1}, {0, 1}},
+  AnimationDisplayTime->0.383333,
+  ImageCacheValid->False],
 
-:[font = postscript; PostScript; formatAsPostScript; output; inactive; preserveAspect; pictureLeft = 34; pictureWidth = 282; pictureHeight = 282; animationSpeed = 23]
+Cell[GraphicsData["PostScript", "\<\
 %!
 %%Creator: Mathematica
 %%AspectRatio: 1 
@@ -14289,8 +14482,15 @@ p
 P
 % End of Graphics
 MathPictureEnd
+\
+\>"], "Graphics",
+  ImageSize->{282, 282},
+  ImageMargins->{{34, Inherited}, {Inherited, Inherited}},
+  ImageRegion->{{0, 1}, {0, 1}},
+  AnimationDisplayTime->0.383333,
+  ImageCacheValid->False],
 
-:[font = postscript; PostScript; formatAsPostScript; output; inactive; preserveAspect; pictureLeft = 34; pictureWidth = 282; pictureHeight = 282; animationSpeed = 23]
+Cell[GraphicsData["PostScript", "\<\
 %!
 %%Creator: Mathematica
 %%AspectRatio: 1 
@@ -15045,8 +15245,15 @@ p
 P
 % End of Graphics
 MathPictureEnd
+\
+\>"], "Graphics",
+  ImageSize->{282, 282},
+  ImageMargins->{{34, Inherited}, {Inherited, Inherited}},
+  ImageRegion->{{0, 1}, {0, 1}},
+  AnimationDisplayTime->0.383333,
+  ImageCacheValid->False],
 
-:[font = postscript; PostScript; formatAsPostScript; output; inactive; preserveAspect; pictureLeft = 34; pictureWidth = 282; pictureHeight = 282; endGroup; endGroup; animationSpeed = 23; infiniteLoop; loopDistance = -1]
+Cell[GraphicsData["PostScript", "\<\
 %!
 %%Creator: Mathematica
 %%AspectRatio: 1 
@@ -15801,7 +16008,185 @@ p
 P
 % End of Graphics
 MathPictureEnd
+\
+\>"], "Graphics",
+  ImageSize->{282, 282},
+  ImageMargins->{{34, Inherited}, {Inherited, Inherited}},
+  ImageRegion->{{0, 1}, {0, 1}},
+  AnimationDisplayTime->0.383333,
+  AnimationCycleOffset->-0.0625,
+  AnimationCycleRepetitions->Infinity,
+  ImageCacheValid->False]}, Open]]}, Open]],
 
-:[font = input; preserveAspect]
-UnfoldPolytope[facets1]
-^*)
+Cell["UnfoldPolytope[facets1]", "Input",
+  ImageRegion->{{0, 1}, {0, 1}}]
+},
+FrontEndVersion->"4.1 for Macintosh",
+ScreenRectangle->{{0, 1152}, {0, 746}},
+AutoGeneratedPackage->Automatic,
+WindowToolbars->{},
+CellGrouping->Manual,
+WindowSize->{520, 624},
+WindowMargins->{{1, Automatic}, {Automatic, 1}},
+PrivateNotebookOptions->{"ColorPalette"->{RGBColor, -1}},
+ShowCellLabel->True,
+ShowCellTags->False,
+RenderingOptions->{"ObjectDithering"->True,
+"RasterDithering"->False}
+]
+
+
+(*******************************************************************
+Cached data follows.  If you edit this Notebook file directly, not
+using Mathematica, you must remove the line containing CacheID at
+the top of  the file.  The cache data will then be recreated when
+you save this file from within Mathematica.
+*******************************************************************)
+
+(*CellTagsOutline
+CellTagsIndex->{}
+*)
+
+(*CellTagsIndex
+CellTagsIndex->{}
+*)
+
+(*NotebookFileOutline
+Notebook[{
+Cell[1707, 52, 471, 14, 70, "Title"],
+
+Cell[CellGroupData[{
+Cell[2201, 68, 118, 2, 70, "Input",
+  InitializationCell->True],
+Cell[2322, 72, 900, 30, 70, "Input",
+  InitializationCell->True],
+
+Cell[CellGroupData[{
+Cell[3245, 104, 177, 7, 70, "Input",
+  InitializationCell->True],
+Cell[3425, 113, 129, 6, 70, "Output"]
+}, Open  ]],
+
+Cell[CellGroupData[{
+Cell[3586, 121, 115, 2, 70, "Input",
+  InitializationCell->True],
+Cell[3704, 125, 193, 7, 70, "Output",
+  InitializationCell->True]
+}, Open  ]],
+Cell[3909, 134, 112, 2, 70, "Input",
+  InitializationCell->True],
+Cell[4024, 138, 96, 2, 70, "Input",
+  InitializationCell->True],
+Cell[4123, 142, 96, 2, 70, "Input",
+  InitializationCell->True],
+Cell[4222, 146, 98, 2, 70, "Input",
+  InitializationCell->True],
+Cell[4323, 150, 93, 2, 70, "Input",
+  InitializationCell->True],
+Cell[4419, 154, 363, 11, 70, "Input",
+  InitializationCell->True],
+Cell[4785, 167, 203, 8, 70, "Input",
+  InitializationCell->True],
+Cell[4991, 177, 283, 9, 70, "Input",
+  InitializationCell->True],
+
+Cell[CellGroupData[{
+Cell[5297, 188, 144, 5, 70, "Input",
+  InitializationCell->True],
+Cell[5444, 195, 131, 6, 70, "Output",
+  InitializationCell->True]
+}, Open  ]]
+}, Closed]],
+
+Cell[CellGroupData[{
+Cell[5616, 203, 147, 4, 70, "Input"],
+
+Cell[CellGroupData[{
+Cell[5786, 209, 75, 1, 70, "Input"],
+Cell[5864, 212, 101, 5, 70, "Output"]
+}, Open  ]],
+
+Cell[CellGroupData[{
+Cell[5997, 219, 84, 1, 70, "Input"],
+
+Cell[CellGroupData[{
+Cell[6104, 222, 64, 1, 70, "Input"],
+Cell[6171, 225, 91, 5, 70, "Output"]
+}, Open  ]],
+Cell[6274, 232, 78, 1, 70, "Input"],
+
+Cell[CellGroupData[{
+Cell[6375, 235, 69, 1, 70, "Input"],
+Cell[6447, 238, 111, 5, 70, "Output"]
+}, Open  ]],
+
+Cell[CellGroupData[{
+Cell[6590, 245, 132, 4, 70, "Input"],
+Cell[6725, 251, 9789, 822, 70, 9646, 818, "GraphicsData", "PostScript", \
+"Graphics"]
+}, Open  ]],
+
+Cell[CellGroupData[{
+Cell[16546, 1075, 164, 7, 70, "Input"],
+Cell[16713, 1084, 8790, 1136, 70, 8647, 1132, "GraphicsData", "PostScript", \
+"Graphics"]
+}, Open  ]]
+}, Open  ]],
+Cell[25524, 2222, 120, 5, 70, "Input"],
+Cell[25647, 2229, 158, 8, 70, "Input"],
+
+Cell[CellGroupData[{
+Cell[25828, 2239, 195, 8, 70, "Input"],
+Cell[26026, 2249, 6941, 773, 70, 6798, 769, "GraphicsData", "PostScript", \
+"Graphics"],
+Cell[32970, 3024, 121, 6, 70, "Output"]
+}, Open  ]],
+
+Cell[CellGroupData[{
+Cell[33123, 3032, 334, 13, 70, "Input"],
+Cell[33460, 3047, 6798, 761, 70, 6621, 756, "GraphicsData", "PostScript", \
+"Graphics"],
+Cell[40261, 3810, 6811, 761, 70, 6634, 756, "GraphicsData", "PostScript", \
+"Graphics"],
+Cell[47075, 4573, 6829, 763, 70, 6652, 758, "GraphicsData", "PostScript", \
+"Graphics"],
+Cell[53907, 5338, 6772, 761, 70, 6595, 756, "GraphicsData", "PostScript", \
+"Graphics"],
+Cell[60682, 6101, 6762, 761, 70, 6585, 756, "GraphicsData", "PostScript", \
+"Graphics"],
+Cell[67447, 6864, 6746, 759, 70, 6569, 754, "GraphicsData", "PostScript", \
+"Graphics"],
+Cell[74196, 7625, 6752, 761, 70, 6575, 756, "GraphicsData", "PostScript", \
+"Graphics"],
+Cell[80951, 8388, 6773, 761, 70, 6596, 756, "GraphicsData", "PostScript", \
+"Graphics"],
+Cell[87727, 9151, 6800, 761, 70, 6623, 756, "GraphicsData", "PostScript", \
+"Graphics"],
+Cell[94530, 9914, 6798, 761, 70, 6621, 756, "GraphicsData", "PostScript", \
+"Graphics"],
+Cell[101331, 10677, 6811, 761, 70, 6634, 756, "GraphicsData", "PostScript", \
+"Graphics"],
+Cell[108145, 11440, 6829, 763, 70, 6652, 758, "GraphicsData", "PostScript", \
+"Graphics"],
+Cell[114977, 12205, 6772, 761, 70, 6595, 756, "GraphicsData", "PostScript", \
+"Graphics"],
+Cell[121752, 12968, 6762, 761, 70, 6585, 756, "GraphicsData", "PostScript", \
+"Graphics"],
+Cell[128517, 13731, 6746, 759, 70, 6569, 754, "GraphicsData", "PostScript", \
+"Graphics"],
+Cell[135266, 14492, 6752, 761, 70, 6575, 756, "GraphicsData", "PostScript", \
+"Graphics"],
+Cell[142021, 15255, 6845, 763, 70, 6596, 756, "GraphicsData", "PostScript", \
+"Graphics"]
+}, Open  ]]
+}, Closed]],
+Cell[148887, 16020, 73, 1, 70, "Input"]
+}
+]
+*)
+
+
+
+(*******************************************************************
+End of Mathematica Notebook file.
+*******************************************************************)

@@ -46,7 +46,7 @@ ReadIncidenceData[filename_String]:=
 
 
 ReadAdjacencyData[filename_String]:=
-	Block[{rf,outlist={},row={},,v,num,i,val,st=" ",deg,colon},
+	Block[{rf,outlist={},row={},v,num,i,val,st=" ",deg,colon},
 		rf=OpenRead[filename];
 		While[st=!=EndOfFile && st=!="begin",
 			st=Read[rf,String];

@@ -1,6 +1,6 @@
 /* testlp3.c: Main test program to call the cdd lp library
    written by Komei Fukuda, fukuda@ifor.math.ethz.ch
-   Version 0.90c, June 12, 2000
+   Version 0.93, July 9, 2003
    Standard ftp site: ftp.ifor.math.ethz.ch, Directory: pub/fukuda/cdd
 */
 
@@ -158,6 +158,7 @@ int main(int argc, char *argv[])
   dd_FreeLPData(lp);
   dd_FreeLPSolution(lps1);
   dd_FreeLPData(lp1);
+  dd_FreeMatrix(A);
 
 _L99:;
   if (err!=dd_NoError) dd_WriteErrorMessages(stdout, err);

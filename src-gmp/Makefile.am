@@ -2,6 +2,9 @@ bin_PROGRAMS = \
 scdd_gmp \
 lcdd_gmp \
 redcheck_gmp \
+fourier_gmp \
+projection_gmp \
+adjacency_gmp \
 testcdd1_gmp \
 testshoot_gmp \
 testcdd2_gmp \
@@ -13,6 +16,9 @@ testlp3_gmp
 scdd_gmp_SOURCES                   = simplecdd.c
 lcdd_gmp_SOURCES                   = lcdd.c
 redcheck_gmp_SOURCES               = redcheck.c
+fourier_gmp_SOURCES                = fourier.c
+projection_gmp_SOURCES             = projection.c
+adjacency_gmp_SOURCES              = adjacency.c
 testcdd1_gmp_SOURCES               = testcdd1.c
 testshoot_gmp_SOURCES              = testshoot.c
 testcdd2_gmp_SOURCES               = testcdd2.c

@@ -2,6 +2,9 @@ bin_PROGRAMS = \
 scdd \
 lcdd \
 redcheck \
+fourier \
+projection \
+adjacency \
 testcdd1 \
 testshoot \
 testcdd2 \
@@ -13,6 +16,9 @@ testlp3
 scdd_SOURCES                   = simplecdd.c
 lcdd_SOURCES                   = lcdd.c
 redcheck_SOURCES               = redcheck.c
+fourier_SOURCES                = fourier.c
+projection_SOURCES             = projection.c
+adjacency_SOURCES              = adjacency.c
 testcdd1_SOURCES               = testcdd1.c
 testshoot_SOURCES              = testshoot.c
 testcdd2_SOURCES               = testcdd2.c

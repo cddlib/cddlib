@@ -1,7 +1,7 @@
 /* cddmathlink.c: Main test program to call the cdd library cddlib
    from Mathematica using MathLink.
    written by Komei Fukuda, fukuda@ifor.math.ethz.ch
-   Version 0.92, December 22, 2001
+   Version 0.92dev, September 22, 2001
    Standard ftp site: ftp.ifor.math.ethz.ch, Directory: pub/fukuda/cdd
 */
 
@@ -224,7 +224,8 @@ int PASCAL WinMain( HINSTANCE hinstCurrent, HINSTANCE hinstPrevious, LPSTR lpszC
 
 #else
 
-int main(int argc, char *argv[])
+int main(argc, argv)
+	int argc; char* argv[];
 {
     dd_set_global_constants();  /* First, this must be called to use cddlib. */
 

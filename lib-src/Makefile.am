@@ -6,6 +6,7 @@ cddlp.c	\
 cddmp.c \
 cddio.c \
 cddlib.c \
+cddproj.c \
 setoper.c
 
 include_HEADERS = \

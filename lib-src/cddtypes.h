@@ -1,6 +1,6 @@
 /* cddtypes.h: Header file for cddlib.c 
    written by Komei Fukuda, fukuda@ifor.math.ethz.ch
-   Version 0.92b, October 19, 2002
+   Version 0.93, July 18, 2003
 */
 
 /* cddlib.c : C-Implementation of the double description method for
@@ -14,8 +14,8 @@
 #define  __CDDTYPES_H
 #endif  /* __CDDTYPES_H */
 
-#define COPYRIGHT   "Copyright (C) 1996, Komei Fukuda, fukuda@ifor.math.ethz.ch"
-#define DDVERSION   "Version 0.92b (October 19, 2002)"
+#define dd_COPYRIGHT   "Copyright (C) 1996, Komei Fukuda, fukuda@ifor.math.ethz.ch"
+#define dd_DDVERSION   "Version 0.93 (July 18, 2003)"
 #include <time.h>
 
 #define dd_wordlenmax     127
@@ -48,9 +48,9 @@ typedef char dd_DataFileType[dd_filenamelen];
 typedef char dd_LineType[dd_linelenmax];
 typedef char dd_WordType[dd_wordlenmax];
 
-typedef struct raydata *dd_RayPtr;
+typedef struct dd_raydata *dd_RayPtr;
 
-typedef struct raydata {
+typedef struct dd_raydata {
   mytype *Ray;
   dd_rowset ZeroSet;
   dd_rowrange FirstInfeasIndex;  /* the first inequality the ray violates */
@@ -59,8 +59,8 @@ typedef struct raydata {
   dd_RayPtr Next;
 } dd_RayType;
 
-typedef struct adjacencydata *dd_AdjacencyPtr;
-typedef struct adjacencydata {
+typedef struct dd_adjacencydata *dd_AdjacencyPtr;
+typedef struct dd_adjacencydata {
   dd_RayPtr Ray1, Ray2;
   dd_AdjacencyPtr Next;
 } dd_AdjacencyType;
@@ -101,9 +101,10 @@ typedef enum {
 
 typedef enum {
   dd_DimensionTooLarge, dd_ImproperInputFormat, 
-  dd_NegativeMatrixSize, dd_EmptyVrepresentation,
+  dd_NegativeMatrixSize, dd_EmptyVrepresentation, dd_EmptyHrepresentation, dd_EmptyRepresentation,
   dd_IFileNotFound, dd_OFileNotOpen, dd_NoLPObjective, dd_NoRealNumberSupport,
-  dd_NotAvailForH, dd_NotAvailForV,
+  dd_NotAvailForH, dd_NotAvailForV, dd_CannotHandleLinearity,
+  dd_RowIndexOutOfRange, dd_ColIndexOutOfRange,
   dd_LPCycling,
   dd_NoError
 } dd_ErrorType;
@@ -128,8 +129,8 @@ typedef enum {
   dd_Unbounded, dd_DualUnbounded
 } dd_LPStatusType;
 
-typedef struct lpsolution *dd_LPSolutionPtr;
-typedef struct lpsolution {
+typedef struct dd_lpsolution *dd_LPSolutionPtr;
+typedef struct dd_lpsolution {
   dd_DataFileType filename;
   dd_LPObjectiveType objective;
   dd_LPSolverType solver; 
@@ -144,15 +145,15 @@ typedef struct lpsolution {
   dd_colindex nbindex;  /* current basis represented by nonbasic indices */
   dd_rowrange re;  /* row index as a certificate in the case of inconsistency */
   dd_colrange se;  /* col index as a certificate in the case of dual inconsistency */
-  long pivots[4]; 
+  long pivots[5]; 
    /* pivots[0]=setup (to find a basis), pivots[1]=PhaseI or Criss-Cross,
-      pivots[2]=Phase II, pivots[3]=Anticycling */
+      pivots[2]=Phase II, pivots[3]=Anticycling, pivots[4]=GMP postopt. */
   long total_pivots;
 } dd_LPSolutionType;
 
 
-typedef struct lpdata *dd_LPPtr;
-typedef struct lpdata {
+typedef struct dd_lpdata *dd_LPPtr;
+typedef struct dd_lpdata {
   dd_DataFileType filename;
   dd_LPObjectiveType objective;
   dd_LPSolverType solver; 
@@ -177,9 +178,9 @@ typedef struct lpdata {
   dd_colindex nbindex;  /* current basis represented by nonbasic indices */
   dd_rowrange re;  /* row index as a certificate in the case of inconsistency */
   dd_colrange se;  /* col index as a certificate in the case of dual inconsistency */
-  long pivots[4]; 
+  long pivots[5]; 
    /* pivots[0]=setup (to find a basis), pivots[1]=PhaseI or Criss-Cross,
-      pivots[2]=Phase II, pivots[3]=Anticycling */
+      pivots[2]=Phase II, pivots[3]=Anticycling, pivots[4]=GMP postopt. */
   long total_pivots;
   int use_given_basis;  /* switch to indicate the use of the given basis */
   dd_colindex given_nbindex;  /* given basis represented by nonbasic indices */
@@ -191,8 +192,8 @@ typedef struct lpdata {
 /*----  end of LP Types ----- */
 
 
-typedef struct matrixdata *dd_MatrixPtr;
-typedef struct matrixdata {
+typedef struct  dd_matrixdata *dd_MatrixPtr;
+typedef struct  dd_matrixdata {
   dd_rowrange rowsize;
   dd_rowset linset; 
     /*  a subset of rows of linearity (ie, generators of
@@ -206,28 +207,28 @@ typedef struct matrixdata {
   dd_Arow rowvec;
 } dd_MatrixType;
 
-typedef struct setfamily *dd_SetFamilyPtr;
-typedef struct setfamily {
+typedef struct dd_setfamily *dd_SetFamilyPtr;
+typedef struct dd_setfamily {
   dd_bigrange famsize;
   dd_bigrange setsize;
   dd_SetVector set;  
 } dd_SetFamilyType;
 
 
-typedef struct nodedata *dd_NodePtr;
-typedef struct nodedata {dd_bigrange key; dd_NodePtr next;} dd_NodeType;
+typedef struct dd_nodedata *dd_NodePtr;
+typedef struct dd_nodedata {dd_bigrange key; dd_NodePtr next;} dd_NodeType;
 
-typedef struct graphdata *dd_GraphPtr;
-typedef struct graphdata {
+typedef struct dd_graphdata *dd_GraphPtr;
+typedef struct dd_graphdata {
   dd_bigrange vsize;
   dd_NodePtr *adjlist;  /* should be initialized to have vsize components */
 } dd_GraphType;
 
 
-typedef struct polyhedradata *dd_PolyhedraPtr;
-typedef struct conedata *dd_ConePtr;
+typedef struct dd_polyhedradata *dd_PolyhedraPtr;
+typedef struct dd_conedata *dd_ConePtr;
 
-typedef struct polyhedradata {
+typedef struct dd_polyhedradata {
   dd_RepresentationType representation;  /* given representation */
   dd_boolean homogeneous;
   dd_colrange d;
@@ -249,7 +250,7 @@ typedef struct polyhedradata {
 
   dd_rowrange m1; 
     /* = m or m+1 (when representation=Inequality && !homogeneous)
-       This data is written after ConeDataLoad is called.  This
+       This data is written after dd_ConeDataLoad is called.  This
        determines the size of Ainc. */
   dd_boolean AincGenerated;
     /* Indicates whether Ainc, Ared, Adom are all computed.
@@ -268,7 +269,7 @@ typedef struct polyhedradata {
 } dd_PolyhedraType;
 
 
-typedef struct conedata {
+typedef struct dd_conedata {
   dd_RepresentationType representation;
   dd_rowrange m;
   dd_colrange d;
@@ -314,6 +315,6 @@ typedef struct conedata {
 } dd_ConeType;
 
 /* Global Variables */
-extern dd_boolean debug;
+extern dd_boolean dd_debug;
 
 /* end of cddtypes.h */

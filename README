@@ -1,6 +1,6 @@
-2001-12-19 (December 19, 2001)
+2003-07-18 (July 18, 2003)
 -----------------------------------------------
-C-Library cddlib (version 0.92a) README FILE
+C-Library cddlib (version 0.93) README FILE
 -----------------------------------------------
 1. The C-library  cddlib is a C implementation of the Double Description 
 Method of Motzkin et al. for generating all vertices (i.e. extreme points)
@@ -19,11 +19,30 @@ representation of a polyhedron with cdd.  Also, cdd can solve a linear
 programming problem, i.e. a problem of maximizing and minimizing 
 a linear function over P.
 
-The version 0.92 is the fifth release of libcdd.  New functions
-are added in this release such as dd_Redundant, dd_RedundantRows, 
-dd_ImplicitLinearity, dd_ImplicitLinearityRows, and dd_RayShooting.
-Also some basic operations on dd_MatrixPtr have been added such as
-dd_MatrixAppendTo, dd_MatrixRowRemove and dd_MatrixSubmatrix.
+The version 0.93 is the sixth release of libcdd. New functions
+added in this release include  dd_Matrix2Adjacency, 
+dd_FourierElimination, and dd_BlockElimination.
+One major change is how the linear programming solver
+dd_LPSolve works in the GMP exact arithmetics mode.
+It solves an LP with floating-point arithmetics first
+and it checks with GMP whether the output is
+correct.  If so, it outputs a correct exact solution.
+Otherwise, it solves the problem from scrach with GMP. 
+It runs much faster for most of the cases. 
+
+Both cdd libraries libcdd.a and libcddgmp.a are compatible with
+the previous version 092.   One significant change is an extension
+of libcddgmp.a.  The GMP based library libcddgmp.a now contains 
+both the GMP arithmetics and the C double floating-point arithmetics functions
+in one.  The functions using GMP are accessible as before, and
+the same functions using the floating-point arithmetics are
+also included in the same library libcddgmp.a.  To call 
+the floating-point versions, you need to use ddf_ prefix
+instead of the usual dd_ prefix.  In addition, there are
+two types of numbers, the default mytype and an additional
+myfloat type that is to be used with the ddf_* functions.
+This "duplex" functionality is in fact exploited in the new 
+LP solver dd_LPSolve.
 
 If you find some problems or bugs, please kindly report them to
 fukuda@ifor.math.ethz.ch.  Please read README.whatsnew for the changes 
@@ -75,14 +94,13 @@ cddml-notbook.ma, cddml-PolytopeSkeleton.ma, cddml-DietProblem.ma,
 and cddml-Zonotope.ma, in the mma subdirectory.  I could 
 compile cddmathlink.c for Macintosh and Windows.  I have put
 binaries for different platforms in 
-ftp://ftp.ifor.math.ethz.ch/pub/fukuda/cdd/cddlibml_binary/  .
+http://www.cs.mcgill.ca/~fukuda/download/cdd/cddlibml_binary/  .
 
 5. The cddlib package is in "tar"ed and "gzip"ed format with name
 cddlib-***.tar.gz, where *** is the version number.  The standard
-anonymous ftp site for the package is
+download site for the package is
 
-     ftp site : ftp.ifor.math.ethz.ch
-     directory: pub/fukuda/cdd
+     web site : http://www.cs.mcgill.ca/~fukuda/cdd 
      file name: cddlib-***.tar.gz
 
 In order to unpack the package in a standard unix environment, type 
@@ -96,14 +114,15 @@ where *** must be replaced by the appropriate version number, and
 For compilation of libcdd, go to the cddlib top directorycddlib
 and follow the general instruction of autoconf.  In generic
 unix/linux environment, use "./configure" and "make".
+To enforce a certain compiler to be use, specify it as
 
-One must install GMP-2.0.2 (or GMP-3.*.*) first.  It is important
-to apply patches for GMP-2.0.2, because it contains a few bugs
-that can crash cddlib.  For compilation of MathLink programs,
+   CXX=gcc ./configure
+
+One must install GMP-4.1 (or GMP-3.*) first.  For compilation of MathLink programs,
 you need a binary "mprep", MathLink library "libML.a" and include file
-"mathlink.h" which come with Mathematica.   I have tested for Mathematica 2.2
-and 3.0 on NEXTSTEP 3.3.  This part is not "autoconf"igured
-and thus one needs to edit Makefile in the src-mathlink subdirectory. 
+"mathlink.h" which come with Mathematica.   I have tested for Mathematica 4.1
+and 3.* on MacOSX and Linux.  This part is not "autoconf"igured
+and thus one needs to edit Makefile in the src-mathlink and src-mathlink2 subdirectories. 
 
 To install the library in public directory of unix environment, 
 just type "make install".  The default installation directory

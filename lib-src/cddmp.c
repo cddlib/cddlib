@@ -1,6 +1,6 @@
 /* cddmp.c       (cddlib arithmetic operations using gmp)
    Copyright: Komei Fukuda 2000, fukuda@ifor.math.ethz.ch
-   Version 0.92, December 12, 2001
+   Version 0.93, July 18, 2003
 */
 /* This program is free software; you can redistribute it and/or modify
    it under the terms of the GNU General Public License as published by
@@ -30,6 +30,7 @@ void dd_set_global_constants()
  mpq_set_ui(dd_zero,0U,1U);
  mpq_set_ui(dd_purezero,0U,1U);
  mpq_set_ui(dd_one,1U,1U);
+ ddf_set_global_constants();
 #elif defined GMPFLOAT
  mpf_set_d(dd_zero,dd_almostzero);
  mpf_set_ui(dd_purezero,0U);
@@ -57,7 +58,7 @@ void ddd_mpq_set_si(mytype a,signed long b)
 }
 #endif
 
-#if defined CDOUBLE
+#if defined dd_CDOUBLE
 void ddd_init(mytype a)   
 {
   a[0]=0L;
@@ -65,7 +66,7 @@ void ddd_init(mytype a)
   
 void ddd_clear(mytype a)
 {
-  a[0]=0L;
+  /* a[0]=0L;  */
 }
 
 void ddd_set(mytype a,mytype b)

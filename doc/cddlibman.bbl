@@ -44,10 +44,8 @@ D.~Bremner, K.~Fukuda, and A.~Marzetta.
 T.~Christof and A.~L{\"o}bel.
 \newblock {PORTA}: Polyhedron representation transformation algorithm (ver.
   1.3.1), 1997.
-\newblock
-  \htmladdnormallink{http://www.iwr.uni-heidelberg.de/iwr/comopt/soft/PORTA/re%
-adme.html}
-  {http://www.iwr.uni-heidelberg.de/iwr/comopt/soft/PORTA/readme.html}.
+\newblock \htmladdnormallink{http://www.zib.de/Optimization/Software/Porta/}
+  {http://www.zib.de/Optimization/Software/Porta/}.
 
 \bibitem{e-acg-87}
 H.~Edelsbrunner.
@@ -58,23 +56,23 @@ H.~Edelsbrunner.
 J.~Erickson.
 \newblock Computational geometry pages, list of software libraries and codes.
 \newblock
-  \htmladdnormallink{http://compgeom.cs.uiuc.edu/~jeffe/compgeom/}{http://comp%
-geom.cs.uiuc.edu/~jeffe/compgeom/}.
+  \htmladdnormallink{http://compgeom.cs.uiuc.edu/\~{}jeffe/compgeom/}{http://c%
+ompgeom.cs.uiuc.edu/\~{}jeffe/compgeom/}.
 
-\bibitem{fg-lpfaq-97}
+\bibitem{fg-lpfaq}
 R.~Fourer and J.W. Gregory.
-\newblock Linear programming frequently asked questions ({LP-FAQ}), 1997.
+\newblock Linear programming frequently asked questions ({LP-FAQ}).
 \newblock
-  \htmladdnormallink{http://www.mcs.anl.gov/home/otc/Guide/faq/linear-programm%
+  \htmladdnormallink{http://www-unix.mcs.anl.gov/otc/Guide/faq/linear-programm%
 ing-faq.html}
-  {http://www.mcs.anl.gov/home/otc/Guide/faq/linear-programming-faq.html}.
+  {http://www-unix.mcs.anl.gov/otc/Guide/faq/linear-programming-faq.html}.
 
 \bibitem{f-pcfaq-98}
 K.~Fukuda.
 \newblock Polyhedral computation {FAQ}, 1998.
 \newblock Both html and ps versions available from
-  \htmladdnormallink{http://www.ifor.math.ethz.ch/staff/fukuda/fukuda.html}
-  {http://www.ifor.math.ethz.ch/staff/fukuda/fukuda.html}.
+  \htmladdnormallink{http://www.ifor.math.ethz.ch/\~{}fukuda/fukuda.html}
+  {http://www.ifor.math.ethz.ch/\~{}fukuda/fukuda.html}.
 
 \bibitem{fp-ddmr-96}
 K.~Fukuda and A.~Prodon.

@@ -3,14 +3,16 @@
 #---------------------------------------------
 # where is gmp?
 #---------------------------------------------
-export gmpdir := $(PWD)/../gmp-3.1
+# export gmpdir := $(PWD)/../gmp-3.1
+export gmpdir := /usr/local
 #---------------------------------------------
 # where is gmp lib?
 export gmplibdir = $(gmpdir)/lib
 #---------------------------------------------
 # where is gmp include?
 #---------------------------------------------
-export gmpincludedir = $(gmpdir)
+# export gmpincludedir = $(gmpdir)
+export gmpincludedir = $(gmpdir)/include
 #---------------------------------------------
 # End of site customization.
 ##############################################

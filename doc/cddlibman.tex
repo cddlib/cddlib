@@ -1,7 +1,7 @@
 % The name of this file: cddlibman.tex
 % written by by Komei Fukuda
 % created March 15, 1999
-% modified December 19, 2001
+% modified July 18, 2003
 %
 \documentclass[11pt]{article}
 \usepackage{html}
@@ -19,7 +19,7 @@
 
 \begin{document}
 \title{cddlib Reference Manual}
-\author{Komei Fukuda \\
+\author{Komei Fukuda\\
 School of Computer Science\\
 McConnel Engineering Building\\
 3480 University Street\\
@@ -27,12 +27,12 @@ Montreal, Quebec\\
 Canada H3A 2A7\\ \\
 email: fukuda@cs.mcgill.ca\\
 }
-\date{ (cddlib ver. 092, manual ver. December 19, 2001)}
+\date{ (cddlib ver. 093, manual ver. July 18, 2003)}
 
 \maketitle
 \begin{abstract}
-This is a reference manual for cddlib-092.  
-The manual is very far from satisfactory
+This is a reference manual for cddlib-093.  
+The manual is not quite satisfactory
 but explains the most important functions of polyhedral
 representation conversion in cddlib.  
 Please use the accompanying README file and test programs to complement the incompleteness.
@@ -58,8 +58,9 @@ to an {\em V-representation}.
 cddlib is a C-library version of the previously released C-code cdd/cdd+.
 In order to make this library version, a large part of the cdd source
 (Version 0.61) has been rewritten.
-This library version is more flexible since it can be called from other
-C programs.
+This library version is more flexible since it can be called from other programs in C/C++.
+Unlike cdd/cdd+, cddlib can handle any general input and is more general.
+Furtthermore,  additional functions have been written to extend its functionality.
 
 One useful feature of  cddlib/cdd/cdd+ is its capability
 of handling the dual (reverse)  problem without any transformation
@@ -128,7 +129,7 @@ Please read the file COPYING carefully before using.
 
 I will not take any responsibility of any problems you might have
 with this program.  But I will be glad to receive bug reports or suggestions
-at the e-mail addresses above.  Finally, if cdd+ turns out to be useful, 
+at the e-mail addresses above. If cdd+ turns out to be useful, 
 please kindly inform  me of  what purposes cdd has been used for. 
 I will be happy to include a list of applications in future
 distribution  if I receive  enough replies.
@@ -255,6 +256,20 @@ the double descrition method to get another representation.
 As an option dd\_MatrixType can save a linear objective function
 to be used by a linear programming solver.
 
+The two dimensional array data in the structure {\bf dd\_MatrixType\/} is
+{\bf dd\_Amatrix\/} whose components are of type {\bf mytype\/}.
+The type mytype is set to be either the rational type {\bf mpq\_t} of 
+the GNU MP Library or the C double array of size $1$.
+This abstract type allows us to write a single program that can
+be compiled with the two different arithmetics, see example
+programs such as simplecdd.c, testlp*.c and testcdd*.c
+in the {\tt src} and {\tt src-gmp} subdirectories of the source
+distribution.
+
+
+
+
+
 \begin{verbatim}
 
 typedef long dd_rowrange;
@@ -276,6 +291,11 @@ typedef enum {
 typedef enum {
   dd_Inequality, dd_Generator, dd_Unspecified
 } dd_RepresentationType;
+
+typedef enum {
+  dd_MaxIndex, dd_MinIndex, dd_MinCutoff, dd_MaxCutoff, dd_MixCutoff,
+   dd_LexMin, dd_LexMax, dd_RandomRow
+} dd_RowOrderType;
 
 typedef enum {
   dd_InProgress, dd_AllFound, dd_RegionEmpty
@@ -335,9 +355,9 @@ typedef struct lpsolution {
   dd_colindex nbindex;  /* current basis represented by nonbasic indices */
   dd_rowrange re;  /* row index as a certificate in the case of inconsistency */
   dd_colrange se;  /* col index as a certificate in the case of dual inconsistency */
-  long pivots[4]; 
+  long pivots[5]; 
    /* pivots[0]=setup (to find a basis), pivots[1]=PhaseI or Criss-Cross,
-      pivots[2]=Phase II, pivots[3]=Anticycling */
+      pivots[2]=Phase II, pivots[3]=Anticycling, pivots[4]=GMP postopt  */
   long total_pivots;
 } dd_LPSolutionType;
 
@@ -362,7 +382,8 @@ We use the following convention:
   Also,
 {\tt setfam} is of type {\tt dd\_SetFamilyPtr},
 {\tt lp} is of type {\tt dd\_LPPtr},
-{\tt solver} is of type {\tt dd\_LPSolverType}.
+{\tt solver} is of type {\tt dd\_LPSolverType},
+{\tt roworder} is of type {\tt dd\_RowOrderType}.
 
 
 \subsection{Library Initialization}  \label{Initialization}
@@ -400,47 +421,97 @@ a pointer to the data. {\tt *err}
 returns {\tt dd\_NoError} if the computation terminates normally.  Otherwise,
 it returns a value according to the error occured.
 
-\item[{\tt boolean dd\_DDInputAppend(\&poly, matrix, \&err)}]:\\
+\item[{\tt dd\_PolyhedraPtr dd\_DDMatrix2Poly2(matrix, roworder, err)}]:\\
+This is the same function as  {\tt dd\_DDMatrix2Poly} except that the insertion
+order is specified by the user.  The argument {\tt roworder} is of {\tt dd\_RowOrderType}
+and takes one of the values:
+  {\tt dd\_MaxIndex}, {\tt dd\_MinIndex}, {\tt dd\_MinCutoff}, {\tt dd\_MaxCutoff}, {\tt dd\_MixCutoff},
+   {\tt dd\_LexMin}, {\tt dd\_LexMax}, {\tt dd\_RandomRow}.   In general, {\tt dd\_LexMin} is
+the best choice which is in fact chosen in {\tt dd\_DDMatrix2Poly}.  If you know that 
+the input is already sorted in the order you like, use  {\tt dd\_MinIndex} or  {\tt dd\_MaxIndex}.
+If the input contains many redundant rows (say more than $80\%$ redundant),
+you might want to try {\tt dd\_MaxCutoff} which might result in much faster termination,
+see \cite{abs-hgach-97,fp-ddmr-96}
+
+\item[{\tt boolean dd\_DDInputAppend(poly, matrix, err)}]:\\
 Modify the input representation in {\tt *poly}
 by appending the matrix of {\tt *matrix}, and compute
 the second representation.  The number of columns in
 {\tt *matrix} must be equal to the input representation.
 
-\item[{\tt boolean dd\_LPSolve(lp, solver, \&err)}]:\\
+\item[{\tt boolean dd\_LPSolve(lp, solver, err)}]:\\
 Solve {\tt lp} by the algorithm {\tt solver} and save
 the solututions in {\tt *lp}.  Unlike the earlier versions
 (dplex, cdd+), it can deal with equations and totally zero right
-hand sides.
+hand sides.  
 
-\item[{\tt dd\_boolean dd\_Redundant(matrix, i, point, \&err)}]:\\
+When it is compiled for GMP rational
+arithmetics, it first tries to solve an LP with C  double
+floating-point arithmetics and verifies whether the output
+basis is correct with GMP.  If so, the correct solution is
+computed with GMP.  Otherwise, it (re)solves the LP
+from scratch with GMP.   This is newly implemented
+in the version 093.  The original (non-crossover) version of 
+the same function is still  available as {\tt boolean dd\_LPSolve0}.
+
+\item[{\tt dd\_boolean dd\_Redundant(matrix, i, point, err)}]:\\
 Check whether $i$th data in {\tt matrix} is redundant for the representation.
 If it is nonredundant, it returns a certificate.  For H-representation,
 it is a {\tt point} in $R^d$ which satisfies
 all inequalities except for the $i$th inequality.  If $i$ is a linearity,
 it does nothing and always returns FALSE.
 
-\item[{\tt dd\_rowset dd\_RedundantRows(matrix, \&err)}]:\\
+\item[{\tt dd\_rowset dd\_RedundantRows(matrix, err)}]:\\
 Returns a maximal set of row indices such that the associated rows
 can be eliminated without changing the polyhedron.  
 The function works for both V- and H-representations.
 
-\item[{\tt dd\_boolean dd\_ImplicitLinearity(matrix, i, \&err)}]:\\
-Check whether $i$th inequality
+\item[{\tt dd\_boolean dd\_ImplicitLinearity(matrix, i, err)}]:\\
+Check whether $i$th row
 in the input is forced to be linearity (equality 
 for H-representation).
 If $i$ is linearity itself, 
 it does nothing and always returns FALSE.
 
-\item[{\tt dd\_rowset dd\_ImplicitLinearityRows(matrix, \&err)}]:\\
+\item[{\tt dd\_rowset dd\_ImplicitLinearityRows(matrix, err)}]:\\
 Returns the set of indices of rows that are 
 implicitly linearity.  It simply calls
 {\tt dd\_ImplicitLinearity} for each inequality and collects
 the row indices for which the answer is TRUE.
 
+\item[{\tt dd\_SetFamilyPtr dd\_Matrix2Adjacency(matrix, err)}]:\\
+Computes the adjacency list of input rows using
+the LP solver and without running the representation conversion.  When
+the input is H-representation, it gives the facet graph of the polyhedron.
+For V-representation, it gives the (vertex) graph of the polyhedron.
+It is required that the input matrix is a minimal representation.
+Run redundancy removal functions before calling this function,
+see the sample code adjacency.c. 
+
+\item[{\tt dd\_MatrixPtr dd\_FourierElimination(matrix, err)}]:\\
+Eliminate the last variable from a system of linear inequalities
+given by matrix by using the Fourier's Elimination.  If the 
+input matrix is V-representation, it returns
+{\tt  err}$=$ {\tt dd\_NotAvailForV}.   This function does not
+remove redundancy  and one might want to call
+redundancy removal functions afterwards. See the sample code fourier.c.
+
+\item[{\tt dd\_MatrixPtr dd\_BlockElimination(matrix, set, err)}]:\\
+Eliminate a set of variables from a system of linear inequalities
+given by matrix by using the extreme rays of the dual linear system.
+See comments in the code cddproj.c for details.  This might be
+a faster way to eliminate variables than the repeated FourierElimination when
+the number of variables to eliminate is large. 
+If the input matrix is V-representation, it returns
+{\tt  err}$=$ {\tt dd\_NotAvailForV}.
+This function does not remove redundancy  and one might want to call
+redundancy removal functions afterwards. See the sample code projection.c.
+
+
 \item[{\tt dd\_rowrange dd\_RayShooting(matrix, point, vector)}]:\\
 Finds the index of a halfspace first left by the ray starting from
 {\tt point} toward the direction {\tt vector}.  It resolves
-the tie by a lexicographic perturbation.  Those inequalities violated
+tie by a lexicographic perturbation.  Those inequalities violated
 by {\tt point} will be simply ignored.
 
 \end{description}
@@ -474,7 +545,7 @@ compiler option.
 \begin{description}
 
 \item[{\tt dd\_MatrixPtr dd\_PolyFile2Matrix (f, err)}]:\\
-Read a Polyhedra data from {\tt f} and store it in {\tt matrixdata}
+Read a Polyhedra data from stream {\tt f} and store it in {\tt matrixdata}
 and return a pointer to the data.
 
 \item[{\tt dd\_MatrixPtr dd\_CopyInequalities(poly)}]:\\
@@ -565,11 +636,26 @@ Remove the $i$th row of {\tt matrix}.
 Generate the submatrix of {\tt matrix} by removing the
 rows indexed by {\tt set} and return a matrixdata pointer.
 
+\item[{\tt dd\_MatrixPtr dd\_CopyMatrix(matrix)}]:\\
+Make a copy of matrixdata pointed by {\tt matrix} and return
+a pointer to the copy.
+
+\item[{\tt  dd\_SetFamilyPtr dd\_Matrix2Adjacency(matrix, err)}]:\\
+Return the adjacency list of the representation given by {\tt matrix}.
+The computation is done by the built-in LP solver.  The representation
+should be free of redundancy when this function is called. 
+See the function  {\tt dd\_rowset dd\_RedundantRows}
+and the example program adjacency.c.
+
 \end{description}
 
 \subsection{Input/Output Functions}  \label{IOLibrary}
 
 \begin{description}
+
+\item[{\tt dd\_MatrixPtr dd\_PolyFile2Matrix (f, err)}]:\\
+Read a Polyhedra data from stream {\tt f} and store it in {\tt matrixdata}
+and return a pointer to the data.
 
 \item[{\tt boolean dd\_DDFile2File(ifile, ofile, err)}]:\\
 Compute the representation conversion for a polyhedron given
@@ -637,11 +723,27 @@ This function is now called {\tt dd\_CopyLPSolution(lp)}.
 
 \end{description}
 
-\section{How to Use}  \label{HOWTO}
+\section{An Extension of the CDD Library in GMP mode}  \label{GMPLIB}
 
-For the moment, the best documentation of usage are 
-the examples, testcdd*.c , testlp*.c, redcheck.c
-and simplecdd.c.
+Starting from the version 093, the GMP version of cddlib, {\tt libcddgmp.a}, contains
+all cdd library functions in two arithmetics.   All functions with the standard prefix {\tt dd\_}
+are computed with the GMP rational arithmetics as before.  The same fuctions with
+the new prefix {\tt ddf\_} are now added to the library  {\tt libcddgmp.a} that are based
+on the C  double floating-point arithmetics.  Thus these functions are equivalent to
+ {\tt libcdd.a} functions, except that all functions and  variable types are with prefix  {\tt ddf\_} and
+the variable type {\tt mytype} is replaced by {\tt myfloat}.
+
+In this sense,  {\tt libcdd.a} is a proper subset of  {\tt libcddgmp.a} and in principle one can
+do everything with  {\tt libcddgmp.a}.   See how the new {\tt dd\_LPSolve} is written in
+cddlp.c.
+
+
+\section{Examples}  \label{EXAMPLES}
+
+See example codes such as testcdd*.c , testlp*.c, redcheck.c, adjacency.c,
+and simplecdd.c 
+in the {\tt src} and {\tt src-gmp} subdirectories of the source
+distribution.
 
 \section{Numerical Accuracy}  \label{accuracy}
  A little caution is in order.  Many people have observed 
@@ -677,17 +779,6 @@ Another thing one can do is scaling.  If the values in one column of
 an input is of smaller magnitude than those in another column, 
 scale one so that they become comparable.
 
-\section{FTP site}  \label{FTP}
-An anonymous \htmladdnormallink{ftp}
-{ftp://ftp.ifor.math.ethz.ch/pub/fukuda/cdd/} site for the programs is set at:
-\begin{verbatim}
-   ftpsite:  ftp.ifor.math.ethz.ch
-   directory: pub/fukuda/cdd
-   filenames: cddlib-***.tar.gz
-\end{verbatim}
-Since the file is compressed binary file, it is necessary to use binary mode for
-file transfer.
-
 \section{Other Useful Codes}  \label{CODES}
 There are several other useful codes available for vertex enumeration and/or
 convex hull computation  such as lrs, qhull, porta and irisa-polylib.
@@ -714,7 +805,7 @@ of a variation of the dd algorithm).
 
  \item Computational Geometry Pages by J. Erickson \cite{e-cgp}.
 
- \item Linear Programming FAQ by R. Fourer and J. Gregory \cite{fg-lpfaq-97}.
+ \item Linear Programming FAQ by R. Fourer and J. Gregory \cite{fg-lpfaq}.
 
  \item ZIB Berlin polyhedral software list:\\
  \htmladdnormallink{ftp://elib.zib-berlin.de/pub/mathprog/polyth/index.html}
@@ -735,7 +826,8 @@ There are many people who helped me to improve cdd, in particular,
 I am indebted to David Avis, 
 Alexander Bockmayr, David Bremner, Henry Crapo, Istvan Csabai, 
 Francois Margot, Marc Pfetsch, Alain Prodon, J\"org Rambau,
-Shawn Rusaw, Matthew Saltzman, Masanori Sato.
+Shawn Rusaw, Matthew Saltzman, Masanori Sato and those listed
+in the HISTORY file.
 
 \bibliographystyle{plain}
 

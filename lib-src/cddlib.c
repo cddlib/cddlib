@@ -1,6 +1,6 @@
 /* cddlib.c: cdd library  (library version of cdd)
    written by Komei Fukuda, fukuda@ifor.math.ethz.ch
-   Version 0.92b, October 19, 2002
+   Version 0.93, July 18, 2003
    Standard ftp site: ftp.ifor.math.ethz.ch, Directory: pub/fukuda/cdd
 */
 
@@ -41,7 +41,7 @@
 #include <string.h>
 
 /* Global Variables */
-dd_boolean debug               =dd_FALSE;
+dd_boolean dd_debug               =dd_FALSE;
 /* GLOBAL CONSTANTS (to be set by dd_set_global_constants() */
 mytype dd_zero;
 mytype dd_one;
@@ -51,7 +51,7 @@ mytype dd_minuszero;
 /* #include <profile.h>    THINK C PROFILER */
 /* #include <console.h>    THINK C PROFILER */
 
-void DDInit(dd_ConePtr cone)
+void dd_DDInit(dd_ConePtr cone)
 {
   cone->Error=dd_NoError;
   cone->CompStatus=dd_InProgress;
@@ -61,15 +61,15 @@ void DDInit(dd_ConePtr cone)
   cone->WeaklyFeasibleRayCount = 0;
   cone->EdgeCount=0; /* active edge count */
   cone->TotalEdgeCount=0; /* active edge count */
-  SetInequalitySets(cone);
-  ComputeRowOrderVector(cone);
+  dd_SetInequalitySets(cone);
+  dd_ComputeRowOrderVector(cone);
   cone->RecomputeRowOrder=dd_FALSE;
 }
 
-void DDMain(dd_ConePtr cone)
+void dd_DDMain(dd_ConePtr cone)
 {
   dd_rowrange hh, itemp, otemp;
-  dd_boolean  localdebug=dd_TRUE;
+  dd_boolean localdebug=dd_TRUE;
 
   if (cone->d<=0){
     cone->Iteration=cone->m;
@@ -82,17 +82,17 @@ void DDMain(dd_ConePtr cone)
      set_fwrite(stderr,cone->InitialHalfspaces);
   }
   while (cone->Iteration <= cone->m) {
-    SelectNextHalfspace(cone, cone->WeaklyAddedHalfspaces, &hh);
+    dd_SelectNextHalfspace(cone, cone->WeaklyAddedHalfspaces, &hh);
     if (set_member(hh,cone->NonequalitySet)){  /* Skip the row hh */
-      if (debug) {
+      if (dd_debug) {
         fprintf(stderr,"*The row # %3ld should be inactive and thus skipped.\n", hh);
       }
       set_addelem(cone->WeaklyAddedHalfspaces, hh);
     } else {
       if (cone->PreOrderedRun)
-        AddNewHalfspace2(cone, hh);
+        dd_AddNewHalfspace2(cone, hh);
       else{
-        AddNewHalfspace1(cone, hh);
+        dd_AddNewHalfspace1(cone, hh);
       }
       set_addelem(cone->AddedHalfspaces, hh);
       set_addelem(cone->WeaklyAddedHalfspaces, hh);
@@ -156,57 +156,84 @@ void dd_InitialDataSetup(dd_ConePtr cone)
   cone->FirstRay = NULL;
   cone->LastRay = NULL;
   set_initialize(&ZSet,cone->m);
-  AddArtificialRay(cone);
+  dd_AddArtificialRay(cone);
   set_copy(cone->AddedHalfspaces, cone->InitialHalfspaces);
   set_copy(cone->WeaklyAddedHalfspaces, cone->InitialHalfspaces);
-  UpdateRowOrderVector(cone, cone->InitialHalfspaces);
+  dd_UpdateRowOrderVector(cone, cone->InitialHalfspaces);
   for (r = 1; r <= cone->d; r++) {
     for (j = 0; j < cone->d; j++){
       dd_set(Vector1[j], cone->B[j][r-1]);
       dd_neg(Vector2[j], cone->B[j][r-1]);
     }
-    Normalize(cone->d, Vector1);
-    Normalize(cone->d, Vector2);
-    ZeroIndexSet(cone->m, cone->d, cone->A, Vector1, ZSet);
+    dd_Normalize(cone->d, Vector1);
+    dd_Normalize(cone->d, Vector2);
+    dd_ZeroIndexSet(cone->m, cone->d, cone->A, Vector1, ZSet);
     if (set_subset(cone->EqualitySet, ZSet)){
-      if (debug) {
+      if (dd_debug) {
         fprintf(stderr,"add an initial ray with zero set:");
         set_fwrite(stderr,ZSet);
       }
-      AddRay(cone, Vector1);
+      dd_AddRay(cone, Vector1);
       if (cone->InitialRayIndex[r]==0) {
-        AddRay(cone, Vector2);
-        if (debug) {
+        dd_AddRay(cone, Vector2);
+        if (dd_debug) {
           fprintf(stderr,"and add its negative also.\n");
         }
       }
     }
   }
-  CreateInitialEdges(cone);
+  dd_CreateInitialEdges(cone);
   cone->Iteration = cone->d + 1;
   if (cone->Iteration >= cone->m) cone->CompStatus=dd_AllFound;
   set_free(ZSet);
 }
 
-dd_boolean DoubleDescription(dd_PolyhedraPtr poly, dd_ErrorType *err)
+dd_boolean dd_DoubleDescription(dd_PolyhedraPtr poly, dd_ErrorType *err)
 {
   dd_ConePtr cone=NULL;
   dd_boolean found=dd_FALSE;
 
   *err=dd_NoError;
   if (poly!=NULL && (poly->child==NULL || poly->child->CompStatus!=dd_AllFound)){
-    cone=ConeDataLoad(poly);
+    cone=dd_ConeDataLoad(poly);
     /* create a cone associated with poly by homogenization */
     time(&cone->starttime);
-    DDInit(cone);
+    dd_DDInit(cone);
     if (poly->representation==dd_Generator && poly->m<=0){
        *err=dd_EmptyVrepresentation;
        cone->Error=*err;
     } else {
-      FindInitialRays(cone, &found);
+      dd_FindInitialRays(cone, &found);
       if (found) {
         dd_InitialDataSetup(cone);
-        DDMain(cone);
+        dd_DDMain(cone);
+      }
+    }
+    time(&cone->endtime);
+  }
+  return found;
+}
+
+dd_boolean dd_DoubleDescription2(dd_PolyhedraPtr poly, dd_RowOrderType horder, dd_ErrorType *err)
+{
+  dd_ConePtr cone=NULL;
+  dd_boolean found=dd_FALSE;
+
+  *err=dd_NoError;
+  if (poly!=NULL && (poly->child==NULL || poly->child->CompStatus!=dd_AllFound)){
+    cone=dd_ConeDataLoad(poly);
+    /* create a cone associated with poly by homogenization */
+    cone->HalfspaceOrder=horder;  /* set the row order */
+    time(&cone->starttime);
+    dd_DDInit(cone);
+    if (poly->representation==dd_Generator && poly->m<=0){
+       *err=dd_EmptyVrepresentation;
+       cone->Error=*err;
+    } else {
+      dd_FindInitialRays(cone, &found);
+      if (found) {
+        dd_InitialDataSetup(cone);
+        dd_DDMain(cone);
       }
     }
     time(&cone->endtime);
@@ -222,9 +249,9 @@ dd_boolean dd_DDInputAppend(dd_PolyhedraPtr *poly, dd_MatrixPtr M,
   dd_ErrorType error;
 
   if ((*poly)->child!=NULL) dd_FreeDDMemory(*poly);
-  AppendMatrix2Poly(poly, M);
+  dd_AppendMatrix2Poly(poly, M);
   (*poly)->representation=dd_Inequality;
-  found=DoubleDescription(*poly, &error);
+  found=dd_DoubleDescription(*poly, &error);
   *err=error;
   return found;
 }

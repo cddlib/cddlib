@@ -1,6 +1,6 @@
 /* cddio.c:  Basic Input and Output Procedures for cddlib
    written by Komei Fukuda, fukuda@ifor.math.ethz.ch
-   Version 0.92b, October 19, 2002
+   Version 0.93, July 18, 2003
 */
 
 /* cddlib : C-library of the double description method for
@@ -18,8 +18,8 @@
 #include <math.h>
 #include <string.h>
 
-/* void fread_rational_value (FILE *, mytype *); */
-void SetLinearity(dd_MatrixPtr, char *);
+/* void dd_fread_rational_value (FILE *, mytype *); */
+void dd_SetLinearity(dd_MatrixPtr, char *);
 
 void dd_SetInputFile(FILE **f,dd_DataFileType inputfile,dd_ErrorType *Error)
 {
@@ -46,6 +46,7 @@ void dd_SetInputFile(FILE **f,dd_DataFileType inputfile,dd_ErrorType *Error)
           tempname=(char*)calloc(dd_filenamelen,sizeof(ch));
           strncpy(tempname,inputfile,i);
           strcpy(inputfile,tempname);
+          free(tempname);
           break;
       }
     }
@@ -137,7 +138,7 @@ void dd_SetWriteFileName(dd_DataFileType inputfile, dd_DataFileType outfile, cha
 }
 
 
-dd_NumberType GetNumberType(char *line)
+dd_NumberType dd_GetNumberType(char *line)
 {
   dd_NumberType nt;
 
@@ -156,7 +157,7 @@ dd_NumberType GetNumberType(char *line)
   return nt;
 }
 
-void ProcessCommandLine(FILE *f, dd_MatrixPtr M, char *line)
+void dd_ProcessCommandLine(FILE *f, dd_MatrixPtr M, char *line)
 {
   char newline[dd_linelenmax];
   dd_colrange j;
@@ -167,13 +168,13 @@ void ProcessCommandLine(FILE *f, dd_MatrixPtr M, char *line)
     M->representation = dd_Generator;
   }
   if (strncmp(line, "debug", 5)==0) {
-    debug = dd_TRUE;
+    dd_debug = dd_TRUE;
   }
   if (strncmp(line, "partial_enum", 12)==0 ||
        strncmp(line, "equality", 8)==0  ||
        strncmp(line, "linearity", 9)==0 ) {
     fgets(newline,dd_linelenmax,f);    
-    SetLinearity(M,newline);
+    dd_SetLinearity(M,newline);
   }
   if (strncmp(line, "maximize", 8)==0 ||
       strncmp(line, "minimize", 8)==0) {
@@ -187,16 +188,16 @@ void ProcessCommandLine(FILE *f, dd_MatrixPtr M, char *line)
         dd_set_d(value, rvalue);
 #endif
       } else {
-        fread_rational_value (f, value);
+        dd_fread_rational_value (f, value);
       }
       dd_set(M->rowvec[j - 1],value);
-      if (debug) {fprintf(stderr,"cost(%5ld) =",j); dd_WriteNumber(stderr,value);}
+      if (dd_debug) {fprintf(stderr,"cost(%5ld) =",j); dd_WriteNumber(stderr,value);}
     }  /*of j*/
   }
   dd_clear(value);
 }
 
-dd_boolean AppendMatrix2Poly(dd_PolyhedraPtr *poly, dd_MatrixPtr M)
+dd_boolean dd_AppendMatrix2Poly(dd_PolyhedraPtr *poly, dd_MatrixPtr M)
 {
   dd_boolean success=dd_FALSE;
   dd_MatrixPtr Mpoly,Mnew=NULL;
@@ -225,8 +226,8 @@ dd_MatrixPtr dd_MatrixCopy(dd_MatrixPtr M)
   d= M->colsize;
   if (m >=0 && d >=0){
     Mcopy=dd_CreateMatrix(m, d);
-    CopyAmatrix(Mcopy->matrix, M->matrix, m, d);
-    CopyArow(Mcopy->rowvec, M->rowvec, d);
+    dd_CopyAmatrix(Mcopy->matrix, M->matrix, m, d);
+    dd_CopyArow(Mcopy->rowvec, M->rowvec, d);
     set_copy(Mcopy->linset,M->linset);
     Mcopy->numbtype=M->numbtype;
     Mcopy->representation=M->representation;
@@ -257,8 +258,8 @@ dd_MatrixPtr dd_MatrixAppend(dd_MatrixPtr M1, dd_MatrixPtr M2)
 
   if (d1>=0 && d1==d2 && m1>=0 && m2>=0){
     M=dd_CreateMatrix(m, d);
-    CopyAmatrix(M->matrix, M1->matrix, m1, d);
-    CopyArow(M->rowvec, M1->rowvec, d);
+    dd_CopyAmatrix(M->matrix, M1->matrix, m1, d);
+    dd_CopyArow(M->rowvec, M1->rowvec, d);
     for (i=0; i<m1; i++){
       if (set_member(i+1,M1->linset)) set_addelem(M->linset,i+1);
     }
@@ -295,8 +296,8 @@ int dd_MatrixAppendTo(dd_MatrixPtr *M1, dd_MatrixPtr M2)
 
   if (d1>=0 && d1==d2 && m1>=0 && m2>=0){
     M=dd_CreateMatrix(m, d);
-    CopyAmatrix(M->matrix, (*M1)->matrix, m1, d);
-    CopyArow(M->rowvec, (*M1)->rowvec, d);
+    dd_CopyAmatrix(M->matrix, (*M1)->matrix, m1, d);
+    dd_CopyArow(M->rowvec, (*M1)->rowvec, d);
     for (i=0; i<m1; i++){
       if (set_member(i+1,(*M1)->linset)) set_addelem(M->linset,i+1);
     }
@@ -328,7 +329,7 @@ int dd_MatrixRowRemove(dd_MatrixPtr *M, dd_rowrange r) /* 092 */
     dd_FreeArow(d, (*M)->matrix[r-1]);
     set_delelem((*M)->linset,r);
     /* slide the row headers */
-    for (i=r; i<=m; i++){
+    for (i=r; i<m; i++){
       (*M)->matrix[i-1]=(*M)->matrix[i];
       if (set_member(i+1, (*M)->linset)){
         set_delelem((*M)->linset,i+1);
@@ -356,14 +357,14 @@ dd_MatrixPtr dd_MatrixSubmatrix(dd_MatrixPtr M, dd_rowset delset) /* 092 */
       if (set_member(i,delset)){
         ishift++;
       } else {
-        CopyArow(Msub->matrix[isub-1], M->matrix[i-1], d);
+        dd_CopyArow(Msub->matrix[isub-1], M->matrix[i-1], d);
         if (set_member(i, M->linset)){
           set_addelem(Msub->linset,i-ishift);
         }
         isub++;
       }
     }
-    CopyArow(Msub->rowvec, M->rowvec, d);
+    dd_CopyArow(Msub->rowvec, M->rowvec, d);
     Msub->numbtype=M->numbtype;
     Msub->representation=M->representation;
     Msub->objective=M->objective;
@@ -372,7 +373,7 @@ dd_MatrixPtr dd_MatrixSubmatrix(dd_MatrixPtr M, dd_rowset delset) /* 092 */
 }
 
 
-dd_PolyhedraPtr CreatePolyhedraData(dd_rowrange m, dd_colrange d)
+dd_PolyhedraPtr dd_CreatePolyhedraData(dd_rowrange m, dd_colrange d)
 {
   dd_rowrange i;
   dd_PolyhedraPtr poly=NULL;
@@ -394,7 +395,7 @@ dd_PolyhedraPtr CreatePolyhedraData(dd_rowrange m, dd_colrange d)
     /* size increased to m+2 in 092b because it is used by the child cone, 
        This is a bug fix suggested by Thao Dang. */
     /* ith component is 1 if it is equality, -1 if it is strict inequality, 0 otherwise. */
-  for (i = 0; i <= m+1; i++) poly->EqualityIndex[i]=0; /* 092b */
+  for (i = 0; i <= m+1; i++) poly->EqualityIndex[i]=0;
 
   poly->NondegAssumed           = dd_FALSE;
   poly->InitBasisAtBottom       = dd_FALSE;
@@ -406,7 +407,7 @@ dd_PolyhedraPtr CreatePolyhedraData(dd_rowrange m, dd_colrange d)
   return poly;
 }
 
-dd_boolean InitializeConeData(dd_rowrange m, dd_colrange d, dd_ConePtr *cone)
+dd_boolean dd_InitializeConeData(dd_rowrange m, dd_colrange d, dd_ConePtr *cone)
 {
   dd_boolean success=dd_TRUE;
   dd_colrange j;
@@ -480,7 +481,7 @@ dd_boolean InitializeConeData(dd_rowrange m, dd_colrange d, dd_ConePtr *cone)
   return success;
 }
 
-dd_ConePtr ConeDataLoad(dd_PolyhedraPtr poly)
+dd_ConePtr dd_ConeDataLoad(dd_PolyhedraPtr poly)
 {
   dd_ConePtr cone=NULL;
   dd_colrange d,j;
@@ -493,7 +494,7 @@ dd_ConePtr ConeDataLoad(dd_PolyhedraPtr poly)
   }
   poly->m1=m;
 
-  InitializeConeData(m, d, &cone);
+  dd_InitializeConeData(m, d, &cone);
   cone->representation=poly->representation;
 
 /* Points to the original polyhedra data, and reversely */
@@ -512,7 +513,7 @@ dd_ConePtr ConeDataLoad(dd_PolyhedraPtr poly)
   return cone;
 }
 
-void SetLinearity(dd_MatrixPtr M, char *line)
+void dd_SetLinearity(dd_MatrixPtr M, char *line)
 {
   int i=0;
   dd_rowrange eqsize,var;
@@ -571,7 +572,7 @@ dd_MatrixPtr dd_PolyFile2Matrix (FILE *f, dd_ErrorType *Error)
   }
   fscanf(f, "%ld %ld %s", &m_input, &d_input, numbtype);
   fprintf(stderr,"size = %ld x %ld\nNumber Type = %s\n", m_input, d_input, numbtype);
-  NT=GetNumberType(numbtype);
+  NT=dd_GetNumberType(numbtype);
   if (NT==dd_Unknown) {
       (*Error)=dd_ImproperInputFormat;
       goto _L99;
@@ -591,10 +592,10 @@ dd_MatrixPtr dd_PolyFile2Matrix (FILE *f, dd_ErrorType *Error)
         dd_set_d(value, rvalue);
 #endif
       } else {
-        fread_rational_value (f, value);
+        dd_fread_rational_value (f, value);
       }
       dd_set(M->matrix[i-1][j - 1],value);
-      if (debug) {fprintf(stderr,"a(%3ld,%5ld) = ",i,j); dd_WriteNumber(stderr,value);}
+      if (dd_debug) {fprintf(stderr,"a(%3ld,%5ld) = ",i,j); dd_WriteNumber(stderr,value);}
     }  /*of j*/
   }  /*of i*/
   if (fscanf(f,"%s",command)==EOF) {
@@ -602,18 +603,18 @@ dd_MatrixPtr dd_PolyFile2Matrix (FILE *f, dd_ErrorType *Error)
   	 goto _L99;
   }
   else if (strncmp(command, "end", 3)!=0) {
-     if (debug) fprintf(stderr,"'end' missing or illegal extra data: %s\n",command);
+     if (dd_debug) fprintf(stderr,"'end' missing or illegal extra data: %s\n",command);
      (*Error)=dd_ImproperInputFormat;
      goto _L99;
   }
   
   successful=dd_TRUE;
   if (linearity) {
-    SetLinearity(M,comsave);
+    dd_SetLinearity(M,comsave);
   }
   while (!feof(f)) {
     fscanf(f,"%s", command);
-    ProcessCommandLine(f, M, command);
+    dd_ProcessCommandLine(f, M, command);
     fgets(command,dd_linelenmax,f); /* skip the CR/LF */
   } 
 
@@ -635,7 +636,7 @@ dd_PolyhedraPtr dd_DDMatrix2Poly(dd_MatrixPtr M, dd_ErrorType *err)
     *err=dd_NegativeMatrixSize;
     goto _L99;
   }
-  poly=CreatePolyhedraData(M->rowsize, M->colsize);
+  poly=dd_CreatePolyhedraData(M->rowsize, M->colsize);
   poly->representation=M->representation;
   poly->homogeneous=dd_TRUE;
 
@@ -648,12 +649,41 @@ dd_PolyhedraPtr dd_DDMatrix2Poly(dd_MatrixPtr M, dd_ErrorType *err)
       if (j==1 && dd_Nonzero(M->matrix[i-1][j-1])) poly->homogeneous = dd_FALSE;
     }  /*of j*/
   }  /*of i*/
-  DoubleDescription(poly,err);
+  dd_DoubleDescription(poly,err);
 _L99:
   return poly; 
 }
 
-void MatrixIntegerFilter(dd_MatrixPtr M)
+dd_PolyhedraPtr dd_DDMatrix2Poly2(dd_MatrixPtr M, dd_RowOrderType horder, dd_ErrorType *err)
+{
+  dd_rowrange i;
+  dd_colrange j;
+  dd_PolyhedraPtr poly=NULL;
+
+  *err=dd_NoError;
+  if (M->rowsize<0 || M->colsize<0){
+    *err=dd_NegativeMatrixSize;
+    goto _L99;
+  }
+  poly=dd_CreatePolyhedraData(M->rowsize, M->colsize);
+  poly->representation=M->representation;
+  poly->homogeneous=dd_TRUE;
+
+  for (i = 1; i <= M->rowsize; i++) {
+    if (set_member(i, M->linset)) {
+      poly->EqualityIndex[i]=1;
+    }
+    for (j = 1; j <= M->colsize; j++) {
+      dd_set(poly->A[i-1][j-1], M->matrix[i-1][j-1]);
+      if (j==1 && dd_Nonzero(M->matrix[i-1][j-1])) poly->homogeneous = dd_FALSE;
+    }  /*of j*/
+  }  /*of i*/
+  dd_DoubleDescription2(poly, horder, err);
+_L99:
+  return poly; 
+}
+
+void dd_MatrixIntegerFilter(dd_MatrixPtr M)
 {   /* setting an almost integer to the integer. */
   dd_rowrange i;
   dd_colrange j;
@@ -662,13 +692,13 @@ void MatrixIntegerFilter(dd_MatrixPtr M)
   dd_init(x);
   for (i=0; i< M->rowsize; i++)
     for (j=0; j< M->colsize; j++){
-       SnapToInteger(x, M->matrix[i][j]);
+       dd_SnapToInteger(x, M->matrix[i][j]);
        dd_set(M->matrix[i][j],x);
     }
   dd_clear(x);
 }
 
-void CopyRay(mytype *a, dd_colrange d_origsize, dd_RayPtr RR, 
+void dd_CopyRay(mytype *a, dd_colrange d_origsize, dd_RayPtr RR, 
   dd_RepresentationType rep, dd_colindex reducedcol)
 {
   long j,j1;
@@ -696,7 +726,7 @@ void CopyRay(mytype *a, dd_colrange d_origsize, dd_RayPtr RR,
   dd_clear(b);
 }
 
-void WriteRay(FILE *f, dd_colrange d_origsize, dd_RayPtr RR, dd_RepresentationType rep, dd_colindex reducedcol)
+void dd_WriteRay(FILE *f, dd_colrange d_origsize, dd_RayPtr RR, dd_RepresentationType rep, dd_colindex reducedcol)
 {
   dd_colrange j;
   static dd_colrange d_last=0;
@@ -708,7 +738,7 @@ void WriteRay(FILE *f, dd_colrange d_origsize, dd_RayPtr RR, dd_RepresentationTy
     d_last=d_origsize+1;
   }
 
-  CopyRay(a, d_origsize, RR, rep, reducedcol);
+ dd_CopyRay(a, d_origsize, RR, rep, reducedcol);
   for (j = 0; j < d_origsize; j++) dd_WriteNumber(f, a[j]);
   fprintf(f, "\n");
 }
@@ -859,7 +889,7 @@ _L99:;
 }
 
 
-void SnapToInteger(mytype y, mytype x)
+void dd_SnapToInteger(mytype y, mytype x)
 {
  /* this is broken.  It does nothing. */
    dd_set(y,x);
@@ -872,14 +902,14 @@ void dd_WriteReal(FILE *f, mytype x)
   double ax;
 
   ax=dd_get_d(x);  
-  ix1= fabs(ax) * 10000. + 0.5;
-  ix2= (fabs(ax) + 0.5);
+  ix1= (long) (fabs(ax) * 10000. + 0.5);
+  ix2= (long) (fabs(ax) + 0.5);
   ix2= ix2*10000;
   if ( ix1 == ix2) {
     if (dd_Positive(x)) {
-      ix = ax + 0.5;
+      ix = (long)(ax + 0.5);
     } else {
-      ix = -ax + 0.5;
+      ix = (long)(-ax + 0.5);
       ix = -ix;
     }
     fprintf(f, " %2ld", ix);
@@ -952,7 +982,7 @@ void dd_WriteAdjacency(FILE *f, dd_PolyhedraPtr poly)
 }
 
 
-void ComputeAinc(dd_PolyhedraPtr poly)
+void dd_ComputeAinc(dd_PolyhedraPtr poly)
 {
 /* This generates the input incidence array poly->Ainc, and
    two sets: poly->Ared, poly->Adom. 
@@ -973,7 +1003,7 @@ void ComputeAinc(dd_PolyhedraPtr poly)
    /* this number is same as poly->m, except when
       poly is given by nonhomogeneous inequalty:
       !(poly->homogeneous) && poly->representation==Inequality,
-      it is poly->m+1.   See ConeDataLoad.
+      it is poly->m+1.   See dd_ConeDataLoad.
    */
   poly->Ainc=(set_type*)calloc(m1, sizeof(set_type));
   for(i=1; i<=m1; i++) set_initialize(&(poly->Ainc[i-1]),poly->n);
@@ -1026,7 +1056,7 @@ _L99:;
   dd_clear(sum);  dd_clear(temp);
 }
 
-dd_boolean InputAdjacentQ(dd_PolyhedraPtr poly, 
+dd_boolean dd_InputAdjacentQ(dd_PolyhedraPtr poly, 
   dd_rowrange i1, dd_rowrange i2)
 /* Before calling this function, RedundantSet must be 
    a set of row indices whose removal results in a minimal
@@ -1040,7 +1070,7 @@ dd_boolean InputAdjacentQ(dd_PolyhedraPtr poly,
   static set_type common;
   static long lastn=0;
 
-  if (poly->AincGenerated==dd_FALSE) ComputeAinc(poly);
+  if (poly->AincGenerated==dd_FALSE) dd_ComputeAinc(poly);
   if (lastn!=poly->n){
     if (lastn >0) set_free(common);
     set_initialize(&common, poly->n);
@@ -1073,7 +1103,7 @@ void dd_WriteInputIncidence(FILE *f, dd_PolyhedraPtr poly)
 {
   dd_SetFamilyPtr I;
 
-  if (poly->AincGenerated==dd_FALSE) ComputeAinc(poly);
+  if (poly->AincGenerated==dd_FALSE) dd_ComputeAinc(poly);
   switch (poly->representation) {
   case dd_Inequality:
     fprintf(f,"icd_file: Incidence of inequalities and generators\n");
@@ -1097,7 +1127,7 @@ void dd_WriteInputAdjacency(FILE *f, dd_PolyhedraPtr poly)
   dd_SetFamilyPtr A;
 
   if (poly->AincGenerated==dd_FALSE){
-    ComputeAinc(poly);
+    dd_ComputeAinc(poly);
   }
   switch (poly->representation) {
   case dd_Inequality:
@@ -1119,9 +1149,9 @@ void dd_WriteInputAdjacency(FILE *f, dd_PolyhedraPtr poly)
 
 void dd_WriteProgramDescription(FILE *f)
 {
-  fprintf(f, "* cddlib: a double description library:%s\n", DDVERSION);
-  fprintf(f, "* compiled for %s arithmetic.\n", ARITHMETIC);
-  fprintf(f,"* %s\n",COPYRIGHT);
+  fprintf(f, "* cddlib: a double description library:%s\n", dd_DDVERSION);
+  fprintf(f, "* compiled for %s arithmetic.\n", dd_ARITHMETIC);
+  fprintf(f,"* %s\n",dd_COPYRIGHT);
 }
 
 void dd_WriteTimes(FILE *f, time_t starttime, time_t endtime)
@@ -1198,7 +1228,7 @@ void dd_WriteRunningMode(FILE *f, dd_PolyhedraPtr poly)
 }
 
 
-void WriteCompletionStatus(FILE *f, dd_ConePtr cone)
+void dd_WriteCompletionStatus(FILE *f, dd_ConePtr cone)
 {
   if (cone->Iteration<cone->m && cone->CompStatus==dd_AllFound) {
     fprintf(f,"*Computation completed at Iteration %4ld.\n", cone->Iteration);
@@ -1250,12 +1280,20 @@ void dd_WriteErrorMessages(FILE *f, dd_ErrorType Error)
     fprintf(f, "*cddlib does not accept this trivial case for which output can be any inconsistent system.\n");
     break;
 
+  case dd_EmptyHrepresentation:
+    fprintf(f, "*Input Error: H-representation is empty.\n");
+    break;
+
+  case dd_EmptyRepresentation:
+    fprintf(f, "*Input Error: Representation is empty.\n");
+    break;
+
   case dd_NoLPObjective:
     fprintf(f, "*LP Error: No LP objective (max or min) is set.\n");
     break;
 
   case dd_NoRealNumberSupport:
-    fprintf(f, "*Error: The binary (with GMP Rational) does not support Real number input.\n");
+    fprintf(f, "*LP Error: The binary (with GMP Rational) does not support Real number input.\n");
     fprintf(f, "         : Use a binary compiled without -DGMPRATIONAL option.\n");
     break;
 
@@ -1265,6 +1303,18 @@ void dd_WriteErrorMessages(FILE *f, dd_ErrorType Error)
 
  case dd_NotAvailForV:
     fprintf(f, "*Error: A function is called with V-rep which does not support an V-representation.\n");
+    break;
+
+ case dd_CannotHandleLinearity:
+    fprintf(f, "*Error: The function called cannot handle linearity.\n");
+    break;
+
+ case dd_RowIndexOutOfRange:
+    fprintf(f, "*Error: Specified row index is out of range\n");
+    break;
+
+ case dd_ColIndexOutOfRange:
+    fprintf(f, "*Error: Specified column index is out of range\n");
     break;
 
  case dd_LPCycling:
@@ -1285,7 +1335,7 @@ dd_SetFamilyPtr dd_CopyIncidence(dd_PolyhedraPtr poly)
   dd_rowrange i;
 
   if (poly->child==NULL || poly->child->CompStatus!=dd_AllFound) goto _L99;
-  if (poly->AincGenerated==dd_FALSE) ComputeAinc(poly);
+  if (poly->AincGenerated==dd_FALSE) dd_ComputeAinc(poly);
   F=dd_CreateSetFamily(poly->n, poly->m1);
   for (i=1; i<=poly->m1; i++)
     for (k=1; k<=poly->n; k++)
@@ -1300,7 +1350,7 @@ dd_SetFamilyPtr dd_CopyInputIncidence(dd_PolyhedraPtr poly)
   dd_SetFamilyPtr F=NULL;
 
   if (poly->child==NULL || poly->child->CompStatus!=dd_AllFound) goto _L99;
-  if (poly->AincGenerated==dd_FALSE) ComputeAinc(poly);
+  if (poly->AincGenerated==dd_FALSE) dd_ComputeAinc(poly);
   F=dd_CreateSetFamily(poly->m1, poly->n);
   for(i=0; i< poly->m1; i++){
     set_copy(F->set[i], poly->Ainc[i]);
@@ -1331,7 +1381,7 @@ dd_SetFamilyPtr dd_CopyAdjacency(dd_PolyhedraPtr poly)
     for (RayPtr2=poly->child->FirstRay, pos2=1; RayPtr2 != NULL; 
 					RayPtr2 = RayPtr2->Next, pos2++){
       if (RayPtr1!=RayPtr2){
-        CheckAdjacency(poly->child, &RayPtr1, &RayPtr2, &adj);
+        dd_CheckAdjacency(poly->child, &RayPtr1, &RayPtr2, &adj);
         if (adj){
           set_addelem(F->set[pos1-1], pos2);
         }
@@ -1359,11 +1409,11 @@ dd_SetFamilyPtr dd_CopyInputAdjacency(dd_PolyhedraPtr poly)
   dd_SetFamilyPtr F=NULL;
 
   if (poly->child==NULL || poly->child->CompStatus!=dd_AllFound) goto _L99;
-  if (poly->AincGenerated==dd_FALSE) ComputeAinc(poly);
+  if (poly->AincGenerated==dd_FALSE) dd_ComputeAinc(poly);
   F=dd_CreateSetFamily(poly->m1, poly->m1);
   for (i=1; i<=poly->m1; i++){
     for (j=1; j<=poly->m1; j++){
-      if (i!=j && InputAdjacentQ(poly, i, j)) {
+      if (i!=j && dd_InputAdjacentQ(poly, i, j)) {
         set_addelem(F->set[i-1],j);
       }
     }
@@ -1397,7 +1447,7 @@ dd_MatrixPtr dd_CopyOutput(dd_PolyhedraPtr poly)
   RayPtr = poly->child->FirstRay;
   while (RayPtr != NULL) {
     if (RayPtr->feasible) {
-      CopyRay(M->matrix[i], poly->d, RayPtr, outputrep, poly->child->newcol);
+     dd_CopyRay(M->matrix[i], poly->d, RayPtr, outputrep, poly->child->newcol);
       i++;  /* 086 */
     }
     RayPtr = RayPtr->Next;
@@ -1407,7 +1457,7 @@ dd_MatrixPtr dd_CopyOutput(dd_PolyhedraPtr poly)
        /* original column j is dependent on others and removed for the cone */
       dd_set(b,poly->child->Bsave[0][j-1]);
       if (outputrep==dd_Generator && dd_Positive(b)){
-        dd_set(M->matrix[i][0],dd_one);  /* Normalize */
+        dd_set(M->matrix[i][0],dd_one);  /* dd_Normalize */
         for (j1=1; j1<poly->d; j1++) 
           dd_div(M->matrix[i][j1],(poly->child->Bsave[j1][j-1]),b);
       } else {
@@ -1425,7 +1475,7 @@ dd_MatrixPtr dd_CopyOutput(dd_PolyhedraPtr poly)
       dd_set(M->matrix[0][j],dd_purezero);
     }
   }
-  MatrixIntegerFilter(M);
+  dd_MatrixIntegerFilter(M);
   if (poly->representation==dd_Inequality)
     M->representation=dd_Generator;
   else
@@ -1441,10 +1491,10 @@ dd_MatrixPtr dd_CopyInput(dd_PolyhedraPtr poly)
   dd_rowrange i;
 
   M=dd_CreateMatrix(poly->m, poly->d);
-  CopyAmatrix(M->matrix, poly->A, poly->m, poly->d);
+  dd_CopyAmatrix(M->matrix, poly->A, poly->m, poly->d);
   for (i=1; i<=poly->m; i++) 
     if (poly->EqualityIndex[i]==1) set_addelem(M->linset,i);
-  MatrixIntegerFilter(M);
+  dd_MatrixIntegerFilter(M);
   if (poly->representation==dd_Generator)
     M->representation=dd_Generator;
   else
@@ -1479,7 +1529,7 @@ dd_MatrixPtr dd_CopyInequalities(dd_PolyhedraPtr poly)
 /****************************************************************************************/
 /*  rational number (a/b) read is taken from Vinci by Benno Bueeler and Andreas Enge    */
 /****************************************************************************************/
-void sread_rational_value (char *s, mytype value)
+void dd_sread_rational_value (char *s, mytype value)
    /* reads a rational value from the specified string "s" and assigns it to "value"    */
    
 {
@@ -1541,14 +1591,14 @@ void sread_rational_value (char *s, mytype value)
    rvalue=sign * numerator/ (signed long) denominator;
    ddd_set_d(value, rvalue);
 #endif
-   if (debug) {
+   if (dd_debug) {
      fprintf(stderr,"rational_read: "); 
      dd_WriteNumber(stderr,value); fprintf(stderr,"\n");
    }
 }
    
 
-void fread_rational_value (FILE *f, mytype value)
+void dd_fread_rational_value (FILE *f, mytype value)
    /* reads a rational value from the specified file "f" and assigns it to "value"      */
    
 {
@@ -1557,7 +1607,7 @@ void fread_rational_value (FILE *f, mytype value)
    
    dd_init(rational_value);
    fscanf(f, "%s ", number_s);
-   sread_rational_value (number_s, rational_value);
+   dd_sread_rational_value (number_s, rational_value);
    dd_set(value,rational_value);
    dd_clear(rational_value);
 }

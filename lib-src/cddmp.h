@@ -1,6 +1,6 @@
-/* cddmp.c       (cddlib arithmetic operations using gmp)
+/* cddmp.h       (cddlib arithmetic operations using gmp)
    Copyright: Komei Fukuda 2000, fukuda@ifor.math.ethz.ch
-   Version 0.92, December 12, 2001
+   Version 0.93, July 18, 2003
 */
 
 /* This program is free software; you can redistribute it and/or modify
@@ -18,6 +18,9 @@
    Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  */
 
+#ifndef  __CDDMP_H
+#define  __CDDMP_H
+#endif  /* __CDDMP_H */
 
 /**********************************/
 /*         MACROS                 */
@@ -26,7 +29,7 @@
 
 #if defined GMPRATIONAL
  #include "gmp.h"
- #define ARITHMETIC "GMP rational"
+ #define dd_ARITHMETIC "GMP rational"
  #define dd_init(a)              mpq_init(a)     
  #define dd_clear(a)             mpq_clear(a)     
  #define dd_set(a, b)            mpq_set(a,b)     
@@ -44,7 +47,7 @@
  #define dd_get_d(a)             mpq_get_d(a)     
 #elif defined GMPFLOAT
  #include "gmp.h"
- #define ARITHMETIC "GMP float"
+ #define dd_ARITHMETIC "GMP float"
  #define dd_init(a)              mpf_init(a)     
  #define dd_clear(a)             mpf_clear(a)     
  #define dd_set(a, b)            mpf_set(a,b)     
@@ -61,8 +64,8 @@
  #define dd_sgn(a)               mpf_sgn(a)
  #define dd_get_d(a)             mpf_get_d(a)     
 #else /* built-in C double */
- #define ARITHMETIC "C double"
- #define CDOUBLE
+ #define dd_ARITHMETIC "C double"
+ #define dd_CDOUBLE
  #define dd_init(a)              ddd_init(a)     
  #define dd_clear(a)             ddd_clear(a)     
  #define dd_set(a, b)            ddd_set(a,b)     

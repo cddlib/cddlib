@@ -6,7 +6,7 @@
 # make clean      to clean all objects and cddmathlink 
 
 # C-compiler
-CC=gcc
+CC=/usr/local/bin/mcc
 #CC=cc
 
 # Archive maintainer ar
@@ -39,7 +39,7 @@ MLLIBDIR = ${MLINKDIR}/lib
 
 # MathLink Compilar Flags (check mcc scripts for appropriate flags)
 #MLFLAGS = -lML -lm -lsocket -lnsl   #Solaris
-MLFLAGS = -lML -lm                  #NEXTSTEP
+MLFLAGS = -lML -lm  # Generic
 
 
 ########## You shouldn't have to change anything after this point ##########
@@ -55,7 +55,7 @@ LIFLAGS = $(LFLAGS) $(IFLAGS) $(CFLAGS)
 ml : cddmathlink
 
 cddmathlink : cddmathlinktm.o cddmathlink.o cddmlio.o
-	${CC} -O3 -I${MLINCDIR} cddmlio.o cddmathlinktm.o cddmathlink.o -L${MLLIBDIR} ${MLFLAGS} -o cddmathlink $(LFLAGS) -lcdd
+	${CC} -O3 -I${MLINCDIR} cddmlio.o cddmathlinktm.o cddmathlink.o -L${MLLIBDIR} ${MLFLAGS} $(LFLAGS) -lcdd -o cddmathlink
 
 cddmathlinktm.o: cddmathlinktm.c $(HFILES)
 	$(CC) $(LIFLAGS) -c cddmathlinktm.c

@@ -87,7 +87,7 @@ Begin["`private`"]
 
 UnfoldPolytope[facets_List]:=
 	Block[{odfacets,edg,faAdj,vertices,veAdj,
-		   t,,tree,cotree,sptree,i,tr,vervec},
+	t,tree,cotree,sptree,i,tr,vervec},
     odfacets = facets;
     {edg,faAdj} = MakeEdgesFromFacets[odfacets];
     vertices = Union[Flatten[facets,1]];

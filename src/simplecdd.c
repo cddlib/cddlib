@@ -1,6 +1,6 @@
 /* simplecdd.c: Main test program to call the cdd library cddlib
    written by Komei Fukuda, fukuda@ifor.math.ethz.ch
-   Version 0.91b, Feb. 26, 2001
+   Version 0.93, July 18, 2003
    Standard ftp site: ftp.ifor.math.ethz.ch, Directory: pub/fukuda/cdd
 */
 
@@ -84,7 +84,8 @@ int main(int argc, char *argv[])
   if (err!=dd_NoError) goto _L99;
 
   if (M->objective==dd_LPnone){ /* do representation conversion */
-    poly=dd_DDMatrix2Poly(M, &err);
+    poly=dd_DDMatrix2Poly2(M, dd_LexMin, &err);
+    /* equivalent to poly=dd_DDMatrix2Poly2(M, &err) when the second argument is set to dd_LexMin. */
     if (err!=dd_NoError) goto _L99;
 
     dd_SetWriteFileName(inputfile, outputfile, 'o', poly->representation);
@@ -137,7 +138,7 @@ int main(int argc, char *argv[])
 
   } else { /* solve the LP */
     lp=dd_Matrix2LP(M, &err);  if (err!=dd_NoError) goto _L99;
-    dd_LPSolve(lp,dd_DualSimplex,&err);  if (err!=dd_NoError) goto _L99;
+    dd_LPSolve0(lp,dd_DualSimplex,&err);  if (err!=dd_NoError) goto _L99;
 
     dd_SetWriteFileName(inputfile, outputfile, 's', M->representation);
     SetWriteFile(&writing, outputfile);

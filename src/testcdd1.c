@@ -1,6 +1,6 @@
 /* testcdd1.c: Main test program to call the cdd library cddlib
    written by Komei Fukuda, fukuda@ifor.math.ethz.ch
-   Version 0.90c, June 12, 2000
+   Version 0.93, July 9, 2003
    Standard ftp site: ftp.ifor.math.ethz.ch, Directory: pub/fukuda/cdd
 */
 
@@ -88,6 +88,7 @@ int main(int argc, char *argv[])
 
     dd_FreePolyhedra(poly);
     /* This is to remove all the space allocated for poly. */
+    dd_FreeMatrix(M);
     dd_FreeMatrix(A);
     dd_FreeMatrix(G);
     dd_FreeSetFamily(GI);

@@ -1,6 +1,13 @@
-libcdd, cdd & cdd+ HISTORY file    (as of October 19, 2002)
+libcdd, cdd & cdd+ HISTORY file    (as of July 18, 2003)
 
 *** libcdd version (date) / changes ***
+
+Version 093 (July 18, 2003) /
+ - dd_LPSolve with GMP now runs fisrt with floating point arithmetics 
+   and checks with GMP the correctness of the result. New functions dd_Matrix2Adjacency, 
+   dd_FourierElimination, dd_BlockElimination, dd_DDMatrix2Poly2 are added.
+   Some minor memory leak problems are fixed. (Thanks to the excellent
+   memory debugger valgrind on linux.)   
 
 Version 092b (October 19, 2002) /
  - An illegal memory access for EqualityIndex reported by 

@@ -145,6 +145,8 @@ int main(int argc, char *argv[])
   dd_FreeLPData(lp);
   dd_FreeLPSolution(lps1);
   dd_FreeLPData(lp1);
+  dd_FreeArow(d, r);
+  dd_FreeMatrix(A);
 
 _L99:;
   if (err!=dd_NoError) dd_WriteErrorMessages(stdout, err);

@@ -1,6 +1,6 @@
 /* redcheck.c: Test program to call the cdd library cddlib
    written by Komei Fukuda, fukuda@ifor.math.ethz.ch
-   Version 0.92, December 11, 2001
+   Version 0.93, July 18, 2003
    Standard ftp site: ftp.ifor.math.ethz.ch, Directory: pub/fukuda/cdd
 */
 
@@ -59,11 +59,14 @@ dd_boolean SetWriteFile(FILE **f, dd_DataFileType fname)
 
 int main(int argc, char *argv[])
 {
-  dd_MatrixPtr M=NULL,M2=NULL;
+  dd_MatrixPtr M=NULL,M2=NULL,M3=NULL;
   dd_colrange d;
   dd_ErrorType err=dd_NoError;
-  dd_rowset redrows,linrows;
+  dd_rowset redrows,linrows,ignoredrows, basisrows;
+  dd_colset ignoredcols, basiscols;
+  long rank;
   mytype val;
+  time_t starttime, endtime;
   dd_DataFileType inputfile;
   FILE *reading=NULL;
 
@@ -88,9 +91,12 @@ int main(int argc, char *argv[])
 
   if (M->representation==dd_Generator) d=M->colsize+1; else d=M->colsize;
 
-  fprintf(stdout, "redundant rows: ");
+  fprintf(stdout, "redundant rows:\n");
+  time(&starttime);
   redrows=dd_RedundantRows(M, &err);
+  time(&endtime);
   set_fwrite(stdout, redrows);
+  dd_WriteTimes(stdout,starttime,endtime);
 
   M2=dd_MatrixSubmatrix(M, redrows);
 
@@ -103,14 +109,39 @@ int main(int argc, char *argv[])
     fprintf(stdout," %ld  ", set_card(linrows));
   set_fwrite(stdout,linrows);
   set_uni(M2->linset, M2->linset, linrows); 
-      /* add the implicit linrows to the given linearity rows */
+      /* add the implicit linrows to the explicit linearity rows */
 
-  printf("\nNonredundant representation (except for the linearity part):\n");
+  printf("\nNonredundant representation (except possibly for the linearity part):\n");
   dd_WriteMatrix(stdout, M2);
 
+  /* To remove redundancy of the linearity part, 
+     we need to compute the rank and a basis of the linearity part. */
+  set_initialize(&ignoredrows, M2->rowsize);
+  set_initialize(&ignoredcols, M2->colsize);
+  set_compl(ignoredrows, M2->linset);
+  rank=dd_MatrixRank(M2,ignoredrows,ignoredcols, &basisrows, &basiscols);
+  set_diff(ignoredrows, M2->linset, basisrows);
+  M3=dd_MatrixSubmatrix(M2, ignoredrows);
+  if (rank>0){
+    fprintf(stdout,"\nThe following %ld linearity rows are dependent and unnecessary:", set_card(ignoredrows));
+    set_fwrite(stdout,ignoredrows);
+  } else
+    fprintf(stdout,"\nThe linearity rows are independent and thus minimal\n");  
 
+  printf("Nonredundant representation (= minimal representation):\n");
+  dd_WriteMatrix(stdout, M3);
+
+  dd_clear(val);
+  set_free(linrows);
+  set_free(basisrows);
+  set_free(basiscols);
+  set_free(ignoredrows);
+  set_free(ignoredcols);
+  set_free(redrows);
+  
   dd_FreeMatrix(M);
   dd_FreeMatrix(M2);
+  dd_FreeMatrix(M3);
 
 _L99:;
   if (err!=dd_NoError) dd_WriteErrorMessages(stderr,err);
