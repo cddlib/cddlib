@@ -48,9 +48,9 @@ int main(int argc, char *argv[])
      1 +   x1          >= 0
      1         +  x2   >= 0
   */
-  A->representation=Inequality;
+  A->representation=dd_Inequality;
   poly=dd_DDMatrix2Poly(A, &err);  /* compute the second (generator) representation */
-  if (err!=NoError) goto _L99;
+  if (err!=dd_NoError) goto _L99;
   printf("\nInput is H-representation:\n");
   G=dd_CopyGenerators(poly);
   dd_WriteMatrix(stdout,A);  printf("\n");
@@ -69,7 +69,7 @@ int main(int argc, char *argv[])
   set_addelem(B->linset,1); /* setting the first to be equality */
 
   dd_DDInputAppend(&poly,B, &err); /* append the two inequalities and compute the generators */
-  if (err!=NoError) goto _L99;
+  if (err!=dd_NoError) goto _L99;
   A=dd_CopyInequalities(poly);  /* get the inequalities (=input). */
   G=dd_CopyGenerators(poly);  /* get the generators (=output). */
   printf("\nNew H-representation with added inequalities:\n");
@@ -82,7 +82,7 @@ int main(int argc, char *argv[])
   dd_FreePolyhedra(poly);
 
 _L99:
-  if (err!=NoError) dd_WriteErrorMessages(stdout,err);
+  if (err!=dd_NoError) dd_WriteErrorMessages(stdout,err);
 
   return 0;
 }

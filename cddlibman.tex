@@ -1,7 +1,7 @@
 % The name of this file: cddlibman.tex
 % written by by Komei Fukuda
 % created March 15, 1999
-% modified Sept. 15, 2000
+% modified December 12, 2001
 %
 \documentclass[11pt]{article}
 \usepackage{html}
@@ -25,12 +25,13 @@ ETH-Zentrum, CH-8092 Zurich, Switzerland\\
 fukuda@ifor.math.ethz.ch \\and\\
 Department of Mathematics\\
 ETFL, CH-1015 Lausanne, Switzerland}
-\date{ (cddlib ver. 091,  Sept. 15, 2000)}
+\date{ (cddlib ver. 092,  December 12, 2001)}
 
 \maketitle
 \begin{abstract}
-This is a reference manual for cddlib-091.  
-It is still imcomplete but explains the most basic functions for polyhedral
+This is a reference manual for cddlib-092.  
+The manual is very far from satisfactory
+but explains the most important functions of polyhedral
 representation conversion in cddlib.  
 Please use the accompanying README file and test programs to complement the incompleteness.
 \end{abstract}
@@ -242,7 +243,8 @@ H-format files and V-format files:
 \section{Basic Object Types (Structures) in cddlib}  \label{DATASTR}
 
 Here are the types (defined in cddtypes.h) that are 
-important for the cddlib user.  The most important one, dd\_MatrixType,
+important for the cddlib user.  The most important one, 
+{\bf dd\_MatrixType\/},
 is to store a Polyhedra data in a straightforward manner.
 Once the user sets up a (pointer to) dd\_MatrixType data,
 he/she can load the data to an internal data type (dd\_PolyhedraType)
@@ -342,15 +344,24 @@ typedef struct lpsolution {
 \section{Library Functions}  \label{LIBRARY}
 
 Here we list some of the most important library functions/procedures. 
-In the following table, {\tt poly} is of type {\tt dd\_PolyhedraPtr},
+We use the following convention: 
+{\tt poly} is of type {\tt dd\_PolyhedraPtr},
 {\tt matrix}, {\tt matrix1} and {\tt matrix2} are of type {\tt dd\_MatrixPtr},
-{\tt err} is of type {\tt dd\_ErrorType*}, {\tt ifile} and {\tt ofile}
-are of type {\tt char*}, {\tt A} is of type {\tt dd\_Amatrix},
-{\tt d} is of type {\tt dd\_colrange}, {\tt m} is of type {\tt dd\_rowrange},
-{\tt x} is of type {\tt mytype}, {\tt a} is of type {\tt signed long integer},
+{\tt err} is of type {\tt dd\_ErrorType*}, 
+{\tt ifile} and {\tt ofile} are of type {\tt char*},
+{\tt A} is of type {\tt dd\_Amatrix},
+{\tt point} and {\tt vector} are of type {\tt dd\_Arow},
+{\tt d} is of type {\tt dd\_colrange}, 
+{\tt m} and {\tt i} are of type {\tt dd\_rowrange},
+{\tt x} is of type {\tt mytype}, 
+{\tt a} is of type {\tt signed long integer},
 {\tt b} is of type {\tt double},
+{\tt set} is of type {\tt set\_type}.
+  Also,
 {\tt setfam} is of type {\tt dd\_SetFamilyPtr},
+{\tt lp} is of type {\tt dd\_LPPtr},
 {\tt solver} is of type {\tt dd\_LPSolverType}.
+
 
 \subsection{Library Initialization}  \label{Initialization}
 
@@ -393,16 +404,49 @@ by appending the matrix of {\tt *matrix}, and compute
 the second representation.  The number of columns in
 {\tt *matrix} must be equal to the input representation.
 
-\item[{\tt boolean dd\_LPSolve(lp, solver, err)}]:\\
+\item[{\tt boolean dd\_LPSolve(lp, solver, \&err)}]:\\
 Solve {\tt lp} by the algorithm {\tt solver} and save
 the solututions in {\tt *lp}.  Unlike the earlier versions
 (dplex, cdd+), it can deal with equations and totally zero right
 hand sides.
+
+\item[{\tt dd\_boolean dd\_Redundant(matrix, i, point, \&err)}]:\\
+Check whether $i$th data in {\tt matrix} is redundant for the representation.
+If it is nonredundant, it returns a certificate.  For H-representation,
+it is a {\tt point} in $R^d$ which satisfies
+all inequalities except for the $i$th inequality.  If $i$ is a linearity,
+it does nothing and always returns FALSE.
+
+\item[{\tt dd\_rowset dd\_RedundantRows(matrix, \&err)}]:\\
+Returns a maximal set of row indices such that the associated rows
+can be eliminated without changing the polyhedron.  
+The function works for both V- and H-representations.
+
+\item[{\tt dd\_boolean dd\_ImplicitLinearity(matrix, i, \&err)}]:\\
+Check whether $i$th inequality
+in the input is forced to be linearity (equality 
+for H-representation).
+If $i$ is linearity itself, 
+it does nothing and always returns FALSE.
+
+\item[{\tt dd\_rowset dd\_ImplicitLinearityRows(matrix, \&err)}]:\\
+Returns the set of indices of rows that are 
+implicitly linearity.  It simply calls
+{\tt dd\_ImplicitLinearity} for each inequality and collects
+the row indices for which the answer is TRUE.
+
+\item[{\tt dd\_rowrange dd\_RayShooting(matrix, point, vector)}]:\\
+Finds the index of a halfspace first left by the ray starting from
+{\tt point} toward the direction {\tt vector}.  It resolves
+the tie by a lexicographic perturbation.  Those inequalities violated
+by {\tt point} will be simply ignored.
+
 \end{description}
 
 
 \subsection{Data Manipulations}  \label{DataLibrary}
 
+\subsubsection{Number Assignments}
 \begin{description}
 
 \item[{\tt void dd\_set\_si(x, a)}]:\\
@@ -421,6 +465,11 @@ This is to set a {\tt mytype} variable {\tt x} to the
 value of double {\tt b}.  This is available only
 when the library is compiled without {\tt -DGMPRATIONAL}
 compiler option.
+
+\end{description}
+
+\subsubsection{Polyhedra Data Manipulation}
+\begin{description}
 
 \item[{\tt dd\_MatrixPtr dd\_PolyFile2Matrix (f, err)}]:\\
 Read a Polyhedra data from {\tt f} and store it in {\tt matrixdata}
@@ -456,9 +505,20 @@ Copy the adjacency representation of the input representation
 pointed by poly to {\tt setfamily}
 and return {\tt d\_SetFamilyPtr}.
 
-\item[{\tt dd\_LPPtr dd\_MakeLPforInteriorFinding(dd\_LPPtr)}]:\\
+\item[{\tt void dd\_FreePolyhedra(poly)}]:\\
+Free memory allocated to {\tt poly}.
+
+\end{description}
+
+\subsubsection{LP Data Manipulation}
+\begin{description}
+
+\item[{\tt dd\_LPPtr dd\_MakeLPforInteriorFinding(lp)}]:\\
 Set up an LP to find an interior point of the feasible region of {\tt lp}
-and return a pointer to the LP.
+and return a pointer to the LP.  The new LP has one new variable
+$x_{d+1}$ and one more constraint:
+$\max x_{d+1}$ subject to $b - A x - x_{d+1} \ge 0$ and $x_{d+1} \le K$,
+where $K$ is a positive constant.
 
 \item[{\tt dd\_LPPtr dd\_Matrix2LP(matrix, err)}]:\\
 Load {\tt matrix} to {\tt lpdata} and return a pointer to the data.
@@ -467,6 +527,14 @@ Load {\tt matrix} to {\tt lpdata} and return a pointer to the data.
 Load the solutions of {\tt lp} to {\tt lpsolution} and
 return a pointer to the data.  This replaces the old name
 {\tt dd\_LPSolutionLoad(lp)}.
+
+\item[{\tt void dd\_FreeLPData(lp)}]:\\
+Free memory allocated to {\tt lp}.
+
+\end{description}
+
+\subsubsection{Matrix Manipulation}
+\begin{description}
 
 \item[{\tt dd\_MatrixPtr dd\_CopyMatrix(matrix)}]:\\
 Make a copy of matrixdata pointed by {\tt matrix} and return
@@ -484,16 +552,21 @@ the sum of the rowsizes of {\tt matrix1} and {\tt matrix2}.
 (i.e. numbertype, representation, etc)
 from the first matrix. 
 
-\item[{\tt void dd\_FreePolyhedra(poly)}]:\\
-Free memory allocated to {\tt poly}.
+\item[{\tt int dd\_MatrixAppendTo(\& matrix1, matrix2)}]:\\
+Same as {\tt dd\_AppendMatrix} except that the first matrix
+is modified to take the result.
 
-\item[{\tt void dd\_FreeLPData(lp)}]:\\
-Free memory allocated to {\tt lp}.
+\item[{\tt int dd\_MatrixRowRemove(\& matrix, i)}]:\\
+Remove the $i$th row of {\tt matrix}.
 
+\item[{\tt dd\_MatrixPtr dd\_MatrixSubmatrix(matrix, set)}]:\\
+Generate the submatrix of {\tt matrix} by removing the
+rows indexed by {\tt set} and return a matrixdata pointer.
 
 \end{description}
 
 \subsection{Input/Output Functions}  \label{IOLibrary}
+
 \begin{description}
 
 \item[{\tt boolean dd\_DDFile2File(ifile, ofile, err)}]:\\
@@ -564,8 +637,9 @@ This function is now called {\tt dd\_CopyLPSolution(lp)}.
 
 \section{How to Use}  \label{HOWTO}
 
-See the examples, testcdd*.c , testlp*.c and simplecdd.c.
-
+For the moment, the best documentation of usage are 
+the examples, testcdd*.c , testlp*.c, redcheck.c
+and simplecdd.c.
 
 \section{Numerical Accuracy}  \label{accuracy}
  A little caution is in order.  Many people have observed 
@@ -574,7 +648,7 @@ is used.   As we all know, floating-point computation
 might not give a correct answer, especially when an input
 data is very sensitive to a small perturbation.  When
 some strange behavior is observed, it is always wise
-to create a rational approximation of the input
+to create a rationalization of the input
 (for example, one can replace 0.3333333 with 1/3)
 and to compute it with cddlib compiled with gmp rational
 to see what a correct behavior should be.  Whenever the time
@@ -585,13 +659,18 @@ you might want to ``play with'' the constant {\tt dd\_almostzero}
 defined in cdd.h:
 
 \begin{verbatim}
-   #define dd_almostzero  1.0E-6
+   #define dd_almostzero  1.0E-7
 \end{verbatim}
 \noindent
 This number is used to recognize whether a number is zero:  
 a number whose absolute value is smaller
 than {\tt dd\_almostzero} is considered zero, and nonzero otherwise.
-You can change this to modify the behavior of cddlib.
+You can change this to modify the behavior of cddlib.  One might
+consider the default setting is rather large for double
+precision arithmetic.  This is because cddlib is made
+to deal with highly degenerate data and it works better
+to treat a relatively large ``epsilon'' as zero.
+
 Another thing one can do is scaling.  If the values in one column of
 an input is of smaller magnitude than those in another column, 
 scale one so that they become comparable.
@@ -650,12 +729,9 @@ for the academic year 1993-1994.  Without his
 support, the present form of this program would not have existed.
 There are many people who helped me to improve cdd, in particular,
 I am indebted to David Avis, 
-Alexander Bockmayr, David Bremner, 
-Henry Crapo, Istvan Csabai, 
-Francois Margot,
-Alain Prodon, 
-Shawn Rusaw, Matthew Saltzman 
-and Masanori Sato. 
+Alexander Bockmayr, David Bremner, Henry Crapo, Istvan Csabai, 
+Francois Margot, Marc Pfetsch, Alain Prodon, 
+Shawn Rusaw, Matthew Saltzman and Masanori Sato.
 
 Finally, I would like to thank both H.-J. L\"uthi (ETHZ)
  and Th. M. Liebling (EPFL) for their continuing support for 

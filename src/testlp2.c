@@ -41,7 +41,7 @@ int main(int argc, char *argv[])
             A   x  <=  b.
   */
         
-  dd_ErrorType error=NoError;
+  dd_ErrorType error=dd_NoError;
   dd_LPSolverType solver;  /* either DualSimplex or CrissCross */
   dd_LPPtr lp;   
 
@@ -73,7 +73,7 @@ int main(int argc, char *argv[])
 
   dd_set_global_constants();
     
-  numb=Real;   /* set a number type */
+  numb=dd_Real;   /* set a number type */
   m=4;    /* number of rows  */
   n=3;    /* number of columns */
   A=dd_CreateMatrix(m,n);
@@ -84,15 +84,15 @@ int main(int argc, char *argv[])
 
   dd_set_si(A->rowvec[0],0);    dd_set_si(A->rowvec[1], 3); dd_set_si(A->rowvec[2], 4);
 
-  A->objective=LPmax;
+  A->objective=dd_LPmax;
   lp=dd_Matrix2LP(A, &err); /* load an LP */
   if (lp==NULL) goto _L99;
 
 /* Solve the LP by cdd LP solver. */
   printf("\n--- Running dd_LPSolve ---\n");
-  solver=DualSimplex;
+  solver=dd_DualSimplex;
   dd_LPSolve(lp, solver, &error);  /* Solve the LP */
-  if (error!=NoError) goto _L99;
+  if (error!=dd_NoError) goto _L99;
 
 /* Write the LP solutions by cdd LP reporter. */
   dd_WriteLPResult(stdout, lp, error);
@@ -102,7 +102,7 @@ int main(int argc, char *argv[])
   dd_FreeMatrix(A);
 
 _L99:;
-  if (error!=NoError) dd_WriteErrorMessages(stdout, error);
+  if (error!=dd_NoError) dd_WriteErrorMessages(stdout, error);
   return 0;
 }
 

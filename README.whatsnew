@@ -1,13 +1,31 @@
-2000-09-15 (Sept. 15, 2000)
+2001-12-12 (December 12, 2001)
 ---------------------------------------------
-C-Library cddlib (version 0.91) What's new? 
+C-Library cddlib (version 0.92) What's new? 
 ---------------------------------------------
 
 0. To learn what's new in this version,
 please check the history file HISTORY.cdd as well.
 
-1. cddlib-091 is a maintenance release, fixing memory leak bugs
-of cddlib-090*.
+1. cddlib-092 adds new functions to check
+redundancy of H- and V- representations, such as,
+dd_Redundant, dd_RedundantRows, dd_ImplicitLinearity,
+dd_ImplicitLinearityRows.  To see how these functions
+can be used, please look at the code redcheck.c which
+removes redundancies in H- or V-representations.
+One can run this code by 
+
+% redcheck sampleh7.ine
+
+Try redcheck with samplev3.ext and sampleh8.ine.  With
+exact arithmetic, use redcheck_gmp .
+
+Also some basic operations on dd_MatrixPtr have been added 
+such as dd_MatrixAppendTo, dd_MatrixRowRemove, dd_MatrixSubmatrix.
+
+The names of enumeration type variables have been modified.
+Now all names have prefix "dd_", e.g. Rational, Integer are
+now dd_Rational and dd_Integer.  This applies to TRUE and FALSE,
+which are now dd_TRUE and dd_FALSE.
 
 2. cddlib comes with a simple standalone code simplecdd.c.
 Once you "make all" at the subdirectory "makedir", 
@@ -36,23 +54,32 @@ with the exact solver scdd_gmp (created by "make gmp")
 This does the same thing but with GMP exact rational
 arithmetic.
 
-
 3. David Avis contributed a sample cddlib code, lcdd.c, which 
 runs like his convex hull code, lrs.  In particular, it generates
 standard output stream for piping in unix.  Just run lcdd as
 
-% lcdd sample.ine
+% lcdd < sample.ine
 
 It writes the extreme points (the content of simple.ext above)
 to standard output.
 
 
 4. For more information, contact
-   Komei Fukuda
-   fukuda@ifor.math.ethz.ch
+   Komei Fukuda (fukuda@ifor.math.ethz.ch)
    Zurich  :IFOR, ETH Zentrum, CH-8092 Zurich, Switzerland  
    Lausanne:DMA, EPFL, Ch-1015 Lausanne, Switzerland
    homepage: http://www.ifor.math.ethz.ch/staff/fukuda/fukuda.html
+
+   Please note that the above address will be replaced by the new 
+   address after January 1, 2002:
+
+   Komei Fukuda (fukuda@cs.mcgill.ca)
+   School of Computer Science
+   McGill University
+   McConnel Engineering Building
+   3480 University Street
+   Montreal, Quebec
+   Canada H3A 2A7
 
 // END of README.whatsnew
 

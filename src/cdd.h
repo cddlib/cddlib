@@ -1,6 +1,6 @@
-/* cddlib.h: Header file for cddlib.c 
+/* cdd.h: Header file for cddlib.c 
    written by Komei Fukuda, fukuda@ifor.math.ethz.ch
-   Version 0.91b, Feb. 26, 2001
+   Version 0.92, December 12, 2001
 */
 
 /* cddlib.c : C-Implementation of the double description method for
@@ -10,9 +10,9 @@
    the manual cddlibman.tex for detail.
 */
 
-#ifndef  __CDDLIB_H
-#define  __CDDLIB_H
-#endif  /* __CDDLIB_H */
+#ifndef  __CDD_H
+#define  __CDD_H
+#endif  /* __CDD_H */
 
 #ifndef  __CDDMP_H
 #include "cddmp.h"
@@ -29,7 +29,7 @@ extern mytype dd_one;
 extern mytype dd_purezero;
 extern mytype dd_minuszero;
    /* to be used to avoid creating temporary spaces for mytype */
-#define dd_almostzero  1.0E-6
+#define dd_almostzero  1.0E-7
 
 /* ---------- FUNCTIONS MEANT TO BE PUBLIC ---------- */
 
@@ -49,18 +49,18 @@ void dd_FreeMatrix(dd_MatrixPtr);
 void dd_SetToIdentity(dd_colrange, dd_Bmatrix);
 
 /* sign recognitions */
-boolean dd_Nonnegative(mytype);
-boolean dd_Nonpositive(mytype);
-boolean dd_Positive(mytype);
-boolean dd_Negative(mytype);
-boolean dd_EqualToZero(mytype);
-boolean dd_Nonzero(mytype);
-boolean dd_Equal(mytype,mytype);
-boolean dd_Larger(mytype,mytype);
-boolean dd_Smaller(mytype,mytype);
+dd_boolean dd_Nonnegative(mytype);
+dd_boolean dd_Nonpositive(mytype);
+dd_boolean dd_Positive(mytype);
+dd_boolean dd_Negative(mytype);
+dd_boolean dd_EqualToZero(mytype);
+dd_boolean dd_Nonzero(mytype);
+dd_boolean dd_Equal(mytype,mytype);
+dd_boolean dd_Larger(mytype,mytype);
+dd_boolean dd_Smaller(mytype,mytype);
 void dd_abs(mytype, mytype);
-void dd_lincomb(mytype, mytype, mytype, mytype, mytype);
-
+void dd_LinearComb(mytype, mytype, mytype, mytype, mytype);
+void dd_InnerProduct(mytype, dd_colrange, dd_Arow, dd_Arow);
 
 /* major cddlib operations */
 dd_MatrixPtr dd_CopyInput(dd_PolyhedraPtr);
@@ -71,18 +71,35 @@ dd_SetFamilyPtr dd_CopyIncidence(dd_PolyhedraPtr);
 dd_SetFamilyPtr dd_CopyAdjacency(dd_PolyhedraPtr);
 dd_SetFamilyPtr dd_CopyInputIncidence(dd_PolyhedraPtr);
 dd_SetFamilyPtr dd_CopyInputAdjacency(dd_PolyhedraPtr);
-dd_MatrixPtr dd_CopyMatrix(dd_MatrixPtr); /* 090c */
-dd_MatrixPtr dd_AppendMatrix(dd_MatrixPtr, dd_MatrixPtr);  /* 090c */
-boolean dd_DDFile2File(char *ifile, char *ofile, dd_ErrorType *err);
-boolean dd_DDInputAppend(dd_PolyhedraPtr*, dd_MatrixPtr, dd_ErrorType*);
-dd_MatrixPtr dd_PolyFile2Matrix (FILE *f, dd_ErrorType *);
+dd_boolean dd_DDFile2File(char *ifile, char *ofile, dd_ErrorType *err);
+dd_boolean dd_DDInputAppend(dd_PolyhedraPtr*, dd_MatrixPtr, dd_ErrorType*);
+dd_MatrixPtr dd_PolyFile2Matrix(FILE *f, dd_ErrorType *);
 dd_PolyhedraPtr dd_DDMatrix2Poly(dd_MatrixPtr, dd_ErrorType *);
+dd_boolean dd_Redundant(dd_MatrixPtr, dd_rowrange, dd_Arow, dd_ErrorType *);  /* 092 */
+dd_rowset dd_RedundantRows(dd_MatrixPtr, dd_ErrorType *);  /* 092 */
+dd_rowset dd_RedundantRowsViaShooting(dd_MatrixPtr, dd_ErrorType *); /* 092 */
+dd_rowrange dd_RayShooting(dd_MatrixPtr, dd_Arow intpt, dd_Arow direction);  /* 092 */ 
+ /* 092, find the first inequality "hit" by a ray from an intpt.  */
+dd_boolean dd_ImplicitLinearity(dd_MatrixPtr, dd_rowrange, dd_Arow, dd_ErrorType *);  /* 092 */
+dd_rowset dd_ImplicitLinearityRows(dd_MatrixPtr, dd_ErrorType *);  /* 092  */
+
+/* Matrix Basic Operations */
+dd_MatrixPtr dd_MatrixCopy(dd_MatrixPtr); /* a new name for dd_CopyMatrix */
+dd_MatrixPtr dd_CopyMatrix(dd_MatrixPtr); /* 090c, kept for compatibility */
+
+dd_MatrixPtr dd_MatrixAppend(dd_MatrixPtr, dd_MatrixPtr);  /* a name for dd_AppendMatrix */
+dd_MatrixPtr dd_AppendMatrix(dd_MatrixPtr, dd_MatrixPtr);  /* 090c, kept for compatibility */
+
+int dd_MatrixAppendTo(dd_MatrixPtr*, dd_MatrixPtr);  /* 092 */
+int dd_MatrixRowRemove(dd_MatrixPtr*, dd_rowrange);  /* 092 */
+dd_MatrixPtr dd_MatrixSubmatrix(dd_MatrixPtr, dd_rowset delset); /* 092 */
 
 /* input/output */
 void dd_SetInputFile(FILE **f,dd_DataFileType inputfile, dd_ErrorType *);
 void dd_SetWriteFileName(dd_DataFileType, dd_DataFileType, char, dd_RepresentationType);
 
 void dd_WriteAmatrix(FILE *, dd_Amatrix, dd_rowrange, dd_colrange);
+void dd_WriteArow(FILE *f, dd_Arow a, dd_colrange);
 void dd_WriteBmatrix(FILE *, dd_colrange, dd_Bmatrix T);
 void dd_WriteMatrix(FILE *, dd_MatrixPtr);
 void dd_MatrixIntegerFilter(dd_MatrixPtr);
@@ -97,79 +114,20 @@ void dd_WriteSetFamilyCompressed(FILE *, dd_SetFamilyPtr);
 void dd_WriteProgramDescription(FILE *);
 void dd_WriteDDTimes(FILE *, dd_PolyhedraPtr);
 void dd_WriteTimes(FILE *, time_t, time_t);
-
-
-/* ---------- FUNCTIONS MEANT TO BE NON-PUBLIC ---------- */
-boolean DoubleDescription(dd_PolyhedraPtr, dd_ErrorType*);
-void FreeDDMemory0(dd_ConePtr);
-void fread_rational_value (FILE *f, mytype value);
-void AddNewHalfspace1(dd_ConePtr, dd_rowrange);
-void AddNewHalfspace2(dd_ConePtr, dd_rowrange);
-void AddRay(dd_ConePtr, mytype *);
-void AddArtificialRay(dd_ConePtr);
-void AValue(mytype*,dd_colrange, dd_Amatrix, mytype *, dd_rowrange);
-void CheckAdjacency(dd_ConePtr,
-    dd_RayPtr*, dd_RayPtr*, boolean *);
-void CheckEquality(dd_colrange, dd_RayPtr *, dd_RayPtr *, boolean *);
-void ComputeRowOrderVector(dd_ConePtr);
-void ConditionalAddEdge(dd_ConePtr,dd_RayPtr, dd_RayPtr, dd_RayPtr);
-void CopyArow(mytype *, mytype *, dd_colrange);
-void CopyAmatrix(mytype **, mytype **, dd_rowrange, dd_colrange);
-void CopyBmatrix(dd_colrange, dd_Bmatrix T, dd_Bmatrix TCOPY);
-void CopyRay(mytype *, dd_colrange, dd_RayPtr,
-   dd_RepresentationType, dd_colindex);
-void CreateInitialEdges(dd_ConePtr);
-void CreateNewRay(dd_ConePtr, dd_RayPtr, dd_RayPtr, dd_rowrange);
-void Eliminate(dd_ConePtr, dd_RayPtr*);
-void EvaluateARay1(dd_rowrange, dd_ConePtr);
-void EvaluateARay2(dd_rowrange, dd_ConePtr);
-void FeasibilityIndices(long *, long *, dd_rowrange, dd_ConePtr);
-void FindBasis(dd_ConePtr, long *rank);
-void FindInitialRays(dd_ConePtr, boolean *);
-void ColumnReduce(dd_ConePtr);
-void GaussianColumnPivot(dd_rowrange, dd_colrange, dd_Amatrix, dd_Bmatrix,  dd_rowrange, dd_colrange);
-boolean LexSmaller(mytype *, mytype *, long);
-boolean LexLarger(mytype *, mytype *, long);
-void Normalize(dd_colrange, mytype *);
-void MatrixIntegerFilter(dd_MatrixPtr);
-void ProcessCommandLine(FILE*,dd_MatrixPtr, char *);
-void SelectNextHalfspace(dd_ConePtr, dd_rowset, dd_rowrange *);
-void SelectPivot2(dd_rowrange,dd_colrange,dd_Amatrix,
-dd_Bmatrix,dd_RowOrderType,dd_rowindex, dd_rowset,dd_rowrange,dd_rowset,
-dd_colset,dd_rowrange *,dd_colrange *,boolean *);
-void SelectPreorderedNext(dd_ConePtr, dd_rowset, dd_rowrange *);
-void SetInequalitySets(dd_ConePtr);
-void SnapToInteger(mytype, mytype);
-void StoreRay1(dd_ConePtr, mytype *, boolean *);
-void StoreRay2(dd_ConePtr, mytype *, boolean *, boolean *);
-void TableauEntry(mytype *, dd_rowrange, dd_colrange, dd_Amatrix, dd_Bmatrix T, dd_rowrange, dd_colrange);
-void UpdateEdges(dd_ConePtr, dd_RayPtr, dd_RayPtr);
-void UpdateRowOrderVector(dd_ConePtr, dd_rowset PriorityRows);
 void dd_WriteIncidence(FILE *, dd_PolyhedraPtr);
 void dd_WriteAdjacency(FILE *, dd_PolyhedraPtr);
 void dd_WriteInputAdjacency(FILE *, dd_PolyhedraPtr);
 void dd_WriteInputIncidence(FILE *, dd_PolyhedraPtr);
-void WriteArow(FILE *f, dd_colrange d_origsize, dd_Arow a);
-void WriteRay(FILE *, dd_colrange, dd_RayPtr,
-   dd_RepresentationType, dd_colindex);
-void ZeroIndexSet(dd_rowrange, dd_colrange, dd_Amatrix, mytype *, dd_rowset);
-
-/* New functions to handle data loading, NON-PUBLIC */
-dd_NumberType GetNumberType(char *);
-dd_ConePtr ConeDataLoad(dd_PolyhedraPtr);
-dd_PolyhedraPtr CreatePolyhedraData(dd_rowrange, dd_colrange);
-boolean InitializeConeData(dd_rowrange, dd_colrange, dd_ConePtr*);
-boolean AppendMatrix2Poly(dd_PolyhedraPtr*, dd_MatrixPtr);
-
 
 /* functions and types for LP solving */
 
 dd_LPPtr dd_Matrix2LP(dd_MatrixPtr, dd_ErrorType *);
   /* a new way to load a matrix to create an LP object. */
 
-boolean dd_LPSolve(dd_LPPtr,dd_LPSolverType,dd_ErrorType *);
+dd_boolean dd_LPSolve(dd_LPPtr,dd_LPSolverType,dd_ErrorType *);
 dd_LPPtr dd_MakeLPforInteriorFinding(dd_LPPtr);  
-dd_LPSolutionPtr dd_CopyLPSolution(dd_LPPtr lp);  /* 0.90c */
+dd_LPSolutionPtr dd_CopyLPSolution(dd_LPPtr);  /* 0.90c */
+void dd_WriteLP(FILE *, dd_LPPtr); /* 092 */
 
 int dd_LPReverseRow(dd_LPPtr, dd_rowrange);
     /* reverse the i-th row (1 <= i <= no. of rows) */
@@ -184,6 +142,65 @@ void dd_FreeLPSolution(dd_LPSolutionPtr);
 void dd_WriteLPResult(FILE *, dd_LPPtr, dd_ErrorType);
 void dd_WriteLPErrorMessages(FILE *, dd_ErrorType);
 void dd_WriteLPTimes(FILE *, dd_LPPtr);
+
+
+/* ---------- FUNCTIONS MEANT TO BE NON-PUBLIC ---------- */
+dd_boolean DoubleDescription(dd_PolyhedraPtr, dd_ErrorType*);
+void FreeDDMemory0(dd_ConePtr);
+void fread_rational_value (FILE *f, mytype value);
+void AddNewHalfspace1(dd_ConePtr, dd_rowrange);
+void AddNewHalfspace2(dd_ConePtr, dd_rowrange);
+void AddRay(dd_ConePtr, mytype *);
+void AddArtificialRay(dd_ConePtr);
+void AValue(mytype*,dd_colrange, dd_Amatrix, mytype *, dd_rowrange);
+void CheckAdjacency(dd_ConePtr, dd_RayPtr*, dd_RayPtr*, dd_boolean *);
+void CheckEquality(dd_colrange, dd_RayPtr *, dd_RayPtr *, dd_boolean *);
+void ComputeRowOrderVector(dd_ConePtr);
+void ConditionalAddEdge(dd_ConePtr,dd_RayPtr, dd_RayPtr, dd_RayPtr);
+void CopyArow(mytype *, mytype *, dd_colrange);
+void CopyAmatrix(mytype **, mytype **, dd_rowrange, dd_colrange);
+void CopyBmatrix(dd_colrange, dd_Bmatrix T, dd_Bmatrix TCOPY);
+void CopyRay(mytype *, dd_colrange, dd_RayPtr,
+   dd_RepresentationType, dd_colindex);
+void CreateInitialEdges(dd_ConePtr);
+void CreateNewRay(dd_ConePtr, dd_RayPtr, dd_RayPtr, dd_rowrange);
+void Eliminate(dd_ConePtr, dd_RayPtr*);
+void EvaluateARay1(dd_rowrange, dd_ConePtr);
+void EvaluateARay2(dd_rowrange, dd_ConePtr);
+void FeasibilityIndices(long *, long *, dd_rowrange, dd_ConePtr);
+void FindBasis(dd_ConePtr, long *rank);
+void FindInitialRays(dd_ConePtr, dd_boolean *);
+void ColumnReduce(dd_ConePtr);
+void GaussianColumnPivot(dd_rowrange, dd_colrange, dd_Amatrix, dd_Bmatrix,  dd_rowrange, dd_colrange);
+dd_boolean LexSmaller(mytype *, mytype *, long);
+dd_boolean LexLarger(mytype *, mytype *, long);
+void Normalize(dd_colrange, mytype *);
+void MatrixIntegerFilter(dd_MatrixPtr);
+void ProcessCommandLine(FILE*,dd_MatrixPtr, char *);
+void SelectNextHalfspace(dd_ConePtr, dd_rowset, dd_rowrange *);
+void SelectPivot2(dd_rowrange,dd_colrange,dd_Amatrix,
+dd_Bmatrix,dd_RowOrderType,dd_rowindex, dd_rowset,dd_rowrange,dd_rowset,
+dd_colset,dd_rowrange *,dd_colrange *,dd_boolean *);
+void SelectPreorderedNext(dd_ConePtr, dd_rowset, dd_rowrange *);
+void SetInequalitySets(dd_ConePtr);
+void SnapToInteger(mytype, mytype);
+void StoreRay1(dd_ConePtr, mytype *, dd_boolean *);
+void StoreRay2(dd_ConePtr, mytype *, dd_boolean *, dd_boolean *);
+void TableauEntry(mytype *, dd_rowrange, dd_colrange, dd_Amatrix, dd_Bmatrix T, dd_rowrange, dd_colrange);
+void UpdateEdges(dd_ConePtr, dd_RayPtr, dd_RayPtr);
+void UpdateRowOrderVector(dd_ConePtr, dd_rowset PriorityRows);
+void WriteRay(FILE *, dd_colrange, dd_RayPtr,
+   dd_RepresentationType, dd_colindex);
+void ZeroIndexSet(dd_rowrange, dd_colrange, dd_Amatrix, mytype *, dd_rowset);
+
+/* New functions to handle data loading, NON-PUBLIC */
+dd_NumberType GetNumberType(char *);
+dd_ConePtr ConeDataLoad(dd_PolyhedraPtr);
+dd_PolyhedraPtr CreatePolyhedraData(dd_rowrange, dd_colrange);
+dd_boolean InitializeConeData(dd_rowrange, dd_colrange, dd_ConePtr*);
+dd_boolean AppendMatrix2Poly(dd_PolyhedraPtr*, dd_MatrixPtr);
+
+
 
 
 

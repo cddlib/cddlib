@@ -1,6 +1,6 @@
 /* cddlib.c: cdd library  (library version of cdd)
    written by Komei Fukuda, fukuda@ifor.math.ethz.ch
-   Version 0.91d, March 9, 2001
+   Version 0.92, December 12, 2001
    Standard ftp site: ftp.ifor.math.ethz.ch, Directory: pub/fukuda/cdd
 */
 
@@ -41,7 +41,7 @@
 #include <string.h>
 
 /* Global Variables */
-boolean debug               =FALSE;
+dd_boolean debug               =dd_FALSE;
 /* GLOBAL CONSTANTS (to be set by dd_set_global_constants() */
 mytype dd_zero;
 mytype dd_one;
@@ -53,8 +53,8 @@ mytype dd_minuszero;
 
 void DDInit(dd_ConePtr cone)
 {
-  cone->Error=NoError;
-  cone->CompStatus=InProgress;
+  cone->Error=dd_NoError;
+  cone->CompStatus=dd_InProgress;
   cone->RayCount = 0;
   cone->TotalRayCount = 0;
   cone->FeasibleRayCount = 0;
@@ -63,18 +63,18 @@ void DDInit(dd_ConePtr cone)
   cone->TotalEdgeCount=0; /* active edge count */
   SetInequalitySets(cone);
   ComputeRowOrderVector(cone);
-  cone->RecomputeRowOrder=FALSE;
+  cone->RecomputeRowOrder=dd_FALSE;
 }
 
 void DDMain(dd_ConePtr cone)
 {
   dd_rowrange hh, itemp, otemp;
-  boolean localdebug=TRUE;
+  dd_boolean  localdebug=dd_TRUE;
 
   if (cone->d<=0){
     cone->Iteration=cone->m;
     cone->FeasibleRayCount=0;
-    cone->CompStatus=AllFound;
+    cone->CompStatus=dd_AllFound;
     goto _L99;
   }
   if (localdebug) {
@@ -110,7 +110,7 @@ void DDMain(dd_ConePtr cone)
         cone->Iteration, hh, cone->TotalRayCount, cone->RayCount,
         cone->FeasibleRayCount);
     }
-    if (cone->CompStatus==AllFound||cone->CompStatus==RegionEmpty) {
+    if (cone->CompStatus==dd_AllFound||cone->CompStatus==dd_RegionEmpty) {
       set_addelem(cone->AddedHalfspaces, hh);
       goto _L99;
     }
@@ -151,7 +151,7 @@ void dd_InitialDataSetup(dd_ConePtr cone)
     last_d=cone->d;
   }
 
-  cone->RecomputeRowOrder=FALSE;
+  cone->RecomputeRowOrder=dd_FALSE;
   cone->ArtificialRay = NULL;
   cone->FirstRay = NULL;
   cone->LastRay = NULL;
@@ -184,23 +184,23 @@ void dd_InitialDataSetup(dd_ConePtr cone)
   }
   CreateInitialEdges(cone);
   cone->Iteration = cone->d + 1;
-  if (cone->Iteration >= cone->m) cone->CompStatus=AllFound;
+  if (cone->Iteration >= cone->m) cone->CompStatus=dd_AllFound;
   set_free(ZSet);
 }
 
-boolean DoubleDescription(dd_PolyhedraPtr poly, dd_ErrorType *err)
+dd_boolean DoubleDescription(dd_PolyhedraPtr poly, dd_ErrorType *err)
 {
   dd_ConePtr cone=NULL;
-  boolean found=FALSE;
+  dd_boolean found=dd_FALSE;
 
-  *err=NoError;
-  if (poly!=NULL && (poly->child==NULL || poly->child->CompStatus!=AllFound)){
+  *err=dd_NoError;
+  if (poly!=NULL && (poly->child==NULL || poly->child->CompStatus!=dd_AllFound)){
     cone=ConeDataLoad(poly);
     /* create a cone associated with poly by homogenization */
     time(&cone->starttime);
     DDInit(cone);
-    if (poly->representation==Generator && poly->m<=0){
-       *err=EmptyVrepresentation;
+    if (poly->representation==dd_Generator && poly->m<=0){
+       *err=dd_EmptyVrepresentation;
        cone->Error=*err;
     } else {
       FindInitialRays(cone, &found);
@@ -214,26 +214,26 @@ boolean DoubleDescription(dd_PolyhedraPtr poly, dd_ErrorType *err)
   return found;
 }
 
-boolean dd_DDInputAppend(dd_PolyhedraPtr *poly, dd_MatrixPtr M,
+dd_boolean dd_DDInputAppend(dd_PolyhedraPtr *poly, dd_MatrixPtr M,
   dd_ErrorType *err)
 {
   /* This is imcomplete.  It simply solves the problem from scratch.  */
-  boolean found;
+  dd_boolean found;
   dd_ErrorType error;
 
   if ((*poly)->child!=NULL) dd_FreeDDMemory(*poly);
   AppendMatrix2Poly(poly, M);
-  (*poly)->representation=Inequality;
+  (*poly)->representation=dd_Inequality;
   found=DoubleDescription(*poly, &error);
   *err=error;
   return found;
 }
 
-boolean dd_DDFile2File(char *ifile, char *ofile, dd_ErrorType *err)
+dd_boolean dd_DDFile2File(char *ifile, char *ofile, dd_ErrorType *err)
 {
   /* The representation conversion from an input file to an outfile.  */
   /* modified by D. Avis to allow stdin/stdout */
-  boolean found=TRUE;
+  dd_boolean found=dd_TRUE;
   dd_ErrorType error;
   FILE *reading=NULL,*writing=NULL;
   dd_PolyhedraPtr poly;
@@ -246,8 +246,8 @@ boolean dd_DDFile2File(char *ifile, char *ofile, dd_ErrorType *err)
    }
   else{
     fprintf(stderr,"The input file %s not found\n",ifile);
-    found=FALSE;
-    error=IFileNotFound;
+    found=dd_FALSE;
+    error=dd_IFileNotFound;
     goto _L99;
   }
 
@@ -256,11 +256,11 @@ boolean dd_DDFile2File(char *ifile, char *ofile, dd_ErrorType *err)
       writing = stdout;
     else if ( (writing = fopen(ofile, "w") ) != NULL){
       fprintf(stderr,"output file %s is open\n",ofile);
-      found=TRUE;
+      found=dd_TRUE;
     } else {
       fprintf(stderr,"The output file %s cannot be opened\n",ofile);
-      found=FALSE;
-      error=OFileNotOpen;
+      found=dd_FALSE;
+      error=dd_OFileNotOpen;
       goto _L99;
     }
   }
@@ -269,12 +269,12 @@ boolean dd_DDFile2File(char *ifile, char *ofile, dd_ErrorType *err)
   poly=dd_DDMatrix2Poly(M, &error);  /* compute the second representation */
   dd_FreeMatrix(M);
 
-  if (error==NoError) {
+  if (error==dd_NoError) {
     dd_WriteRunningMode(writing, poly);
     A=dd_CopyInequalities(poly);
     G=dd_CopyGenerators(poly);
 
-    if (poly->representation==Inequality) {
+    if (poly->representation==dd_Inequality) {
       dd_WriteMatrix(writing,G);
      } else {
       dd_WriteMatrix(writing,A);

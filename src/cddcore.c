@@ -1,6 +1,6 @@
 /* cddcore.c:  Core Procedures for cddlib
    written by Komei Fukuda, fukuda@ifor.math.ethz.ch
-   Version 0.91b, Feb. 26, 2001
+   Version 0.92, December 12, 2001
 */
 
 /* cddlib : C-library of the double description method for
@@ -19,10 +19,10 @@
 #include <string.h>
 
 void CheckAdjacency(dd_ConePtr cone,
-    dd_RayPtr *RP1, dd_RayPtr *RP2, boolean *adjacent)
+    dd_RayPtr *RP1, dd_RayPtr *RP2, dd_boolean *adjacent)
 {
   dd_RayPtr TempRay;
-  boolean localdebug=FALSE;
+  dd_boolean localdebug=dd_FALSE;
   static dd_rowset Face, Face1;
   static dd_rowrange last_m=0;
   
@@ -35,12 +35,12 @@ void CheckAdjacency(dd_ConePtr cone,
     last_m=cone->m;
   }
 
-  if (debug) localdebug=TRUE;
-  *adjacent = TRUE;
+  if (debug) localdebug=dd_TRUE;
+  *adjacent = dd_TRUE;
   set_int(Face1, (*RP1)->ZeroSet, (*RP2)->ZeroSet);
   set_int(Face, Face1, cone->AddedHalfspaces);
   if (set_card(Face)< cone->d - 2) {
-    *adjacent = FALSE;
+    *adjacent = dd_FALSE;
     if (localdebug) {
       fprintf(stderr,"non adjacent: set_card(face) %ld < %ld = cone->d.\n",
         set_card(Face),cone->d);
@@ -48,14 +48,14 @@ void CheckAdjacency(dd_ConePtr cone,
     return;
   }
   else if (cone->parent->NondegAssumed) {
-  	*adjacent = TRUE;
+  	*adjacent = dd_TRUE;
   	return;
   }
   TempRay = cone->FirstRay;
   while (TempRay != NULL && *adjacent) {
     if (TempRay != *RP1 && TempRay != *RP2) {
     	set_int(Face1, TempRay->ZeroSet, cone->AddedHalfspaces);
-      	if (set_subset(Face, Face1)) *adjacent = FALSE;
+      	if (set_subset(Face, Face1)) *adjacent = dd_FALSE;
     }
     TempRay = TempRay->Next;
   }
@@ -115,17 +115,17 @@ void AValue(mytype *val, dd_colrange d_size, dd_Amatrix A, mytype *p, dd_rowrang
   dd_clear(x);
 }
 
-void StoreRay1(dd_ConePtr cone, mytype *p, boolean *feasible)
-{  /* Original ray storing routine when RelaxedEnumeration is FALSE */
+void StoreRay1(dd_ConePtr cone, mytype *p, dd_boolean *feasible)
+{  /* Original ray storing routine when RelaxedEnumeration is dd_FALSE */
   dd_rowrange i,k,fii=cone->m+1;
   dd_colrange j;
   mytype temp;
   dd_RayPtr RR;
-  boolean localdebug=debug;
+  dd_boolean localdebug=debug;
 
   dd_init(temp);
   RR=cone->LastRay;
-  *feasible = TRUE;
+  *feasible = dd_TRUE;
   set_initialize(&(RR->ZeroSet),cone->m);
   for (j = 0; j < cone->d; j++){
     dd_set(RR->Ray[j],p[j]);
@@ -148,7 +148,7 @@ void StoreRay1(dd_ConePtr cone, mytype *p, boolean *feasible)
       if (localdebug) {
         fprintf(stderr,"recognized negative!\n");
       }
-      *feasible = FALSE;
+      *feasible = dd_FALSE;
       if (fii>cone->m) fii=i;  /* the first violating inequality index */
       if (localdebug) {
         fprintf(stderr,"this ray is not feasible, neg comp = %ld\n", fii);
@@ -162,8 +162,8 @@ void StoreRay1(dd_ConePtr cone, mytype *p, boolean *feasible)
 }
 
 void StoreRay2(dd_ConePtr cone, mytype *p, 
-    boolean *feasible, boolean *weaklyfeasible)
-   /* Ray storing routine when RelaxedEnumeration is TRUE.
+    dd_boolean *feasible, dd_boolean *weaklyfeasible)
+   /* Ray storing routine when RelaxedEnumeration is dd_TRUE.
        weaklyfeasible is true iff it is feasible with
        the strict_inequality conditions deleted. */
 {
@@ -171,13 +171,13 @@ void StoreRay2(dd_ConePtr cone, mytype *p,
   dd_rowrange i,k,fii=cone->m+1;
   dd_colrange j;
   mytype temp;
-  boolean localdebug=debug;
+  dd_boolean localdebug=debug;
 
   dd_init(temp);
   RR=cone->LastRay;
-  if (debug) localdebug=TRUE;
-  *feasible = TRUE;
-  *weaklyfeasible = TRUE;
+  if (debug) localdebug=dd_TRUE;
+  *feasible = dd_TRUE;
+  *weaklyfeasible = dd_TRUE;
   set_initialize(&(RR->ZeroSet),cone->m);
   for (j = 0; j < cone->d; j++){
     dd_set(RR->Ray[j],p[j]);
@@ -188,14 +188,14 @@ void StoreRay2(dd_ConePtr cone, mytype *p,
     if (dd_EqualToZero(temp)){
       set_addelem(RR->ZeroSet, k);
       if (cone->parent->EqualityIndex[k]==-1) 
-        *feasible=FALSE;  /* strict inequality required */
+        *feasible=dd_FALSE;  /* strict inequality required */
     }
 /*    if (temp < -zero){ */
     if (dd_Negative(temp)){
-      *feasible = FALSE;
+      *feasible = dd_FALSE;
       if (fii>cone->m && cone->parent->EqualityIndex[k]>=0) {
         fii=i;  /* the first violating inequality index */
-        *weaklyfeasible=FALSE;
+        *weaklyfeasible=dd_FALSE;
       }
     }
   }
@@ -207,7 +207,7 @@ void StoreRay2(dd_ConePtr cone, mytype *p,
 
 void AddRay(dd_ConePtr cone, mytype *p)
 {  
-  boolean feasible, weaklyfeasible;
+  dd_boolean feasible, weaklyfeasible;
   dd_colrange j;
 
   if (cone->FirstRay == NULL) {
@@ -254,7 +254,7 @@ void AddArtificialRay(dd_ConePtr cone)
 {  
   dd_Arow zerovector;
   dd_colrange j,d1;
-  boolean feasible;
+  dd_boolean feasible;
 
   if (cone->d<=0) d1=1; else d1=cone->d;
   dd_InitializeArow(d1, &zerovector);
@@ -284,10 +284,10 @@ void ConditionalAddEdge(dd_ConePtr cone,
     dd_RayPtr Ray1, dd_RayPtr Ray2, dd_RayPtr ValidFirstRay)
 {
   long it,it_row,fii1,fii2,fmin,fmax;
-  boolean adjacent,lastchance;
+  dd_boolean adjacent,lastchance;
   dd_RayPtr TempRay,Rmin,Rmax;
   dd_AdjacencyType *NewEdge;
-  boolean localdebug=FALSE;
+  dd_boolean localdebug=dd_FALSE;
   dd_rowset ZSmin, ZSmax;
   static dd_rowset Face, Face1;
   static dd_rowrange last_m=0;
@@ -326,7 +326,7 @@ void ConditionalAddEdge(dd_ConePtr cone,
     if (localdebug) fprintf(stderr,"ConditionalAddEdge: No strong separation -> No edge added\n");
   }
   else {  /* the pair will be separated at the iteration fmin */
-    lastchance=TRUE;
+    lastchance=dd_TRUE;
     /* flag to check it will be the last chance to store the edge candidate */
     set_int(Face1, ZSmax, ZSmin);
     (cone->count_int)++;
@@ -341,7 +341,7 @@ void ConditionalAddEdge(dd_ConePtr cone,
     for (it=cone->Iteration+1; it < fmin && lastchance; it++){
       it_row=cone->OrderVector[it];
       if (cone->parent->EqualityIndex[it_row]>=0 && set_member(it_row, Face1)){
-        lastchance=FALSE;
+        lastchance=dd_FALSE;
         (cone->count_int_bad)++;
         if (localdebug){
           fprintf(stderr,"There will be another chance iteration %ld (row %ld) to store the pair\n", it, it_row);
@@ -349,7 +349,7 @@ void ConditionalAddEdge(dd_ConePtr cone,
       }
     }
     if (lastchance){
-      adjacent = TRUE;
+      adjacent = dd_TRUE;
       (cone->count_int_good)++;
       /* adjacent checking */
       set_int(Face, Face1, cone->AddedHalfspaces);
@@ -364,10 +364,10 @@ void ConditionalAddEdge(dd_ConePtr cone,
         fprintf(stderr,"\n");
       }
       if (set_card(Face)< cone->d - 2) {
-        adjacent = FALSE;
+        adjacent = dd_FALSE;
       }
       else if (cone->parent->NondegAssumed) {
-    	adjacent = TRUE;
+    	adjacent = dd_TRUE;
       }
       else{
         TempRay = ValidFirstRay;  /* the first ray for adjacency checking */
@@ -376,7 +376,7 @@ void ConditionalAddEdge(dd_ConePtr cone,
             set_int(Face1, TempRay->ZeroSet, cone->AddedHalfspaces);
             if (set_subset(Face, Face1)) {
               if (localdebug) set_fwrite(stderr,Face1);
-              adjacent = FALSE;
+              adjacent = dd_FALSE;
             }
           }
           TempRay = TempRay->Next;
@@ -408,7 +408,7 @@ void CreateInitialEdges(dd_ConePtr cone)
   dd_RayPtr Ptr1, Ptr2;
   dd_rowrange fii1,fii2;
   long count=0;
-  boolean adj,localdebug=FALSE;
+  dd_boolean adj,localdebug=dd_FALSE;
 
   cone->Iteration=cone->d;  /* CHECK */
   if (cone->FirstRay ==NULL || cone->LastRay==NULL){
@@ -442,7 +442,7 @@ void UpdateEdges(dd_ConePtr cone, dd_RayPtr RRbegin, dd_RayPtr RRend)
 {
   dd_RayPtr Ptr1, Ptr2begin, Ptr2;
   dd_rowrange fii1;
-  boolean ptr2found,quit,localdebug=FALSE;
+  dd_boolean ptr2found,quit,localdebug=dd_FALSE;
   long count=0,pos1, pos2;
   float workleft,prevworkleft=110.0,totalpairs;
 
@@ -455,24 +455,24 @@ void UpdateEdges(dd_ConePtr cone, dd_RayPtr RRbegin, dd_RayPtr RRend)
   Ptr1=RRbegin;
   pos1=1;
   do{
-    ptr2found=FALSE;
-    quit=FALSE;
+    ptr2found=dd_FALSE;
+    quit=dd_FALSE;
     fii1=Ptr1->FirstInfeasIndex;
     pos2=2;
     for (Ptr2=Ptr1->Next; !ptr2found && !quit; Ptr2=Ptr2->Next,pos2++){
       if  (Ptr2->FirstInfeasIndex > fii1){
         Ptr2begin=Ptr2;
-        ptr2found=TRUE;
+        ptr2found=dd_TRUE;
       }
-      else if (Ptr2==RRend) quit=TRUE;
+      else if (Ptr2==RRend) quit=dd_TRUE;
     }
     if (ptr2found){
-      quit=FALSE;
+      quit=dd_FALSE;
       for (Ptr2=Ptr2begin; !quit ; Ptr2=Ptr2->Next){
         count++;
         if (localdebug) fprintf(stderr,"UpdateEdges: edge %ld \n",count);
         ConditionalAddEdge(cone, Ptr1,Ptr2,RRbegin);
-        if (Ptr2==RRend || Ptr2->Next==NULL) quit=TRUE;
+        if (Ptr2==RRend || Ptr2->Next==NULL) quit=dd_TRUE;
       }
     }
     Ptr1=Ptr1->Next;
@@ -492,7 +492,7 @@ void FreeDDMemory0(dd_ConePtr cone)
   dd_RayPtr Ptr, PrevPtr;
   long count;
   dd_colrange j;
-  boolean localdebug=FALSE;
+  dd_boolean localdebug=dd_FALSE;
   
   /* THIS SHOULD BE REWRITTEN carefully */
   PrevPtr=cone->ArtificialRay;
@@ -578,17 +578,17 @@ void Normalize(dd_colrange d_size, mytype *V)
 {
   long j,jmin=0;
   mytype temp,min;
-  boolean nonzerofound=FALSE;
+  dd_boolean nonzerofound=dd_FALSE;
 
   if (d_size>0){
     dd_init(min);  dd_init(temp);
     dd_abs(min,V[0]);  jmin=0; /* set the minmizer to 0 */
-    if (dd_Positive(min)) nonzerofound=TRUE;
+    if (dd_Positive(min)) nonzerofound=dd_TRUE;
     for (j = 1; j < d_size; j++) {
       dd_abs(temp,V[j]);
       if (dd_Positive(temp)){
         if (!nonzerofound || dd_Smaller(temp,min)){
-          nonzerofound=TRUE;
+          nonzerofound=dd_TRUE;
           dd_set(min, temp);  jmin=j;
         }
       }
@@ -798,6 +798,9 @@ dd_MatrixPtr dd_CreateMatrix(dd_rowrange m_size,dd_colrange d_size)
   M->rowsize=m0;
   set_initialize(&(M->linset), m1);
   M->colsize=d0;
+  M->objective=dd_LPnone;
+  M->numbtype=dd_Unknown;
+  M->representation=dd_Unspecified;
   return M;
 }
 
@@ -806,13 +809,15 @@ void dd_FreeMatrix(dd_MatrixPtr M)
   dd_rowrange m1;
   dd_colrange d1;
 
-  if (M->rowsize<=0) m1=1; else m1=M->rowsize;
-  if (M->colsize<=0) d1=1; else d1=M->colsize;
   if (M!=NULL) {
-    dd_FreeAmatrix(m1,d1,M->matrix);
-    dd_FreeArow(d1,M->rowvec);
-    set_free(M->linset);
-    free(M);
+    if (M->rowsize<=0) m1=1; else m1=M->rowsize;
+    if (M->colsize<=0) d1=1; else d1=M->colsize;
+    if (M!=NULL) {
+      dd_FreeAmatrix(m1,d1,M->matrix);
+      dd_FreeArow(d1,M->rowvec);
+      set_free(M->linset);
+      free(M);
+    }
   }
 }
 
@@ -834,7 +839,7 @@ void ColumnReduce(dd_ConePtr cone)
 {
   dd_colrange j,j1=0;
   dd_rowrange i;
-  boolean localdebug=FALSE;
+  dd_boolean localdebug=dd_FALSE;
 
   for (j=1;j<=cone->d;j++) {
     if (cone->InitialRayIndex[j]>0){
@@ -859,19 +864,19 @@ void ColumnReduce(dd_ConePtr cone)
   cone->d=j1;  /* update the dimension. cone->d_orig remembers the old. */
   CopyBmatrix(cone->d_orig, cone->B, cone->Bsave);  
     /* save the dual basis inverse as Bsave.  This matrix contains the linearity space generators. */
-  cone->ColReduced=TRUE;
+  cone->ColReduced=dd_TRUE;
 }
 
 void FindBasis(dd_ConePtr cone, long *rank)
 {
-  boolean stop, chosen, localdebug=debug;
+  dd_boolean stop, chosen, localdebug=debug;
   dd_rowset NopivotRow;
   dd_colset ColSelected;
   dd_rowrange r;
   dd_colrange j,s;
 
   *rank = 0;
-  stop = FALSE;
+  stop = dd_FALSE;
   for (j=0;j<=cone->d;j++) cone->InitialRayIndex[j]=0;
   set_emptyset(cone->InitialHalfspaces);
   set_initialize(&ColSelected, cone->d);
@@ -892,30 +897,30 @@ void FindBasis(dd_ConePtr cone, long *rank)
         GaussianColumnPivot(cone->m, cone->d, cone->A, cone->B, r, s);
         if (localdebug) dd_WriteBmatrix(stderr,cone->d,cone->B);
       } else {
-        stop=TRUE;
+        stop=dd_TRUE;
       }
-      if (*rank==cone->d) stop = TRUE;
+      if (*rank==cone->d) stop = dd_TRUE;
   } while (!stop);
   set_free(ColSelected);
   set_free(NopivotRow);
 }
 
 
-void FindInitialRays(dd_ConePtr cone, boolean *found)
+void FindInitialRays(dd_ConePtr cone, dd_boolean *found)
 {
   dd_rowset CandidateRows;
   dd_rowrange i;
   long rank;
-  dd_RowOrderType roworder_save=LexMin;
+  dd_RowOrderType roworder_save=dd_LexMin;
 
-  *found = FALSE;
+  *found = dd_FALSE;
   set_initialize(&CandidateRows, cone->m);
-  if (cone->parent->InitBasisAtBottom==TRUE) {
+  if (cone->parent->InitBasisAtBottom==dd_TRUE) {
     roworder_save=cone->HalfspaceOrder;
-    cone->HalfspaceOrder=MaxIndex;
-    cone->PreOrderedRun=FALSE;
+    cone->HalfspaceOrder=dd_MaxIndex;
+    cone->PreOrderedRun=dd_FALSE;
   }
-  else cone->PreOrderedRun=TRUE;
+  else cone->PreOrderedRun=dd_TRUE;
   if (debug) dd_WriteBmatrix(stderr, cone->d, cone->B);
   for (i = 1; i <= cone->m; i++)
     if (!set_member(i,cone->NonequalitySet)) set_addelem(CandidateRows, i);
@@ -936,29 +941,29 @@ void FindInitialRays(dd_ConePtr cone, boolean *found)
       set_fwrite(stderr,cone->InitialHalfspaces);
     };
   }
-  *found = TRUE;
+  *found = dd_TRUE;
   set_free(CandidateRows);
-  if (cone->parent->InitBasisAtBottom==TRUE) {
+  if (cone->parent->InitBasisAtBottom==dd_TRUE) {
     cone->HalfspaceOrder=roworder_save;
   }
-  if (cone->HalfspaceOrder==MaxCutoff||
-      cone->HalfspaceOrder==MinCutoff||
-      cone->HalfspaceOrder==MixCutoff){
-    cone->PreOrderedRun=FALSE;
-  } else cone->PreOrderedRun=TRUE;
+  if (cone->HalfspaceOrder==dd_MaxCutoff||
+      cone->HalfspaceOrder==dd_MinCutoff||
+      cone->HalfspaceOrder==dd_MixCutoff){
+    cone->PreOrderedRun=dd_FALSE;
+  } else cone->PreOrderedRun=dd_TRUE;
 }
 
-void CheckEquality(dd_colrange d_size, dd_RayPtr*RP1, dd_RayPtr*RP2, boolean *equal)
+void CheckEquality(dd_colrange d_size, dd_RayPtr*RP1, dd_RayPtr*RP2, dd_boolean *equal)
 {
   long j;
 
   if (debug)
     fprintf(stderr,"Check equality of two rays\n");
-  *equal = TRUE;
+  *equal = dd_TRUE;
   j = 1;
   while (j <= d_size && *equal) {
     if (!dd_Equal((*RP1)->Ray[j - 1],(*RP2)->Ray[j - 1]))
-      *equal = FALSE;
+      *equal = dd_FALSE;
     j++;
   }
   if (*equal)
@@ -973,7 +978,7 @@ void CreateNewRay(dd_ConePtr cone,
   mytype a1, a2, v1, v2;
   static dd_Arow NewRay;
   static dd_colrange last_d=0;
-  boolean localdebug=debug;
+  dd_boolean localdebug=debug;
 
   dd_init(a1); dd_init(a2); dd_init(v1); dd_init(v2);
   if (last_d!=cone->d){
@@ -989,8 +994,8 @@ void CreateNewRay(dd_ConePtr cone,
   AValue(&a1, cone->d, cone->A, Ptr1->Ray, ii);
   AValue(&a2, cone->d, cone->A, Ptr2->Ray, ii);
   if (localdebug) {
-    fprintf(stderr,"CreatNewRay: Ray1 ="); WriteArow(stderr, cone->d, Ptr1->Ray);
-    fprintf(stderr,"CreatNewRay: Ray2 ="); WriteArow(stderr, cone->d, Ptr2->Ray);
+    fprintf(stderr,"CreatNewRay: Ray1 ="); dd_WriteArow(stderr, Ptr1->Ray, cone->d);
+    fprintf(stderr,"CreatNewRay: Ray2 ="); dd_WriteArow(stderr, Ptr2->Ray, cone->d);
   }
   dd_abs(v1,a1);
   dd_abs(v2,a2);
@@ -999,14 +1004,14 @@ void CreateNewRay(dd_ConePtr cone,
     fprintf(stderr,"AValue2 and ABS");  dd_WriteNumber(stderr,a2); dd_WriteNumber(stderr,v2); fprintf(stderr,"\n");
   }
   for (j = 0; j < cone->d; j++){
-    dd_lincomb(NewRay[j], Ptr1->Ray[j],v2,Ptr2->Ray[j],v1);
+    dd_LinearComb(NewRay[j], Ptr1->Ray[j],v2,Ptr2->Ray[j],v1);
   }
   if (localdebug) {
-    fprintf(stderr,"CreatNewRay: New ray ="); WriteArow(stderr, cone->d, NewRay);
+    fprintf(stderr,"CreatNewRay: New ray ="); dd_WriteArow(stderr, NewRay, cone->d);
   }
   Normalize(cone->d, NewRay);
   if (localdebug) {
-    fprintf(stderr,"CreatNewRay: Normalized ray ="); WriteArow(stderr, cone->d, NewRay);
+    fprintf(stderr,"CreatNewRay: Normalized ray ="); dd_WriteArow(stderr, NewRay, cone->d);
   }
   AddRay(cone, NewRay);
   dd_clear(a1); dd_clear(a2); dd_clear(v1); dd_clear(v2);
@@ -1066,7 +1071,7 @@ void EvaluateARay2(dd_rowrange i, dd_ConePtr cone)
   dd_colrange j;
   mytype temp,tnext;
   dd_RayPtr Ptr, NextPtr;
-  boolean zerofound=FALSE,negfound=FALSE,posfound=FALSE;
+  dd_boolean zerofound=dd_FALSE,negfound=dd_FALSE,posfound=dd_FALSE;
 
   if (cone==NULL || cone->TotalRayCount<=0) goto _L99;  
   dd_init(temp); dd_init(tnext);
@@ -1085,7 +1090,7 @@ void EvaluateARay2(dd_rowrange i, dd_ConePtr cone)
 /*    if ( temp < -zero) {*/
     if ( dd_Negative(temp)) {
       if (!negfound){
-        negfound=TRUE;
+        negfound=dd_TRUE;
         cone->NegHead=Ptr;
         cone->NegLast=Ptr;
       }
@@ -1097,7 +1102,7 @@ void EvaluateARay2(dd_rowrange i, dd_ConePtr cone)
 /*    else if (temp > zero){*/
     else if (dd_Positive(temp)){
       if (!posfound){
-        posfound=TRUE;
+        posfound=dd_TRUE;
         cone->PosHead=Ptr;
         cone->PosLast=Ptr;
       }
@@ -1108,7 +1113,7 @@ void EvaluateARay2(dd_rowrange i, dd_ConePtr cone)
     }
     else {
       if (!zerofound){
-        zerofound=TRUE;
+        zerofound=dd_TRUE;
         cone->ZeroHead=Ptr;
         cone->ZeroLast=Ptr;
       }
@@ -1172,8 +1177,8 @@ void DeleteNegativeRays(dd_ConePtr cone)
   dd_rowrange fii,fiitest;
   mytype temp;
   dd_RayPtr Ptr, PrevPtr,NextPtr,ZeroPtr1,ZeroPtr0;
-  boolean found, completed, zerofound=FALSE,negfound=FALSE,posfound=FALSE;
-  boolean localdebug=FALSE;
+  dd_boolean found, completed, zerofound=dd_FALSE,negfound=dd_FALSE,posfound=dd_FALSE;
+  dd_boolean localdebug=dd_FALSE;
   
   dd_init(temp);
   cone->PosHead=NULL;cone->ZeroHead=NULL;cone->NegHead=NULL;
@@ -1184,7 +1189,7 @@ void DeleteNegativeRays(dd_ConePtr cone)
   Ptr = cone->FirstRay;
   if (PrevPtr->Next != Ptr) 
     fprintf(stderr,"Error at DeleteNegativeRays: ArtificialRay does not point the FirstRay.\n");
-  completed=FALSE;
+  completed=dd_FALSE;
   while (Ptr != NULL && !completed){
 /*    if ( (Ptr->ARay) < -zero ){ */
     if ( dd_Negative(Ptr->ARay)){
@@ -1192,7 +1197,7 @@ void DeleteNegativeRays(dd_ConePtr cone)
       Ptr=PrevPtr->Next;
     }
     else{
-      completed=TRUE;
+      completed=dd_TRUE;
     }
   }
   
@@ -1207,13 +1212,13 @@ void DeleteNegativeRays(dd_ConePtr cone)
     if ( dd_Negative(temp)) {
       if (!negfound){
         fprintf(stderr,"Error: An infeasible ray found after their removal\n");
-        negfound=TRUE;
+        negfound=dd_TRUE;
       }
     }
 /*    else if (temp > zero){*/
     else if (dd_Positive(temp)){
       if (!posfound){
-        posfound=TRUE;
+        posfound=dd_TRUE;
         cone->PosHead=Ptr;
         cone->PosLast=Ptr;
       }
@@ -1224,19 +1229,19 @@ void DeleteNegativeRays(dd_ConePtr cone)
     else {
       (cone->ZeroRayCount)++;
       if (!zerofound){
-        zerofound=TRUE;
+        zerofound=dd_TRUE;
         cone->ZeroHead=Ptr;
         cone->ZeroLast=Ptr;
         cone->ZeroLast->Next=NULL;
       }
       else{/* Find a right position to store the record sorted w.r.t. FirstInfeasIndex */
         fii=Ptr->FirstInfeasIndex; 
-        found=FALSE;
+        found=dd_FALSE;
         ZeroPtr1=NULL;
         for (ZeroPtr0=cone->ZeroHead; !found && ZeroPtr0!=NULL ; ZeroPtr0=ZeroPtr0->Next){
           fiitest=ZeroPtr0->FirstInfeasIndex;
           if (fiitest >= fii){
-            found=TRUE;
+            found=dd_TRUE;
           }
           else ZeroPtr1=ZeroPtr0;
         }
@@ -1313,20 +1318,20 @@ void FeasibilityIndices(long *fnum, long *infnum, dd_rowrange i, dd_ConePtr cone
   dd_clear(temp); dd_clear(tnext);
 }
 
-boolean LexSmaller(mytype *v1, mytype *v2, long dmax)
+dd_boolean LexSmaller(mytype *v1, mytype *v2, long dmax)
 { /* dmax is the size of vectors v1,v2 */
-  boolean determined, smaller;
+  dd_boolean determined, smaller;
   dd_colrange j;
 
-  smaller = FALSE;
-  determined = FALSE;
+  smaller = dd_FALSE;
+  determined = dd_FALSE;
   j = 1;
   do {
     if (!dd_Equal(v1[j - 1],v2[j - 1])) {  /* 086 */
       if (dd_Smaller(v1[j - 1],v2[j - 1])) {  /*086 */
-	    smaller = TRUE;
+	    smaller = dd_TRUE;
 	  }
-      determined = TRUE;
+      determined = dd_TRUE;
     } else
       j++;
   } while (!(determined) && (j <= dmax));
@@ -1334,13 +1339,13 @@ boolean LexSmaller(mytype *v1, mytype *v2, long dmax)
 }
 
 
-boolean LexLarger(mytype *v1, mytype *v2, long dmax)
+dd_boolean LexLarger(mytype *v1, mytype *v2, long dmax)
 {
   return LexSmaller(v2, v1, dmax);
 }
 
 void AddNewHalfspace1(dd_ConePtr cone, dd_rowrange hnew)
-/* This procedure 1 must be used with PreorderedRun=FALSE 
+/* This procedure 1 must be used with PreorderedRun=dd_FALSE 
    This procedure is the most elementary implementation of
    DD and can be used with any type of ordering, including
    dynamic ordering of rows, e.g. MaxCutoff, MinCutoff.
@@ -1352,7 +1357,7 @@ void AddNewHalfspace1(dd_ConePtr cone, dd_rowrange hnew)
   long pos1, pos2;
   double prevprogress, progress;
   mytype value1, value2;
-  boolean adj, equal, completed;
+  dd_boolean adj, equal, completed;
 
   dd_init(value1); dd_init(value2);
   EvaluateARay1(hnew, cone);  
@@ -1363,7 +1368,7 @@ void AddNewHalfspace1(dd_ConePtr cone, dd_rowrange hnew)
   RayPtr1 = cone->FirstRay;        /*1st hnew-infeasible ray to scan and compare with feasible rays*/
   dd_set(value1,cone->FirstRay->ARay);
   if (dd_Nonnegative(value1)) {
-    if (cone->RayCount==cone->WeaklyFeasibleRayCount) cone->CompStatus=AllFound;
+    if (cone->RayCount==cone->WeaklyFeasibleRayCount) cone->CompStatus=dd_AllFound;
     goto _L99;        /* Sicne there is no hnew-infeasible ray and nothing to do */
   }
   else {
@@ -1378,14 +1383,14 @@ void AddNewHalfspace1(dd_ConePtr cone, dd_rowrange hnew)
     cone->FirstRay=NULL;
     cone->ArtificialRay->Next=cone->FirstRay;
     cone->RayCount=0;
-    cone->CompStatus=AllFound;
+    cone->CompStatus=dd_AllFound;
     goto _L99;   /* All rays are infeasible, and the computation must stop */
   }
   RayPtr2 = RayPtr2s;   /*2nd feasible ray to scan and compare with 1st*/
   RayPtr3 = cone->LastRay;    /*Last feasible for scanning*/
   prevprogress=-10.0;
   pos1 = 1;
-  completed=FALSE;
+  completed=dd_FALSE;
   while ((RayPtr1 != RayPtr2s) && !completed) {
     dd_set(value1,RayPtr1->ARay);
     dd_set(value2,RayPtr2->ARay);
@@ -1403,7 +1408,7 @@ void AddNewHalfspace1(dd_ConePtr cone, dd_rowrange hnew)
       RayPtr1 = RayPtr0->Next;
       RayPtr2 = RayPtr2s;
     } else {
-      completed=TRUE;
+      completed=dd_TRUE;
     }
     pos1++;
     progress = 100.0 * ((double)pos1 / pos2) * (2.0 * pos2 - pos1) / pos2;
@@ -1413,7 +1418,7 @@ void AddNewHalfspace1(dd_ConePtr cone, dd_rowrange hnew)
       prevprogress=progress;
     }
   }
-  if (cone->RayCount==cone->WeaklyFeasibleRayCount) cone->CompStatus=AllFound;
+  if (cone->RayCount==cone->WeaklyFeasibleRayCount) cone->CompStatus=dd_AllFound;
   _L99:;
   dd_clear(value1); dd_clear(value2);
 }
@@ -1425,7 +1430,7 @@ void AddNewHalfspace2(dd_ConePtr cone, dd_rowrange hnew)
   dd_AdjacencyType *EdgePtr, *EdgePtr0;
   long pos1;
   dd_rowrange fii1, fii2;
-  boolean localdebug=FALSE;
+  dd_boolean localdebug=dd_FALSE;
 
   EvaluateARay2(hnew, cone);
    /* Check feasibility of rays w.r.t. hnew 
@@ -1435,7 +1440,7 @@ void AddNewHalfspace2(dd_ConePtr cone, dd_rowrange hnew)
     cone->FirstRay=NULL;
     cone->ArtificialRay->Next=cone->FirstRay;
     cone->RayCount=0;
-    cone->CompStatus=AllFound;
+    cone->CompStatus=dd_AllFound;
     goto _L99;   /* All rays are infeasible, and the computation must stop */
   }
   
@@ -1480,7 +1485,7 @@ void AddNewHalfspace2(dd_ConePtr cone, dd_rowrange hnew)
     }
   }
 
-  if (cone->RayCount==cone->WeaklyFeasibleRayCount) cone->CompStatus=AllFound;
+  if (cone->RayCount==cone->WeaklyFeasibleRayCount) cone->CompStatus=dd_AllFound;
 _L99:;
 }
 
@@ -1489,15 +1494,15 @@ void SelectNextHalfspace0(dd_ConePtr cone, dd_rowset excluded, dd_rowrange *hnex
 {
   /*A natural way to choose the next hyperplane.  Simply the largest index*/
   long i;
-  boolean determined;
+  dd_boolean determined;
 
   i = cone->m;
-  determined = FALSE;
+  determined = dd_FALSE;
   do {
     if (set_member(i, excluded))
       i--;
     else
-      determined = TRUE;
+      determined = dd_TRUE;
   } while (!determined && i>=1);
   if (determined) 
     *hnext = i;
@@ -1509,15 +1514,15 @@ void SelectNextHalfspace1(dd_ConePtr cone, dd_rowset excluded, dd_rowrange *hnex
 {
   /*Natural way to choose the next hyperplane.  Simply the least index*/
   long i;
-  boolean determined;
+  dd_boolean determined;
 
   i = 1;
-  determined = FALSE;
+  determined = dd_FALSE;
   do {
     if (set_member(i, excluded))
       i++;
     else
-      determined = TRUE;
+      determined = dd_TRUE;
   } while (!determined && i<=cone->m);
   if (determined) 
     *hnext = i;
@@ -1654,7 +1659,7 @@ long Partition(dd_rowindex OV, long p, long r, dd_Amatrix A, long dmax)
 
   i=p-1;
   j=r+1;
-  while (TRUE){
+  while (dd_TRUE){
     do{
       j--;
     } while (LexLarger(A[OV[j]-1],x,dmax));
@@ -1692,7 +1697,7 @@ void RandomPermutation(dd_rowindex OV, long t, unsigned int seed)
 {
   long k,j,ovj;
   double u,xk,r,rand_max=(double) RAND_MAX;
-  boolean localdebug=FALSE;
+  dd_boolean localdebug=dd_FALSE;
 
   srand(seed);
   for (j=t; j>1 ; j--) {
@@ -1714,21 +1719,21 @@ void ComputeRowOrderVector(dd_ConePtr cone)
 
   cone->OrderVector[0]=0;
   switch (cone->HalfspaceOrder){
-  case MaxIndex:
+  case dd_MaxIndex:
     for(i=1; i<=cone->m; i++) cone->OrderVector[i]=cone->m-i+1;
     break;
 
-  case MinIndex: 
+  case dd_MinIndex: 
     for(i=1; i<=cone->m; i++) cone->OrderVector[i]=i;    
     break;
 
-  case LexMin: case MinCutoff: case MixCutoff: case MaxCutoff:
+  case dd_LexMin: case dd_MinCutoff: case dd_MixCutoff: case dd_MaxCutoff:
     for(i=1; i<=cone->m; i++) cone->OrderVector[i]=i;
     RandomPermutation(cone->OrderVector, cone->m, cone->rseed);
     QuickSort(cone->OrderVector, 1, cone->m, cone->A, cone->d);
     break;
 
-  case LexMax:
+  case dd_LexMax:
     for(i=1; i<=cone->m; i++) cone->OrderVector[i]=i;
     RandomPermutation(cone->OrderVector, cone->m, cone->rseed);
     QuickSort(cone->OrderVector, 1, cone->m, cone->A, cone->d);
@@ -1739,7 +1744,7 @@ void ComputeRowOrderVector(dd_ConePtr cone)
     }
     break;
 
-  case RandomRow:
+  case dd_RandomRow:
     for(i=1; i<=cone->m; i++) cone->OrderVector[i]=i;
     RandomPermutation(cone->OrderVector, cone->m, cone->rseed);
     break;
@@ -1754,18 +1759,18 @@ in highest order.
 {
   dd_rowrange i,j,k,j1=0,oj=0;
   long rr;
-  boolean found, localdebug=FALSE;
+  dd_boolean found, localdebug=dd_FALSE;
   
-  if (debug) localdebug=TRUE;
-  found=TRUE;
+  if (debug) localdebug=dd_TRUE;
+  found=dd_TRUE;
   rr=set_card(PriorityRows);
   if (localdebug) set_fwrite(stderr,PriorityRows);
   for (i=1; i<=rr; i++){
-    found=FALSE;
+    found=dd_FALSE;
     for (j=i; j<=cone->m && !found; j++){
       oj=cone->OrderVector[j];
       if (set_member(oj, PriorityRows)){
-        found=TRUE;
+        found=dd_TRUE;
         if (localdebug) fprintf(stderr,"%ldth in sorted list (row %ld) is in PriorityRows\n", j, oj);
         j1=j;
       }
@@ -1815,23 +1820,23 @@ void SelectNextHalfspace(dd_ConePtr cone, dd_rowset excluded, dd_rowrange *hh)
 
     switch (cone->HalfspaceOrder) {
 
-    case MaxIndex:
+    case dd_MaxIndex:
       SelectNextHalfspace0(cone, excluded, hh);
       break;
 
-    case MinIndex:
+    case dd_MinIndex:
       SelectNextHalfspace1(cone, excluded, hh);
       break;
 
-    case MinCutoff:
+    case dd_MinCutoff:
       SelectNextHalfspace2(cone, excluded, hh);
       break;
 
-    case MaxCutoff:
+    case dd_MaxCutoff:
       SelectNextHalfspace3(cone, excluded, hh);
       break;
 
-    case MixCutoff:
+    case dd_MixCutoff:
       SelectNextHalfspace4(cone, excluded, hh);
       break;
 
@@ -1842,49 +1847,49 @@ void SelectNextHalfspace(dd_ConePtr cone, dd_rowset excluded, dd_rowrange *hh)
   }
 }
 
-boolean dd_Nonnegative(mytype val)
+dd_boolean dd_Nonnegative(mytype val)
 {
-/*  if (val>=-dd_zero) return TRUE;  */
-  if (dd_cmp(val,dd_minuszero)>=0) return TRUE;
-  else return FALSE;
+/*  if (val>=-dd_zero) return dd_TRUE;  */
+  if (dd_cmp(val,dd_minuszero)>=0) return dd_TRUE;
+  else return dd_FALSE;
 }
 
-boolean dd_Nonpositive(mytype val)
+dd_boolean dd_Nonpositive(mytype val)
 {
-/*  if (val<=dd_zero) return TRUE;  */
-  if (dd_cmp(val,dd_zero)<=0) return TRUE;
-  else return FALSE;
+/*  if (val<=dd_zero) return dd_TRUE;  */
+  if (dd_cmp(val,dd_zero)<=0) return dd_TRUE;
+  else return dd_FALSE;
 }
 
-boolean dd_Positive(mytype val)
+dd_boolean dd_Positive(mytype val)
 {
   return !dd_Nonpositive(val);
 }
 
-boolean dd_Negative(mytype val)
+dd_boolean dd_Negative(mytype val)
 {
   return !dd_Nonnegative(val);
 }
 
-boolean dd_EqualToZero(mytype val)
+dd_boolean dd_EqualToZero(mytype val)
 {
   return (dd_Nonnegative(val) && dd_Nonpositive(val));
 }
 
-boolean dd_Nonzero(mytype val)
+dd_boolean dd_Nonzero(mytype val)
 {
   return (dd_Positive(val) || dd_Negative(val));
 }
 
-boolean dd_Equal(mytype val1,mytype val2)
+dd_boolean dd_Equal(mytype val1,mytype val2)
 {
   return (!dd_Larger(val1,val2) && !dd_Smaller(val1,val2));
 }
 
-boolean dd_Larger(mytype val1,mytype val2)
+dd_boolean dd_Larger(mytype val1,mytype val2)
 {
   mytype temp;
-  boolean answer;
+  dd_boolean answer;
 
   dd_init(temp);
   dd_sub(temp,val1, val2);
@@ -1893,7 +1898,7 @@ boolean dd_Larger(mytype val1,mytype val2)
   return answer;
 }
 
-boolean dd_Smaller(mytype val1,mytype val2)
+dd_boolean dd_Smaller(mytype val1,mytype val2)
 {
   return dd_Larger(val2,val1);
 }
@@ -1904,7 +1909,7 @@ void dd_abs(mytype absval, mytype val)
   else dd_set(absval,val); 
 }
 
-void dd_lincomb(mytype lc, mytype v1, mytype c1, mytype v2, mytype c2)
+void dd_LinearComb(mytype lc, mytype v1, mytype c1, mytype v2, mytype c2)
 /*  lc := v1 * c1 + v2 * c2   */
 {
   mytype temp;
@@ -1913,6 +1918,30 @@ void dd_lincomb(mytype lc, mytype v1, mytype c1, mytype v2, mytype c2)
   dd_mul(lc,v1,c1);
   dd_mul(temp,v2,c2); 
   dd_add(lc,lc,temp);
+  dd_clear(temp);
+}
+
+void dd_InnerProduct(mytype prod, dd_colrange d, dd_Arow v1, dd_Arow v2)
+{
+  mytype temp;
+  dd_colrange j;
+  dd_boolean localdebug=dd_FALSE;
+
+  dd_init(temp);
+  dd_set_si(prod, 0);
+  for (j = 0; j < d; j++){
+    dd_mul(temp,v1[j],v2[j]); 
+    dd_add(prod,prod,temp);
+  }
+  if (localdebug) {
+    fprintf(stderr,"InnerProduct:\n"); 
+    dd_WriteArow(stderr, v1, d);
+    dd_WriteArow(stderr, v2, d);
+    fprintf(stderr,"prod ="); 
+    dd_WriteNumber(stderr, prod);
+    fprintf(stderr,"\n");
+  }
+  
   dd_clear(temp);
 }
 

@@ -1,6 +1,6 @@
-2000-09-15 (September 15, 2000)
+2001-12-12 (December 12, 2001)
 -----------------------------------------------
-C-Library cddlib (version 0.91) README FILE
+C-Library cddlib (version 0.92) README FILE
 -----------------------------------------------
 1. The C-library  cddlib is a C implementation of the Double Description 
 Method of Motzkin et al. for generating all vertices (i.e. extreme points)
@@ -19,11 +19,11 @@ representation of a polyhedron with cdd.  Also, cdd can solve a linear
 programming problem, i.e. a problem of maximizing and minimizing 
 a linear function over P.
 
-The version 0.91 is the forth release of libcdd.  While the previous
-version 0.90 was a major update in terms of functional interfaces 
-and internal arithmetic handling, this version is rather a maintenance
-release.   I believe that the library is getting more stable and
-reliable.
+The version 0.92 is the fifth release of libcdd.  New functions
+are added in this release such as dd_Redundant, dd_RedundantRows, 
+dd_ImplicitLinearity, dd_ImplicitLinearityRows, and dd_RayShooting.
+Also some basic operations on dd_MatrixPtr have been added such as
+dd_MatrixAppendTo, dd_MatrixRowRemove and dd_MatrixSubmatrix.
 
 If you find some problems or bugs, please kindly report them to
 fukuda@ifor.math.ethz.ch.  Please read README.whatsnew for the changes 
@@ -31,8 +31,8 @@ over the last release.
 
 The documentation (cddlibman.tex) is still incomplete but contains 
 descriptions of the most important functions. Please look at the examples,
-testcdd*.c, testlp*.c, simplecdd.c, lcdd.c for how these functions
-can be used from user's C-codes.
+testcdd*.c, testlp*.c, simplecdd.c, lcdd.c, redcheck,c for how 
+the library functions can be used in user's C-codes.
 
 2. One convenient feature of cddlib is the ability
 to handle essentially any data.  More precisely, it can
@@ -56,7 +56,7 @@ If you need speedy computation with floating-point arithmetic,
 you might want to "play with" the constant "dd_almostzero" defined 
 in cdd.h:
 
-   #define dd_almostzero  1.0E-6
+   #define dd_almostzero  1.0E-7
 
 This number is used to recognize whether a number is zero: 
 a number whose absolute value is smaller
@@ -73,7 +73,7 @@ use this program "cddmathlink" from Mathematica
 to manipulate polytopes.  Please check the files, 
 cddml-notbook.ma, cddml-PolytopeSkeleton.ma, cddml-DietProblem.ma,
 and cddml-Zonotope.ma, in the mma subdirectory.  I could 
-compile cddmathlink.c for Machintosh and Windows.  I have put
+compile cddmathlink.c for Macintosh and Windows.  I have put
 binaries for different platforms in 
 ftp://ftp.ifor.math.ethz.ch/pub/fukuda/cdd/cddlibml_binary/  .
 
@@ -107,14 +107,14 @@ or
 In above, gnu C compiler gcc can be replaced by the native C-compiler
 cc of your system if cc supports the modern ANSI C.  Edit the environment
 variable CC in the file "Makefile".  For compilation of GMP versions,
-one must install GMP-2.0.2 (or highter) first.  It is important
+one must install GMP-2.0.2 (or higher) first.  It is important
 to apply patches as well since GMP-2.0.2 contains a few bugs
 that can crash cddlib.  For compilation of MathLink programs,
 you need a binary "mprep", MathLink library "libML.a" and include file
 "mathlink.h" which come with Mathematica.   I have tested for Mathematica 2.2
 and 3.0 on NEXTSTEP 3.3.
 
-To install the library in public directory of unix enviroment, 
+To install the library in public directory of unix environment, 
 the following is suggested:
   
    % cp libcdd*.a /usr/local/lib

@@ -1,6 +1,6 @@
 /* cddmp.c       (cddlib arithmetic operations using gmp)
    Copyright: Komei Fukuda 2000, fukuda@ifor.math.ethz.ch
-   Version 0.91b, Feb. 26, 2001
+   Version 0.92, December 12, 2001
 */
 
 /* This program is free software; you can redistribute it and/or modify

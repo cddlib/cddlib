@@ -1,6 +1,6 @@
 /* cddmlio.c: MathLink Basic Input and Output Procedures for cddlib.c
    written by Komei Fukuda, fukuda@ifor.math.ethz.ch
-   Version 0.90c, June 12, 2000
+   Version 0.92dev, Sept. 22, 2001
 */
 
 /* cdd.c : C-Implementation of the double description method for
@@ -39,8 +39,6 @@ void dd_MLWriteAmatrix(dd_Amatrix A, long rowmax, long colmax)
 
 void dd_MLWriteMatrix(dd_MatrixPtr M)
 {
-  dd_bigrange outsize;
-
   MLPutFunction(stdlink,"List",2);
   dd_MLWriteAmatrix(M->matrix, M->rowsize, M->colsize);
   dd_MLWriteSet(M->linset);

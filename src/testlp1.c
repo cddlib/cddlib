@@ -41,43 +41,48 @@ int main(int argc, char *argv[])
             A   x  <=  b.
   */
         
-  dd_ErrorType error=NoError;
+  dd_ErrorType error=dd_NoError;
   dd_MatrixPtr M,G;
-  dd_LPSolverType solver=DualSimplex;  /* either DualSimplex or CrissCross */
+  dd_LPSolverType solver=dd_DualSimplex;  /* either DualSimplex or CrissCross */
   dd_LPPtr lp;   /* pointer to LP data structure that is not visible by user. */
   dd_PolyhedraPtr poly;
   dd_DataFileType inputfile;
+  int ans;
 
   dd_set_global_constants(); /* First, this must be called once to use cddlib. */
 
-  while (error==NoError) {
+  while (error==dd_NoError) {
 
 /* Input an LP using the cdd library  */
     dd_SetInputFile(&reading,inputfile,&error);
-    if (error!=NoError) goto _L99;
+    if (error!=dd_NoError) goto _L99;
     M=dd_PolyFile2Matrix(reading, &error);
-    if (error!=NoError) goto _L99;
-    dd_WriteMatrix(stdout, M);
+    if (error!=dd_NoError) goto _L99;
+    /* dd_WriteMatrix(stdout, M);  */
     lp=dd_Matrix2LP(M, &error);
-    if (error!=NoError) goto _L99;
+    if (error!=dd_NoError) goto _L99;
 
 /* Solve the LP by cdd LP solver. */
     printf("\n--- Running dd_LPSolve ---\n");
     dd_LPSolve(lp,solver,&error);
-    if (error!=NoError) goto _L99;
+    if (error!=dd_NoError) goto _L99;
 
     /* Write the LP solutions by cdd LP reporter. */
     dd_WriteLPResult(stdout, lp, error);
 
 /* Generate all vertices of the feasible reagion */
-    poly=dd_DDMatrix2Poly(M, &error);
-    G=dd_CopyGenerators(poly);
-    printf("\nAll the vertices of the feasible region.\n");
-    dd_WriteMatrix(stdout,G);
+    printf("\nShould I generate all extreme points (y/n)? ");
+    ans=getchar();
+    if (ans=='y' || ans=='Y'){
+      poly=dd_DDMatrix2Poly(M, &error);
+      G=dd_CopyGenerators(poly);
+      printf("\nAll the vertices of the feasible region.\n");
+      dd_WriteMatrix(stdout,G);
 
-/* Free allocated spaces. */
-    dd_FreeMatrix(G);
-    dd_FreePolyhedra(poly);
+      /* Free allocated spaces. */
+      dd_FreeMatrix(G);
+      dd_FreePolyhedra(poly);
+    }
 
 /* Free allocated spaces. */
     dd_FreeMatrix(M);
@@ -85,7 +90,7 @@ int main(int argc, char *argv[])
   }
 _L99:;
   fclose(reading);
-  if (error!=NoError) dd_WriteErrorMessages(stdout, error);
+  if (error!=dd_NoError) dd_WriteErrorMessages(stdout, error);
   return 0;
 }
 

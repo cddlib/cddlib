@@ -49,7 +49,7 @@
 cddmathlink
 Convex Hull and Vertex Enumeration by MathLink to cddlib
 by Komei Fukuda
-March 14, 1999
+April 17, 2001
 ;[s]
 6:0,0;11,1;50,2;58,3;62,4;68,5;99,-1;
 6:1,21,16,Times,1,24,3651,9032,33889;1,21,16,Times,1,24,0,0,0;1,22,17,Times,3,24,960,30237,6342;1,21,16,Times,1,24,0,0,0;1,21,16,Times,1,24,33889,1793,1793;1,21,16,Times,1,24,0,0,0;
@@ -70,24 +70,27 @@ cddml=
 Install["~/Math/cddmathlink"]
 (*
 :[font = output; output; inactive; initialization; preserveAspect; endGroup; endGroup; endGroup]
-LinkObject["~/Math/cddmathlink", 19, 19]
+LinkObject["~/Math/cddmathlink", 5, 5]
 ;[o]
-LinkObject[~/Math/cddmathlink, 19, 19]
+LinkObject[~/Math/cddmathlink, 5, 5]
 :[font = subsection; inactive; Cclosed; preserveAspect; startGroup]
 Generating All Vertices 
 :[font = input; preserveAspect; startGroup]
 ?AllVertices
 :[font = print; inactive; preserveAspect]
-AllVertices[m,d+1,A] generates all extreme points (vertices) and extreme
-   rays of the convex polyhedron in R^(d+1) given as the solution set to
-   an inequality system  A x >= 0 where  A is an m*(d+1) matrix  and 
-   x=(1,x1,...,xd).  The output is {{extlist, linearity}, inclist} where
-   extlist is  the extreme point list and inclist is the incidence list.
-    Each vertex (ray) has the first component 1 (0).  If the convex
-   polyhedron has no vertices, extlist is a (nonunique) set of
-   generators of the polyhedron where those generators in the linearity
-   list are considered as linearity space (of points satisfying A (0,
-   x1, x2, ...., xd) = 0)  generators.
+AllVertices[m,d+1,A] generates all extreme points
+   (vertices) and extreme rays of the convex polyhedron
+   in R^(d+1) given as the solution set to an inequality
+   system  A x >= 0 where  A is an m*(d+1) matrix  and 
+   x=(1,x1,...,xd).  The output is {{extlist,
+   linearity}, ecdlist} where extlist is  the extreme
+   point list and ecdlist is the incidence list.  Each
+   vertex (ray) has the first component 1 (0).  If the
+   convex polyhedron is nonempty and has no vertices,
+   extlist is a (nonunique) set of generators of the
+   polyhedron where those generators in the linearity
+   list are considered as linearity space (of points
+   satisfying A (0, x1, x2, ...., xd) = 0)  generators.
 :[font = text; inactive; preserveAspect]
 Let's try this function with a 3-dimenstional cube defined by 6 inequalities (facets);  
 x1  >= 0, x2 >=0, x3 >= 0, 1 - x1 >= 0,   1 - x2 >= 0 and  1 - x3 >= 0.  We write these six inequalities  as   A  x  >=  0  and  x=(1, x1, x2, x3).
@@ -95,9 +98,9 @@ x1  >= 0, x2 >=0, x3 >= 0, 1 - x1 >= 0,   1 - x2 >= 0 and  1 - x3 >= 0.  We writ
 MatrixForm[a={{0,1,0,0},{0,0,1,0},{0,0,0,1},
 	{1,-1,0,0},{1,0,-1,0},{1,0,0,-1}}]
 :[font = output; output; inactive; preserveAspect]
-MatrixForm[{{0, 1, 0, 0}, {0, 0, 1, 0}, {0, 0, 0, 1}, {1, -1, 0, 0}, 
+MatrixForm[{{0, 1, 0, 0}, {0, 0, 1, 0}, {0, 0, 0, 1}, 
  
-   {1, 0, -1, 0}, {1, 0, 0, -1}}]
+   {1, -1, 0, 0}, {1, 0, -1, 0}, {1, 0, 0, -1}}]
 ;[o]
 0    1    0    0
 
@@ -119,83 +122,116 @@ MatrixForm[{{0, 1, 0, 0}, {0, 0, 1, 0}, {0, 0, 0, 1}, {1, -1, 0, 0},
 :[font = input; preserveAspect; startGroup]
 {{vertices, linearity}, incidences}=AllVertices[m,d1,Flatten[a]]
 :[font = output; output; inactive; preserveAspect; endGroup; endGroup; endGroup; endGroup]
-{{{{1., 0, 0, 1.}, {1., 0, 1., 1.}, {1., 1., 1., 1.}, 
+{{{{1., 1., 1., 0}, {1., 0, 1., 0}, {1., 0, 0, 0}, 
  
-    {1., 1., 0, 1.}, {1., 1., 1., 0}, {1., 1., 0, 0}, {1., 0, 1., 0}, 
+    {1., 1., 0, 0}, {1., 0, 0, 1.}, {1., 1., 0, 1.}, 
  
-    {1., 0, 0, 0}}, {}}, {{1, 2, 6}, {1, 5, 6}, {4, 5, 6}, {2, 4, 6}, 
+    {1., 0, 1., 1.}, {1., 1., 1., 1.}}, {}}, 
  
-   {3, 4, 5}, {2, 3, 4}, {1, 3, 5}, {1, 2, 3}}}
+  {{3, 4, 5}, {1, 3, 5}, {1, 2, 3}, {2, 3, 4}, 
+ 
+   {1, 2, 6}, {2, 4, 6}, {1, 5, 6}, {4, 5, 6}}}
 ;[o]
-{{{{1., 0, 0, 1.}, {1., 0, 1., 1.}, {1., 1., 1., 1.}, 
+{{{{1., 1., 1., 0}, {1., 0, 1., 0}, {1., 0, 0, 0}, 
  
-    {1., 1., 0, 1.}, {1., 1., 1., 0}, {1., 1., 0, 0}, {1., 0, 1., 0}, 
+    {1., 1., 0, 0}, {1., 0, 0, 1.}, {1., 1., 0, 1.}, 
  
-    {1., 0, 0, 0}}, {}}, {{1, 2, 6}, {1, 5, 6}, {4, 5, 6}, {2, 4, 6}, 
+    {1., 0, 1., 1.}, {1., 1., 1., 1.}}, {}}, 
  
-   {3, 4, 5}, {2, 3, 4}, {1, 3, 5}, {1, 2, 3}}}
+  {{3, 4, 5}, {1, 3, 5}, {1, 2, 3}, {2, 3, 4}, 
+ 
+   {1, 2, 6}, {2, 4, 6}, {1, 5, 6}, {4, 5, 6}}}
 :[font = subsection; inactive; Cclosed; preserveAspect; startGroup]
 Generating the Graph Structure
 :[font = input; preserveAspect; startGroup]
 ?AllVerticesWithAdjacency
 :[font = print; inactive; preserveAspect]
-AllVerticesWithAdjacency[m,d+1,A] generates all extreme points
-   (vertices) and extreme rays of the convex polyhedron in R^(d+1) given
-   as the solution set to an inequality system  A x >= 0 where   A is an
-   m*(d+1) matrix  and x=(1,x1,...,xd). The output is {{extlist,
-   linearity}, inclist, adjlist} where extlist , inclist, adjlist are
-   the extreme point list, the incidence list, the adjacency list (of
-   extreme points and rays). Each vertex (ray) has the first component 1
-   (0). If the convex polyhedron has a vertex, linearity is the empty
-   set.  If the convex polyhedron has no vertices, extlist is a
-   (nonunique) set of generators of the polyhedron where those
-   generators in the linearity list are considered as linearity space
-   (of points satisfying A (0, x1, x2, ...., xd) = 0) generators.
+AllVerticesWithAdjacency[m,d+1,A] generates all extreme
+   points (vertices) and extreme rays of the convex
+   polyhedron in R^(d+1) given as the solution set to an
+   inequality system  A x >= 0 where   A is an m*(d+1)
+   matrix  and x=(1,x1,...,xd). The output is {{extlist,
+   linearity}, ecdlist, eadlist, icdlist, iadlist} where
+   extlist, ecdlist, eadlist are the extreme point list,
+   the incidence list, the adjacency list (of extreme
+   points and rays), and icdlist, iadlist are the
+   incidence list, the adjacency list (of inequalities).
+    Each vertex (ray) has the first component 1 (0). If
+   the convex polyhedron is nonempty and has no
+   vertices, extlist is a (nonunique) set of generators
+   of the polyhedron where those generators in the
+   linearity list are considered as linearity space (of
+   points satisfying A (0, x1, x2, ...., xd) = 0)
+   generators.
 :[font = input; preserveAspect; startGroup]
-{{vertices,linearity},incidences,adjacencies}=
+{{vertices,linearity},ecd,ead,icd,iad}=
 	AllVerticesWithAdjacency[m,d1,Flatten[a]]
 :[font = output; output; inactive; preserveAspect; endGroup; endGroup]
-{{{{1., 0, 0, 1.}, {1., 0, 1., 1.}, {1., 1., 1., 1.}, {1., 1., 0, 1.}, 
+{{{{1., 1., 1., 0}, {1., 0, 1., 0}, {1., 0, 0, 0}, 
  
-    {1., 1., 1., 0}, {1., 1., 0, 0}, {1., 0, 1., 0}, {1., 0, 0, 0}}, 
+    {1., 1., 0, 0}, {1., 0, 0, 1.}, {1., 1., 0, 1.}, 
  
-   {}}, {{1, 2, 6}, {1, 5, 6}, {4, 5, 6}, {2, 4, 6}, {3, 4, 5}, 
+    {1., 0, 1., 1.}, {1., 1., 1., 1.}}, {}}, 
  
-   {2, 3, 4}, {1, 3, 5}, {1, 2, 3}}, 
+  {{3, 4, 5}, {1, 3, 5}, {1, 2, 3}, {2, 3, 4}, 
  
-  {{2, 4, 8}, {1, 3, 7}, {2, 4, 5}, {1, 3, 6}, {3, 6, 7}, {4, 5, 8}, 
+   {1, 2, 6}, {2, 4, 6}, {1, 5, 6}, {4, 5, 6}}, 
  
-   {2, 5, 8}, {1, 6, 7}}}
+  {{2, 4, 8}, {1, 3, 7}, {2, 4, 5}, {1, 3, 6}, 
+ 
+   {3, 6, 7}, {4, 5, 8}, {2, 5, 8}, {1, 6, 7}}, 
+ 
+  {{2, 3, 5, 7}, {3, 4, 5, 6}, {1, 2, 3, 4}, 
+ 
+   {1, 4, 6, 8}, {1, 2, 7, 8}, {5, 6, 7, 8}, {}}, 
+ 
+  {{2, 3, 5, 6}, {1, 3, 4, 6}, {1, 2, 4, 5}, 
+ 
+   {2, 3, 5, 6}, {1, 3, 4, 6}, {1, 2, 4, 5}, {}}}
 ;[o]
-{{{{1., 0, 0, 1.}, {1., 0, 1., 1.}, {1., 1., 1., 1.}, {1., 1., 0, 1.}, 
+{{{{1., 1., 1., 0}, {1., 0, 1., 0}, {1., 0, 0, 0}, 
  
-    {1., 1., 1., 0}, {1., 1., 0, 0}, {1., 0, 1., 0}, {1., 0, 0, 0}}, 
+    {1., 1., 0, 0}, {1., 0, 0, 1.}, {1., 1., 0, 1.}, 
  
-   {}}, {{1, 2, 6}, {1, 5, 6}, {4, 5, 6}, {2, 4, 6}, {3, 4, 5}, 
+    {1., 0, 1., 1.}, {1., 1., 1., 1.}}, {}}, 
  
-   {2, 3, 4}, {1, 3, 5}, {1, 2, 3}}, 
+  {{3, 4, 5}, {1, 3, 5}, {1, 2, 3}, {2, 3, 4}, 
  
-  {{2, 4, 8}, {1, 3, 7}, {2, 4, 5}, {1, 3, 6}, {3, 6, 7}, {4, 5, 8}, 
+   {1, 2, 6}, {2, 4, 6}, {1, 5, 6}, {4, 5, 6}}, 
  
-   {2, 5, 8}, {1, 6, 7}}}
+  {{2, 4, 8}, {1, 3, 7}, {2, 4, 5}, {1, 3, 6}, 
+ 
+   {3, 6, 7}, {4, 5, 8}, {2, 5, 8}, {1, 6, 7}}, 
+ 
+  {{2, 3, 5, 7}, {3, 4, 5, 6}, {1, 2, 3, 4}, 
+ 
+   {1, 4, 6, 8}, {1, 2, 7, 8}, {5, 6, 7, 8}, {}}, 
+ 
+  {{2, 3, 5, 6}, {1, 3, 4, 6}, {1, 2, 4, 5}, 
+ 
+   {2, 3, 5, 6}, {1, 3, 4, 6}, {1, 2, 4, 5}, {}}}
 :[font = text; inactive; preserveAspect; endGroup]
-The graph structure is output as the adjacency  list  adjacencies. For example, the first list {2, 4 ,8} represents the neighbour vertices of the first vertex 1.
+The graph structure is output as the adjacency  list  ead. For example, the first list {2, 4 ,8} represents the neighbour vertices of the first vertex 1.  The adjacency of input is given by
+the list  iad.
 ;[s]
-3:0,0;54,1;67,2;163,-1;
-3:1,11,8,Times,0,12,0,0,0;1,10,8,Courier,1,12,0,0,0;1,11,8,Times,0,12,0,0,0;
+4:0,0;54,1;59,2;200,3;204,-1;
+4:1,11,8,Times,0,12,0,0,0;1,10,8,Courier,1,12,0,0,0;1,11,8,Times,0,12,0,0,0;1,10,8,Courier,1,12,0,0,0;
 :[font = subsection; inactive; Cclosed; preserveAspect; startGroup]
 Convex Hull (Facet Generation)
 :[font = input; preserveAspect; startGroup]
 ?AllFacets
 :[font = print; inactive; preserveAspect]
-AllFacets[n,d+1,G] generates all facet inequalities of the convex
-   polyhedron in R^(d+1) generated by points and rays given in the rows
-   of an n*(d+1) matrix G.  Each point (ray) must have 1 (0) in the
-   first coordinate.  The output is {{faclist, equalities}, inclist}
-   where faclist is  the facet  list and inclist is the incidence list. 
-   If the convex polyhedron is not full-dimensional, extlist is a
-   (nonunique) set of inequalities of the polyhedron where those
-   inequalities in the equalities list are considered as equalities.
+AllFacets[n,d+1,G] generates all facet inequalities of
+   the convex polyhedron in R^(d+1) generated by points
+   and rays given in the rows of an n*(d+1) matrix G. 
+   Each point (ray) must have 1 (0) in the first
+   coordinate.  The output is {{faclist, equalities},
+   icdlist} where faclist is  the facet  list and
+   icdlist is the incidence list.  If the convex
+   polyhedron is not full-dimensional, extlist is a
+   (nonunique) set of inequalities of the polyhedron
+   where those inequalities in the equalities list are
+   considered as equalities.
 :[font = text; inactive; preserveAspect]
 We have computed all the vertices of a 3-cube.  Let's try the reverse operation.  First check the size of the list of vertics.   It should reconstruct the facets we have started with.
 :[font = input; preserveAspect; startGroup]
@@ -208,21 +244,21 @@ We have computed all the vertices of a 3-cube.  Let's try the reverse operation.
 
 {{facets,equalities}, fincidences}= AllFacets[n,d1,Flatten[vertices]]
 :[font = output; output; inactive; preserveAspect; endGroup]
-{{{{0, 0, 1., 0}, {0, 0, 0, 1.}, {0, 1., 0, 0}, {1., 0, -1., 0}, 
+{{{{0, 0, 0, 1.}, {0, 1., 0, 0}, {0, 0, 1., 0}, 
  
-    {1., -1., 0, 0}, {1., 0, 0, -1.}}, {}}, 
+    {1., 0, 0, -1.}, {1., 0, -1., 0}, {1., -1., 0, 0}}\
  
-  {{1, 4, 6, 8}, {5, 6, 7, 8}, {1, 2, 7, 8}, {2, 3, 5, 7}, 
+    , {}}, {{1, 2, 3, 4}, {2, 3, 5, 7}, {3, 4, 5, 6}, 
  
-   {3, 4, 5, 6}, {1, 2, 3, 4}}}
+   {5, 6, 7, 8}, {1, 2, 7, 8}, {1, 4, 6, 8}}}
 ;[o]
-{{{{0, 0, 1., 0}, {0, 0, 0, 1.}, {0, 1., 0, 0}, {1., 0, -1., 0}, 
+{{{{0, 0, 0, 1.}, {0, 1., 0, 0}, {0, 0, 1., 0}, 
  
-    {1., -1., 0, 0}, {1., 0, 0, -1.}}, {}}, 
+    {1., 0, 0, -1.}, {1., 0, -1., 0}, {1., -1., 0, 0}}\
  
-  {{1, 4, 6, 8}, {5, 6, 7, 8}, {1, 2, 7, 8}, {2, 3, 5, 7}, 
+    , {}}, {{1, 2, 3, 4}, {2, 3, 5, 7}, {3, 4, 5, 6}, 
  
-   {3, 4, 5, 6}, {1, 2, 3, 4}}}
+   {5, 6, 7, 8}, {1, 2, 7, 8}, {1, 4, 6, 8}}}
 :[font = text; inactive; preserveAspect]
 We can compute how the facets are connected by using AllFacetsWithAdjacency function.
 ;[s]
@@ -230,32 +266,48 @@ We can compute how the facets are connected by using AllFacetsWithAdjacency func
 3:1,11,8,Times,0,12,0,0,0;1,10,8,Times,1,12,0,0,0;1,11,8,Times,0,12,0,0,0;
 :[font = input; preserveAspect; startGroup]
 
-{{facets,equalities}, fincidences,fadjacencies}= 
+{{facets,equalities}, icd,iad, ecd,ead}= 
 	AllFacetsWithAdjacency[n,d1,Flatten[vertices]]
 :[font = output; output; inactive; preserveAspect; endGroup; endGroup]
-{{{{0, 0, 1., 0}, {0, 0, 0, 1.}, {0, 1., 0, 0}, {1., 0, -1., 0}, 
+{{{{0, 0, 0, 1.}, {0, 1., 0, 0}, {0, 0, 1., 0}, 
  
-    {1., -1., 0, 0}, {1., 0, 0, -1.}}, {}}, 
+    {1., 0, 0, -1.}, {1., 0, -1., 0}, {1., -1., 0, 0}}\
  
-  {{1, 4, 6, 8}, {5, 6, 7, 8}, {1, 2, 7, 8}, {2, 3, 5, 7}, 
+    , {}}, {{1, 2, 3, 4}, {2, 3, 5, 7}, {3, 4, 5, 6}, 
  
-   {3, 4, 5, 6}, {1, 2, 3, 4}}, 
+   {5, 6, 7, 8}, {1, 2, 7, 8}, {1, 4, 6, 8}}, 
  
-  {{2, 3, 5, 6}, {1, 3, 4, 5}, {1, 2, 4, 6}, {2, 3, 5, 6}, 
+  {{2, 3, 5, 6}, {1, 3, 4, 5}, {1, 2, 4, 6}, 
  
-   {1, 2, 4, 6}, {1, 3, 4, 5}}}
+   {2, 3, 5, 6}, {1, 2, 4, 6}, {1, 3, 4, 5}}, 
+ 
+  {{1, 5, 6}, {1, 2, 5}, {1, 2, 3}, {1, 3, 6}, 
+ 
+   {2, 3, 4}, {3, 4, 6}, {2, 4, 5}, {4, 5, 6}}, 
+ 
+  {{2, 4, 8}, {1, 3, 7}, {2, 4, 5}, {1, 3, 6}, 
+ 
+   {3, 6, 7}, {4, 5, 8}, {2, 5, 8}, {1, 6, 7}}}
 ;[o]
-{{{{0, 0, 1., 0}, {0, 0, 0, 1.}, {0, 1., 0, 0}, {1., 0, -1., 0}, 
+{{{{0, 0, 0, 1.}, {0, 1., 0, 0}, {0, 0, 1., 0}, 
  
-    {1., -1., 0, 0}, {1., 0, 0, -1.}}, {}}, 
+    {1., 0, 0, -1.}, {1., 0, -1., 0}, {1., -1., 0, 0}}\
  
-  {{1, 4, 6, 8}, {5, 6, 7, 8}, {1, 2, 7, 8}, {2, 3, 5, 7}, 
+    , {}}, {{1, 2, 3, 4}, {2, 3, 5, 7}, {3, 4, 5, 6}, 
  
-   {3, 4, 5, 6}, {1, 2, 3, 4}}, 
+   {5, 6, 7, 8}, {1, 2, 7, 8}, {1, 4, 6, 8}}, 
  
-  {{2, 3, 5, 6}, {1, 3, 4, 5}, {1, 2, 4, 6}, {2, 3, 5, 6}, 
+  {{2, 3, 5, 6}, {1, 3, 4, 5}, {1, 2, 4, 6}, 
  
-   {1, 2, 4, 6}, {1, 3, 4, 5}}}
+   {2, 3, 5, 6}, {1, 2, 4, 6}, {1, 3, 4, 5}}, 
+ 
+  {{1, 5, 6}, {1, 2, 5}, {1, 2, 3}, {1, 3, 6}, 
+ 
+   {2, 3, 4}, {3, 4, 6}, {2, 4, 5}, {4, 5, 6}}, 
+ 
+  {{2, 4, 8}, {1, 3, 7}, {2, 4, 5}, {1, 3, 6}, 
+ 
+   {3, 6, 7}, {4, 5, 8}, {2, 5, 8}, {1, 6, 7}}}
 :[font = text; inactive; preserveAspect; startGroup]
 If you want to compute an inequality description of the one-dimensional cone in R^3 with a vertex at origin and containing the direction (1,1,1), you must set up the input (generator) data as:
 :[font = input; preserveAspect; startGroup]
@@ -268,13 +320,17 @@ coneGenerators={{1,0,0,0},{0,1,1,1}}
 {{cfacets,cequalities}, cfincidences}= 
 	AllFacets[2,4,Flatten[coneGenerators]]
 :[font = output; output; inactive; preserveAspect; endGroup]
-{{{{1., 0, 0, 0}, {0, 1., 0, 0}, {0, -1., 1., 0}, {0, -1., 0, 1.}}, 
+{{{{1., 0, 0, 0}, {0, 1., 0, 0}, {0, -1., 1., 0}, 
  
-   {3, 4}}, {{2}, {1}}}
+    {0, -1., 0, 1.}}, {3, 4}}, 
+ 
+  {{2}, {1}, {1, 2}, {1, 2}}}
 ;[o]
-{{{{1., 0, 0, 0}, {0, 1., 0, 0}, {0, -1., 1., 0}, {0, -1., 0, 1.}}, 
+{{{{1., 0, 0, 0}, {0, 1., 0, 0}, {0, -1., 1., 0}, 
  
-   {3, 4}}, {{2}, {1}}}
+    {0, -1., 0, 1.}}, {3, 4}}, 
+ 
+  {{2}, {1}, {1, 2}, {1, 2}}}
 :[font = text; inactive; preserveAspect; endGroup; endGroup]
 Since the equalities list contains 3 and 4, of the four output inequalities , the third and the forth must be considered as equalities.  It is important to note that this cone can have infinitely many different minimal inequality descriptions, since it is not full-dimensional.
 :[font = subsection; inactive; Cclosed; preserveAspect; startGroup]
@@ -286,65 +342,65 @@ n=30; d1=8;
 :[font = input; preserveAspect; startGroup]
 points=Table[Prepend[Table[Random[Integer,{0,1}],{d1-1}],0],{n}]
 :[font = output; output; inactive; preserveAspect; endGroup]
-{{0, 1, 0, 1, 0, 0, 0, 0}, {0, 0, 1, 0, 0, 0, 1, 1}, 
+{{0, 0, 1, 1, 1, 1, 0, 1}, {0, 1, 0, 0, 0, 1, 0, 1}, 
  
-  {0, 0, 1, 1, 0, 0, 1, 0}, {0, 1, 0, 0, 1, 1, 0, 0}, 
+  {0, 1, 1, 1, 0, 1, 1, 1}, {0, 0, 0, 0, 1, 1, 1, 1}, 
  
-  {0, 1, 1, 1, 0, 1, 1, 1}, {0, 0, 1, 0, 1, 1, 1, 1}, 
+  {0, 1, 0, 1, 1, 1, 1, 1}, {0, 1, 1, 1, 0, 0, 0, 0}, 
  
-  {0, 0, 0, 1, 0, 0, 0, 0}, {0, 0, 0, 1, 1, 0, 1, 0}, 
+  {0, 1, 0, 1, 1, 0, 1, 0}, {0, 0, 1, 0, 0, 0, 1, 1}, 
  
-  {0, 1, 0, 0, 0, 1, 0, 0}, {0, 1, 1, 0, 1, 1, 0, 1}, 
+  {0, 0, 0, 1, 1, 1, 1, 0}, {0, 1, 1, 0, 0, 1, 1, 1}, 
  
-  {0, 1, 1, 0, 0, 0, 0, 1}, {0, 0, 0, 0, 0, 0, 0, 0}, 
+  {0, 1, 0, 1, 1, 1, 0, 1}, {0, 0, 1, 0, 0, 0, 0, 0}, 
  
-  {0, 0, 1, 1, 0, 1, 0, 0}, {0, 0, 0, 0, 1, 1, 1, 0}, 
+  {0, 0, 0, 0, 0, 0, 0, 1}, {0, 1, 0, 0, 0, 0, 1, 1}, 
  
-  {0, 1, 0, 1, 1, 1, 1, 1}, {0, 0, 1, 0, 0, 0, 0, 0}, 
+  {0, 1, 1, 1, 1, 0, 1, 1}, {0, 0, 0, 0, 0, 1, 0, 0}, 
  
-  {0, 0, 0, 1, 1, 0, 1, 0}, {0, 0, 0, 1, 1, 0, 1, 1}, 
+  {0, 0, 1, 0, 1, 1, 0, 0}, {0, 1, 0, 1, 0, 0, 0, 1}, 
  
-  {0, 1, 1, 0, 0, 0, 0, 1}, {0, 0, 1, 0, 1, 1, 1, 0}, 
+  {0, 1, 1, 0, 0, 1, 0, 1}, {0, 0, 0, 1, 0, 0, 1, 1}, 
  
-  {0, 0, 0, 1, 0, 1, 1, 1}, {0, 1, 0, 0, 0, 0, 1, 0}, 
+  {0, 1, 1, 1, 1, 1, 1, 0}, {0, 1, 0, 0, 0, 1, 0, 1}, 
  
-  {0, 0, 1, 0, 0, 1, 1, 0}, {0, 0, 0, 1, 1, 0, 0, 1}, 
+  {0, 1, 1, 0, 0, 1, 1, 1}, {0, 0, 1, 1, 1, 1, 0, 1}, 
  
-  {0, 1, 1, 1, 0, 1, 1, 0}, {0, 0, 0, 1, 0, 0, 0, 1}, 
+  {0, 1, 0, 0, 1, 0, 1, 1}, {0, 1, 0, 0, 1, 0, 1, 1}, 
  
-  {0, 1, 1, 0, 0, 1, 1, 0}, {0, 1, 1, 0, 1, 1, 0, 1}, 
+  {0, 1, 1, 0, 1, 0, 1, 1}, {0, 1, 0, 1, 1, 1, 1, 1}, 
  
-  {0, 0, 1, 1, 0, 0, 0, 1}, {0, 1, 1, 1, 1, 1, 0, 0}}
+  {0, 1, 1, 0, 1, 1, 1, 1}, {0, 0, 0, 0, 1, 0, 0, 0}}
 ;[o]
-{{0, 1, 0, 1, 0, 0, 0, 0}, {0, 0, 1, 0, 0, 0, 1, 1}, 
+{{0, 0, 1, 1, 1, 1, 0, 1}, {0, 1, 0, 0, 0, 1, 0, 1}, 
  
-  {0, 0, 1, 1, 0, 0, 1, 0}, {0, 1, 0, 0, 1, 1, 0, 0}, 
+  {0, 1, 1, 1, 0, 1, 1, 1}, {0, 0, 0, 0, 1, 1, 1, 1}, 
  
-  {0, 1, 1, 1, 0, 1, 1, 1}, {0, 0, 1, 0, 1, 1, 1, 1}, 
+  {0, 1, 0, 1, 1, 1, 1, 1}, {0, 1, 1, 1, 0, 0, 0, 0}, 
  
-  {0, 0, 0, 1, 0, 0, 0, 0}, {0, 0, 0, 1, 1, 0, 1, 0}, 
+  {0, 1, 0, 1, 1, 0, 1, 0}, {0, 0, 1, 0, 0, 0, 1, 1}, 
  
-  {0, 1, 0, 0, 0, 1, 0, 0}, {0, 1, 1, 0, 1, 1, 0, 1}, 
+  {0, 0, 0, 1, 1, 1, 1, 0}, {0, 1, 1, 0, 0, 1, 1, 1}, 
  
-  {0, 1, 1, 0, 0, 0, 0, 1}, {0, 0, 0, 0, 0, 0, 0, 0}, 
+  {0, 1, 0, 1, 1, 1, 0, 1}, {0, 0, 1, 0, 0, 0, 0, 0}, 
  
-  {0, 0, 1, 1, 0, 1, 0, 0}, {0, 0, 0, 0, 1, 1, 1, 0}, 
+  {0, 0, 0, 0, 0, 0, 0, 1}, {0, 1, 0, 0, 0, 0, 1, 1}, 
  
-  {0, 1, 0, 1, 1, 1, 1, 1}, {0, 0, 1, 0, 0, 0, 0, 0}, 
+  {0, 1, 1, 1, 1, 0, 1, 1}, {0, 0, 0, 0, 0, 1, 0, 0}, 
  
-  {0, 0, 0, 1, 1, 0, 1, 0}, {0, 0, 0, 1, 1, 0, 1, 1}, 
+  {0, 0, 1, 0, 1, 1, 0, 0}, {0, 1, 0, 1, 0, 0, 0, 1}, 
  
-  {0, 1, 1, 0, 0, 0, 0, 1}, {0, 0, 1, 0, 1, 1, 1, 0}, 
+  {0, 1, 1, 0, 0, 1, 0, 1}, {0, 0, 0, 1, 0, 0, 1, 1}, 
  
-  {0, 0, 0, 1, 0, 1, 1, 1}, {0, 1, 0, 0, 0, 0, 1, 0}, 
+  {0, 1, 1, 1, 1, 1, 1, 0}, {0, 1, 0, 0, 0, 1, 0, 1}, 
  
-  {0, 0, 1, 0, 0, 1, 1, 0}, {0, 0, 0, 1, 1, 0, 0, 1}, 
+  {0, 1, 1, 0, 0, 1, 1, 1}, {0, 0, 1, 1, 1, 1, 0, 1}, 
  
-  {0, 1, 1, 1, 0, 1, 1, 0}, {0, 0, 0, 1, 0, 0, 0, 1}, 
+  {0, 1, 0, 0, 1, 0, 1, 1}, {0, 1, 0, 0, 1, 0, 1, 1}, 
  
-  {0, 1, 1, 0, 0, 1, 1, 0}, {0, 1, 1, 0, 1, 1, 0, 1}, 
+  {0, 1, 1, 0, 1, 0, 1, 1}, {0, 1, 0, 1, 1, 1, 1, 1}, 
  
-  {0, 0, 1, 1, 0, 0, 0, 1}, {0, 1, 1, 1, 1, 1, 0, 0}}
+  {0, 1, 1, 0, 1, 1, 1, 1}, {0, 0, 0, 0, 1, 0, 0, 0}}
 :[font = input; preserveAspect; startGroup]
 Dimensions[points]
 :[font = output; output; inactive; preserveAspect; endGroup]
@@ -353,46 +409,38 @@ Dimensions[points]
 {30, 8}
 :[font = input; preserveAspect]
 
-{CPUtime, {{facets,equalities}, inc, adj}}= 
-	Timing[AllFacetsWithAdjacency[n,d1,Flatten[points]]];
+{CPUtime, {{facets,equalities}, inc}}= 
+	Timing[AllFacets[n,d1,Flatten[points]]];
 :[font = input; preserveAspect; startGroup]
 {CPUtime,Length[facets]}
 :[font = output; output; inactive; preserveAspect; endGroup]
-{0.01666666666666661*Second, 31}
+{0.*Second, 33}
 ;[o]
-{0.0166667 Second, 31}
+{0. Second, 33}
 :[font = text; inactive; preserveAspect]
 Usually facets of 0/1 polytopes are very pretty and their coefficients are small integers.
 :[font = input; preserveAspect; startGroup]
 Take[facets,5]
-:[font = output; output; inactive; preserveAspect; endGroup]
-{{0, 0, 0, 1., -1., 1., 0, 0}, {0, 2., 0, 1., -1., -1., 2., 0}, 
- 
-  {0, 2., 0, 1., 0, -1., 2., -1.}, {0, 1., 0, 1., 0, 0, 1., -1.}, 
- 
-  {0, 1., 1., 0, 1., 1., -1., 0}}
-;[o]
-{{0, 0, 0, 1., -1., 1., 0, 0}, {0, 2., 0, 1., -1., -1., 2., 0}, 
- 
-  {0, 2., 0, 1., 0, -1., 2., -1.}, {0, 1., 0, 1., 0, 0, 1., -1.}, 
- 
-  {0, 1., 1., 0, 1., 1., -1., 0}}
-:[font = text; inactive; preserveAspect]
-Also each facet tends to have many neighbours.
-:[font = input; preserveAspect; startGroup]
-Take[adj,5]
 :[font = output; output; inactive; preserveAspect; endGroup; endGroup]
-{{2, 4, 6, 7, 9, 10, 11, 14, 21, 23, 26, 30, 31}, 
+{{0, 0, 0, 1., 0, 0, 0, 0}, 
  
-  {1, 3, 10, 11, 26, 28, 29}, {2, 4, 10, 26, 27, 28}, 
+  {0, 0, 0, 1., 0, 0, -1., 1.}, 
  
-  {1, 3, 6, 10, 26, 27, 31}, {6, 9, 10, 12, 13, 21, 24, 31}}
+  {0, 1., 1., 1., 0, 1., -2., 1.}, 
+ 
+  {0, 1., 0, 0, 0, 1., -1., 1.}, 
+ 
+  {0, 1., 1., 1., 0, 1., -1., 0}}
 ;[o]
-{{2, 4, 6, 7, 9, 10, 11, 14, 21, 23, 26, 30, 31}, 
+{{0, 0, 0, 1., 0, 0, 0, 0}, 
  
-  {1, 3, 10, 11, 26, 28, 29}, {2, 4, 10, 26, 27, 28}, 
+  {0, 0, 0, 1., 0, 0, -1., 1.}, 
  
-  {1, 3, 6, 10, 26, 27, 31}, {6, 9, 10, 12, 13, 21, 24, 31}}
+  {0, 1., 1., 1., 0, 1., -2., 1.}, 
+ 
+  {0, 1., 0, 0, 0, 1., -1., 1.}, 
+ 
+  {0, 1., 1., 1., 0, 1., -1., 0}}
 :[font = subsection; inactive; Cclosed; preserveAspect; startGroup]
 Disconnecting  cddmathlink
 :[font = input; preserveAspect; startGroup]

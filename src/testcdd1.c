@@ -27,14 +27,13 @@
 #include <math.h>
 #include <string.h>
 
-boolean SetInputFile(FILE **f, char *fname)
+dd_boolean SetInputFile(FILE **f, char *fname)
 {
-  boolean success=FALSE;
-  success=FALSE;
+  dd_boolean success=dd_FALSE;
 
   if ( ( *f = fopen(fname, "r") )!= NULL) {
     printf("input file %s is open\n", fname);
-    success=TRUE;
+    success=dd_TRUE;
   }
   else{
     printf("The input file %s not found\n",fname);
@@ -55,7 +54,7 @@ int main(int argc, char *argv[])
   dd_set_global_constants();  /* First, this must be called. */
 
   dd_SetInputFile(&reading,inputfile, &err);
-  if (err==NoError) {
+  if (err==dd_NoError) {
     M=dd_PolyFile2Matrix(reading, &err);
   }
   else {
@@ -63,9 +62,9 @@ int main(int argc, char *argv[])
     goto _L99;
   }
 
-  if (err==NoError) {
+  if (err==dd_NoError) {
     poly=dd_DDMatrix2Poly(M, &err); /* compute the second representation */
-    if (err!=NoError) {
+    if (err!=dd_NoError) {
       dd_WriteErrorMessages(stdout,err);  goto _L99;
     }
     A=dd_CopyInequalities(poly);
@@ -73,7 +72,7 @@ int main(int argc, char *argv[])
     GI=dd_CopyIncidence(poly);
     GA=dd_CopyAdjacency(poly);
 
-    if (poly->representation==Inequality) {
+    if (poly->representation==dd_Inequality) {
       printf("\nInput is an H-representation\n");
     } else {
       printf("\nInput is a V-representation\n");

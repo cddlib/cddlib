@@ -27,14 +27,14 @@
 #include <math.h>
 #include <string.h>
 
-boolean SetInputFile(FILE **f, dd_DataFileType fname)
+dd_boolean SetInputFile(FILE **f, dd_DataFileType fname)
 {
-  boolean success=FALSE;
-  success=FALSE;
+  dd_boolean success=dd_FALSE;
+  success=dd_FALSE;
 
   if ( ( *f = fopen(fname, "r") )!= NULL) {
     printf("input file %s is open\n", fname);
-    success=TRUE;
+    success=dd_TRUE;
   }
   else{
     printf("The input file %s not found\n",fname);
@@ -42,13 +42,13 @@ boolean SetInputFile(FILE **f, dd_DataFileType fname)
   return success;
 }
 
-boolean SetWriteFile(FILE **f, dd_DataFileType fname)
+dd_boolean SetWriteFile(FILE **f, dd_DataFileType fname)
 {
-  boolean success=FALSE;
+  dd_boolean success=dd_FALSE;
 
   if ( (*f = fopen(fname, "w")) != NULL){
     printf("output file %s is open\n",fname);
-    success=TRUE;
+    success=dd_TRUE;
   }
   else{
     printf("The output file %s cannot be opened\n",fname);
@@ -62,7 +62,7 @@ int main(int argc, char *argv[])
   dd_PolyhedraPtr poly;
   dd_LPPtr lp;
   dd_MatrixPtr M,A;
-  dd_ErrorType err=NoError;
+  dd_ErrorType err=dd_NoError;
   dd_DataFileType inputfile,outputfile;
   FILE *reading=NULL, *writing;
 
@@ -73,7 +73,7 @@ int main(int argc, char *argv[])
     dd_WriteProgramDescription(stdout);
     dd_SetInputFile(&reading,inputfile, &err);
   }
-  if (err==NoError) {
+  if (err==dd_NoError) {
     M=dd_PolyFile2Matrix(reading, &err);
   }
   else {
@@ -81,25 +81,25 @@ int main(int argc, char *argv[])
     goto _L99;
   }
 
-  if (err!=NoError) goto _L99;
+  if (err!=dd_NoError) goto _L99;
 
-  if (M->objective==LPnone){ /* do representation conversion */
+  if (M->objective==dd_LPnone){ /* do representation conversion */
     poly=dd_DDMatrix2Poly(M, &err);
-    if (err!=NoError) goto _L99;
+    if (err!=dd_NoError) goto _L99;
 
     dd_SetWriteFileName(inputfile, outputfile, 'o', poly->representation);
     SetWriteFile(&writing, outputfile);
     dd_WriteProgramDescription(writing);
     dd_WriteRunningMode(writing, poly);
     switch (poly->representation) {
-    case Inequality:
+    case dd_Inequality:
       fprintf(writing, "ext_file: Generators\n");
       A=dd_CopyGenerators(poly);
       dd_WriteMatrix(writing,A);
       dd_FreeMatrix(A);
       break;
 
-    case Generator:
+    case dd_Generator:
       fprintf(writing, "ine_file: Inequalities\n");
       A=dd_CopyInequalities(poly);
       dd_WriteMatrix(writing,A);
@@ -136,8 +136,8 @@ int main(int argc, char *argv[])
     dd_FreePolyhedra(poly);
 
   } else { /* solve the LP */
-    lp=dd_Matrix2LP(M, &err);  if (err!=NoError) goto _L99;
-    dd_LPSolve(lp,DualSimplex,&err);  if (err!=NoError) goto _L99;
+    lp=dd_Matrix2LP(M, &err);  if (err!=dd_NoError) goto _L99;
+    dd_LPSolve(lp,dd_DualSimplex,&err);  if (err!=dd_NoError) goto _L99;
 
     dd_SetWriteFileName(inputfile, outputfile, 's', M->representation);
     SetWriteFile(&writing, outputfile);
@@ -148,7 +148,7 @@ int main(int argc, char *argv[])
     dd_FreeLPData(lp);
   }
 _L99:
-  if (err!=NoError) dd_WriteErrorMessages(stdout,err);
+  if (err!=dd_NoError) dd_WriteErrorMessages(stdout,err);
   return 0;
 }
 

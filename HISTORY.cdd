@@ -1,6 +1,20 @@
-libcdd, cdd & cdd+ HISTORY file    (as of March 9, 2001)
+libcdd, cdd & cdd+ HISTORY file    (as of December 12, 2001)
 
 *** libcdd version (date) / changes ***
+
+Version 092 (December 12, 2001) /
+ - the default value of dd_almostzero is now set to 1.0E-7 
+   instead of 1.0E-6.  New functions are added for checking
+   redundancy of H- and V- representations such as
+   dd_Redundant, dd_RedundantRows, dd_ImplicitLinearity,
+   dd_ImplicitLinearityRows, and dd_RayShooting.  
+   Also some basic operations on dd_MatrixPtr have been added such as
+   dd_MatrixAppendTo, dd_MatrixRowRemove, dd_MatrixSubmatrix.
+
+   The names of enumeration type variables have been modified.
+   Now all names have prefix "dd_", e.g. Rational, Integer are
+   now dd_Rational and dd_Integer.  This applies to TRUE and FALSE,
+   which are now dd_TRUE and dd_FALSE.
 
 Version 091d (March 9, 2001) /
  - Memory leak in dd_FreeLPData and dd_FreeLPSolution are

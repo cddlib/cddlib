@@ -1,7 +1,7 @@
 /* cddmathlink.c: Main test program to call the cdd library cddlib
    from Mathematica using MathLink.
    written by Komei Fukuda, fukuda@ifor.math.ethz.ch
-   Version 0.90c, June 12, 2000
+   Version 0.92dev, September 22, 2001
    Standard ftp site: ftp.ifor.math.ethz.ch, Directory: pub/fukuda/cdd
 */
 
@@ -23,6 +23,7 @@
 #include "setoper.h"
 #include "cdd.h"
 #include "mathlink.h"
+#include "cddmlio.h"
 #include <stdio.h>
 #include <stdlib.h>
 #include <time.h>
@@ -33,8 +34,8 @@ void allvertices(int m_input, int d_input, double *a_input)
 /* output vertices and incidences */
 {
   dd_PolyhedraPtr poly;
-  dd_MatrixPtr A,G;
-  dd_SetFamilyPtr GI;
+  dd_MatrixPtr A=NULL,G=NULL;
+  dd_SetFamilyPtr GI=NULL;
   dd_rowrange i,m; 
   dd_colrange j,d;
   dd_ErrorType err;
@@ -44,10 +45,10 @@ void allvertices(int m_input, int d_input, double *a_input)
   for (i=0; i<m; i++){
     for (j=0; j<d; j++) dd_set_d(A->matrix[i][j],a_input[i*d+j]);
   }
-  A->representation=Inequality;
+  A->representation=dd_Inequality;
   poly=dd_DDMatrix2Poly(A, &err);
     /* compute the second (generator) representation */
-  if (err==NoError) {
+  if (err==dd_NoError) {
     G=dd_CopyGenerators(poly);
     GI=dd_CopyIncidence(poly);
 
@@ -67,30 +68,34 @@ void allvertices2(int m_input, int d_input, double *a_input)
 /* output vertices, incidences and adjacency */
 {
   dd_PolyhedraPtr poly;
-  dd_MatrixPtr A,G;
-  dd_SetFamilyPtr GI,GA;
+  dd_MatrixPtr A=NULL,G=NULL;
+  dd_SetFamilyPtr GI=NULL,GA=NULL;
+  dd_SetFamilyPtr AI=NULL,AA=NULL;
   dd_rowrange i,m; 
   dd_colrange j,d;
   dd_ErrorType err;
 
   m=(dd_rowrange)m_input; d=(dd_colrange)d_input;
-  printf("m=%d   d=%d\n",m, d);
   A=dd_CreateMatrix(m,d);
   for (i=0; i<m; i++){
     for (j=0; j<d; j++) dd_set_d(A->matrix[i][j],a_input[i*d+j]);
   }
-  A->representation=Inequality;
+  A->representation=dd_Inequality;
   poly=dd_DDMatrix2Poly(A, &err);
     /* compute the second (generator) representation */
-  if (err==NoError){
+  if (err==dd_NoError){
     G=dd_CopyGenerators(poly);
     GI=dd_CopyIncidence(poly);
     GA=dd_CopyAdjacency(poly);
+    AI=dd_CopyInputIncidence(poly);
+    AA=dd_CopyInputAdjacency(poly);
 
-    MLPutFunction(stdlink,"List",3);
+    MLPutFunction(stdlink,"List",5);
     dd_MLWriteMatrix(G);
     dd_MLWriteSetFamily(GI);
     dd_MLWriteSetFamily(GA);
+    dd_MLWriteSetFamily(AI);
+    dd_MLWriteSetFamily(AA);
   } else {
     dd_MLWriteError(poly);
   }
@@ -98,14 +103,16 @@ void allvertices2(int m_input, int d_input, double *a_input)
   dd_FreeMatrix(G);
   dd_FreeSetFamily(GI);
   dd_FreeSetFamily(GA);
+  dd_FreeSetFamily(AI);
+  dd_FreeSetFamily(AA);
 }
 
 void allfacets(int n_input, int d_input, double *g_input)
 /* output facets and incidences */
 {
   dd_PolyhedraPtr poly;
-  dd_MatrixPtr A,G;
-  dd_SetFamilyPtr AI;
+  dd_MatrixPtr A=NULL,G=NULL;
+  dd_SetFamilyPtr AI=NULL;
   dd_rowrange i,n; 
   dd_colrange j,d;
   dd_ErrorType err;
@@ -115,10 +122,10 @@ void allfacets(int n_input, int d_input, double *g_input)
   for (i=0; i<n; i++){
     for (j=0; j<d; j++) dd_set_d(G->matrix[i][j],g_input[i*d+j]);
   }
-  G->representation=Generator;
+  G->representation=dd_Generator;
   poly=dd_DDMatrix2Poly(G, &err);
     /* compute the second (inequality) representation */
-  if (err==NoError){
+  if (err==dd_NoError){
     A=dd_CopyInequalities(poly);
     AI=dd_CopyIncidence(poly);
 
@@ -139,8 +146,9 @@ void allfacets2(int n_input, int d_input, double *g_input)
 /* output facets, incidences and adjacency */
 {
   dd_PolyhedraPtr poly;
-  dd_MatrixPtr A,G;
-  dd_SetFamilyPtr AI, AA;
+  dd_MatrixPtr A=NULL,G=NULL;
+  dd_SetFamilyPtr AI=NULL, AA=NULL;
+  dd_SetFamilyPtr GI=NULL, GA=NULL;
   dd_rowrange i,n; 
   dd_colrange j,d;
   dd_ErrorType err;
@@ -150,18 +158,22 @@ void allfacets2(int n_input, int d_input, double *g_input)
   for (i=0; i<n; i++){
     for (j=0; j<d; j++) dd_set_d(G->matrix[i][j],g_input[i*d+j]);
   }
-  G->representation=Generator;
+  G->representation=dd_Generator;
   poly=dd_DDMatrix2Poly(G, &err);
     /* compute the second (inequality) representation */
-  if (err==NoError){
+  if (err==dd_NoError){
     A=dd_CopyInequalities(poly);
     AI=dd_CopyIncidence(poly);
     AA=dd_CopyAdjacency(poly);
+    GI=dd_CopyInputIncidence(poly);
+    GA=dd_CopyInputAdjacency(poly);
 
-    MLPutFunction(stdlink,"List",3);
+    MLPutFunction(stdlink,"List",5);
     dd_MLWriteMatrix(A);
     dd_MLWriteSetFamily(AI);
     dd_MLWriteSetFamily(AA);
+    dd_MLWriteSetFamily(GI);
+    dd_MLWriteSetFamily(GA);
   } else {
     dd_MLWriteError(poly);
   }
@@ -170,6 +182,8 @@ void allfacets2(int n_input, int d_input, double *g_input)
   dd_FreeMatrix(G);
   dd_FreeSetFamily(AI);
   dd_FreeSetFamily(AA);
+  dd_FreeSetFamily(GI);
+  dd_FreeSetFamily(GA);
 }
 
 #if MACINTOSH_MATHLINK
@@ -188,16 +202,23 @@ int main( int argc, char* argv[])
 
 #elif WINDOWS_MATHLINK
 
-int PASCAL WinMain( HANDLE hinstCurrent, HANDLE hinstPrevious, LPSTR lpszCmdLine, int nCmdShow)
+#if __BORLANDC__
+#pragma argsused
+#endif
+
+int PASCAL WinMain( HINSTANCE hinstCurrent, HINSTANCE hinstPrevious, LPSTR lpszCmdLine, int nCmdShow)
 {
 	char  buff[512];
+	char FAR * buff_start = buff;
 	char FAR * argv[32];
 	char FAR * FAR * argv_end = argv + 32;
 
     dd_set_global_constants();  /* First, this must be called to use cddlib. */
 
+	hinstPrevious = hinstPrevious; /* suppress warning */
+
 	if( !MLInitializeIcon( hinstCurrent, nCmdShow)) return 1;
-	MLScanString( argv, &argv_end, &commandline, &buf);
+	MLScanString( argv, &argv_end, &lpszCmdLine, &buff_start);
 	return MLMain( argv_end - argv, argv);
 }
 
@@ -207,6 +228,7 @@ int main(argc, argv)
 	int argc; char* argv[];
 {
     dd_set_global_constants();  /* First, this must be called to use cddlib. */
+
 	return MLMain(argc, argv);
 }
 
