@@ -1,0 +1,746 @@
+% The name of this file: cddlibman.tex
+% written by by Komei Fukuda
+% created March 15, 1999
+% modified December 19, 2001
+%
+\documentclass[11pt]{article}
+\usepackage{html}
+\renewcommand{\baselinestretch}{1}
+\renewcommand{\arraystretch}{1}
+\setlength{\oddsidemargin}{0mm}
+\setlength{\textwidth}{16cm}
+\setlength{\topmargin}{-15mm}
+\setlength{\textheight}{235mm}
+%\setlength{\headsep}{0in}
+%\setlength{\headheight}{0pt}
+\pagestyle{plain}
+
+\newcommand {\0} {{\bf 0}}
+
+\begin{document}
+\title{cddlib Reference Manual}
+\author{Komei Fukuda \\
+School of Computer Science\\
+McConnel Engineering Building\\
+3480 University Street\\
+Montreal, Quebec\\
+Canada H3A 2A7\\ \\
+email: fukuda@cs.mcgill.ca\\
+}
+\date{ (cddlib ver. 092, manual ver. December 19, 2001)}
+
+\maketitle
+\begin{abstract}
+This is a reference manual for cddlib-092.  
+The manual is very far from satisfactory
+but explains the most important functions of polyhedral
+representation conversion in cddlib.  
+Please use the accompanying README file and test programs to complement the incompleteness.
+\end{abstract}
+
+\section{Introduction} \label{INTRODUCTION}
+
+The program  cddlib  is an efficient implementation \cite{fp-ddmr-96}  of 
+the double description Method~\cite{mrtt-ddm-53}
+for generating  all vertices (i.e. extreme points)
+and extreme rays of a general 
+convex polyhedron given by 
+a system of linear inequalities:
+\[
+   P = \{ x=(x_1, x_2, \ldots, x_d)^T \in R^{d}:  b - A  x  \ge 0 \}
+\]
+where $A$ is a given $m \times d$ real matrix and 
+$b$ is a given real $m$-vector.   In the mathematical
+language, the computation is the transformation
+of an {\em H-representation\/} of a convex polytope
+to an {\em V-representation}.  
+
+cddlib is a C-library version of the previously released C-code cdd/cdd+.
+In order to make this library version, a large part of the cdd source
+(Version 0.61) has been rewritten.
+This library version is more flexible since it can be called from other
+C programs.
+
+One useful feature of  cddlib/cdd/cdd+ is its capability
+of handling the dual (reverse)  problem without any transformation
+of data.  The dual transformation problem of a V-representation
+to a minimal H-representation and is often called the 
+{\em (convex) hull problem\/}.  More explicitly,
+is to obtain a linear inequality representation
+of a convex polyhedron given as the Minkowski sum of 
+the convex hull of a finite set of points and the nonnegative
+hull of a finite set of points in $R^{d+1}$: 
+\[
+P = conv(v_1,\ldots,v_n) +  nonneg(r_{n+1},\ldots,r_{n+s}), 
+\]
+where
+ the {\em Minkowski sum of two subsets $S$ and $T$} of $R^{d+1}$ is defined
+as 
+\[
+S + T = \{ s + t \; |  s \in S \mbox{ and } t \in T \}.
+\]
+As we see in this manual, the computation can be done
+in straightforward manner.  Unlike the earlier versions of
+cdd/cdd+ that assume certain regularity conditions for input, 
+cddlib is designed to do a correction transformation for any general input.
+The user must be aware of the fact that in certain cases the
+transformation is not unique and there are polyhedra with
+infinitely many representations.  For example, a line
+segment (1-dimensional polytope) in $R^3$ has infinitely
+many minimal H-representations, and a halfspace in the same space
+has infinitely many minimal V-representations.  cddlib generates
+merely one minimal representation.
+
+cddlib comes with an LP code to solve the general
+linear programming (LP) problem to maximize (or minimize) a linear
+function over polyhedron $P$.   It is useful mainly for solving 
+dense LP's with large $m$ (say, up to few hundred thousands) and small $d$ 
+(say, up to 100).  It implements a revised dual simplex method that
+updates $(d+1)\times (d+1)$ matrix for a pivot operation.
+
+The program cddlib has an I/O routines that read and write files in 
+{\em Polyhedra format\/} which was defined by David Avis and
+the author in 1993, and has been updated in 1997.  
+The program called lrs \cite{a-uglrs-97} developed by David Avis is
+a C-implementation of the reverse search algorithm~\cite{af-pachv-92} 
+for the same enumeration purpose, and it conforms to Polyhedra format as well.
+Hopefully, this compatibility of the two programs
+enables users to use both programs for the same input files
+and to choose whichever is useful for their purposes.
+From our experiences with relatively large problems,
+the two methods are both useful and perhaps complementary
+to each other.  In general, the program cdd+ tends to be
+efficient for highly degenerate inputs and the program rs
+tends to be efficient for nondegenerate or slightly
+degenerate problems.
+
+Although the program can be used for nondegenerate inputs,
+it might not be very efficient.  For nondegenerate inputs, 
+other available programs, such as the reverse search code lrs or
+qhull (developed by the Geometry Center),
+might be more efficient.  See Section~\ref{CODES} 
+for pointers to these codes.  
+The paper \cite{abs-hgach-97} contains many interesting results on polyhedral
+computation and experimental results on cdd+, lrs, qhull and porta.
+
+This program can be distributed freely under the GNU GENERAL PUBLIC LICENSE.
+Please read the file COPYING carefully before using.
+
+I will not take any responsibility of any problems you might have
+with this program.  But I will be glad to receive bug reports or suggestions
+at the e-mail addresses above.  Finally, if cdd+ turns out to be useful, 
+please kindly inform  me of  what purposes cdd has been used for. 
+I will be happy to include a list of applications in future
+distribution  if I receive  enough replies.
+The most powerful support for free software development
+is user's appreciation and collaboration.
+
+\section{Polyhedra H- and V-Formats (Version 1999)} \label{FORMAT}
+\bigskip
+Every convex polyhedron has two representations, one as
+the intersection of finite halfspaces and the other
+as Minkowski sum of the convex hull of finite points
+and the nonnegative hull of finite directions.  These are
+called H-representation and V-representation, respectively.
+
+Naturally there are two basic Polyhedra formats, 
+H-format for  H-representation and V-format for
+V-representation.    These two formats are designed
+to be almost indistinguishable, and in fact, one can
+almost pretend one for the other.   There is some asymmetry
+arising from the asymmetry of two representations.
+
+First we start with the H-representation.
+Let $A$ be an $m \times d$ matrix, and let $b$ be a column $m$-vector.
+The Polyhedra format  ({\em  H-format} )  of 
+the system  $\; b - A x \ge \0\;$ of $m$ inequalities in $d$ variables
+$x =(x_1, x_2, \ldots, x_d)^T$ is
+
+\begin{tabular}{ccl}
+\\ \hline
+\multicolumn{3}{l} {various comments}\\
+\multicolumn{3}{l} {{\bf H-representation}}\\
+\multicolumn{3}{l} {{\bf (linearity $t\;$ $i_1\;$  $i_2\;$  $\ldots$ $\;i_t$)}}\\
+\multicolumn{3}{l} {{\bf begin}}\\
+ $m$ & $d+1$ & numbertype\\
+ $b$ & $-A$ \\
+\multicolumn{3}{l} {{\bf end}}\\
+\multicolumn{3}{l} {various options} \\ \hline
+\end{tabular}
+
+\bigskip
+\noindent
+where numbertype can be one of integer, rational or real.
+When rational type is selected, each component
+of $b$ and $A$ can be specified by the usual integer expression 
+or by the rational expression ``$p / q$''  or  ``$-p / q$'' where
+$p$ and $q$ are arbitrary long positive integers (see the example
+input file rational.ine).  In the 1997 format,
+we introduced ``H-representation'' which must appear
+before ``begin''. 
+There was one restriction in the old polyhedra format 
+(before 1997):  the last $d$ rows must determine
+a vertex of $P$.  This is obsolete now.
+
+In the new 1999 format, we added the possibility of specifying {\bf linearity\/}.
+This means that
+for H-representation, some of the input rows can be specified as  {\bf equalities}:  
+$b_{i_j} - A_{i_j} = 0 \;$ for all $j=1,2, \ldots, t$.
+The linearity line may be omitted if there are no equalities.
+
+Option lines can be used to control computation of a specific program.
+In particular both cdd and lrs use the option lines to represent
+a linear objective function.  See the attached LP files, samplelp*.ine.
+
+\bigskip
+Next we define Polyhedra  {\em V-format}.  Let $P$ be 
+represented by $n$ gerating points and $s$ generating directions (rays) as 
+$P = conv(v_1,\ldots,v_n) +  nonneg(r_{n+1},\ldots,r_{n+s})$.
+Then the Polyhedra V-format for $P$ is 
+
+\begin{tabular}{cll}
+\\ \hline
+\multicolumn{3}{l} {various comments}\\
+\multicolumn{3}{l} {{\bf V-representation}}\\
+\multicolumn{3}{l} {({\bf linearity $t\;$ $i_1\;$  $i_2\;$  $\ldots$ $\;i_t$ })}\\
+\multicolumn{3}{l} {{\bf begin}}\\
+ $n+s$ & $d+1$ & numbertype\\
+ $1$ & $v_1$  & \\
+ $\vdots$ & $\vdots$  & \\
+ $1$ & $v_n$  & \\
+ $0$ & $r_{n+1}$  & \\
+ $\vdots$ & $\vdots$  & \\
+ $0$ & $r_{n+s}$  & \\
+\multicolumn{3}{l} {{\bf end}}\\
+\multicolumn{3}{l} {various options} \\ \hline
+\end{tabular}
+
+\bigskip
+\noindent
+Here we do not require that
+vertices and rays are listed
+separately; they can appear mixed in arbitrary
+order.
+
+Linearity for V-representation specifies a subset of generators
+whose coefficients are relaxed
+to be {\bf free}:  for all $j=1,2, \ldots, t$, the $k=i_j$th generator ($v_{k}$ or $r_k$ whichever is the $i_j$th generator) is a free generator. 
+This means for each such a ray $r_k$, 
+the line generated by $r_k$ is in the polyhedron,
+and for each such a vertex $v_k$, its coefficient is no longer nonnegative
+but still the coefficients for all $v_i$'s must sum up to one. 
+
+When the representation statement, either ``H-representation''
+or ``V-representation'', is omitted, the former
+``H-representation'' is assumed.
+
+It is strongly suggested to use the following rule for naming
+H-format files and V-format files:   
+\begin{description}
+\item[(a)] use the filename  extension ``.ine'' for H-files (where ine stands for inequalities), and 
+\item[(b)]  use the filename  extension ``.ext'' for V-files (where ext stands for extreme points/rays). 
+\end{description}
+
+
+\section{Basic Object Types (Structures) in cddlib}  \label{DATASTR}
+
+Here are the types (defined in cddtypes.h) that are 
+important for the cddlib user.  The most important one, 
+{\bf dd\_MatrixType\/},
+is to store a Polyhedra data in a straightforward manner.
+Once the user sets up a (pointer to) dd\_MatrixType data,
+he/she can load the data to an internal data type (dd\_PolyhedraType)
+by using functions described in the next section, and apply
+the double descrition method to get another representation.
+As an option dd\_MatrixType can save a linear objective function
+to be used by a linear programming solver.
+
+\begin{verbatim}
+
+typedef long dd_rowrange;
+typedef long dd_colrange;
+typedef long dd_bigrange;
+
+typedef set_type dd_rowset;   /* set_type defined in setoper.h */
+typedef set_type dd_colset;
+typedef long *dd_rowindex;   
+typedef int *dd_rowflag;   
+typedef long *dd_colindex;
+typedef mytype **dd_Amatrix;  /* mytype is either GMP mpq_t or 1-dim double array. */
+typedef mytype *dd_Arow;
+
+typedef enum {
+  dd_Real, dd_Rational, dd_Integer, dd_Unknown
+} dd_NumberType;
+
+typedef enum {
+  dd_Inequality, dd_Generator, dd_Unspecified
+} dd_RepresentationType;
+
+typedef enum {
+  dd_InProgress, dd_AllFound, dd_RegionEmpty
+} dd_CompStatusType;
+
+typedef enum {
+  dd_DimensionTooLarge, dd_ImproperInputFormat, 
+  dd_NegativeMatrixSize, dd_EmptyVrepresentation,
+  dd_IFileNotFound, dd_OFileNotOpen, dd_NoLPObjective, dd_NoRealNumberSupport, dd_NoError
+} dd_ErrorType;
+
+typedef enum {
+  dd_LPnone=0, dd_LPmax, dd_LPmin
+} dd_LPObjectiveType;
+
+typedef enum {
+  dd_LPSundecided, dd_Optimal, dd_Inconsistent, dd_DualInconsistent,
+  dd_StrucInconsistent, dd_StrucDualInconsistent,
+  dd_Unbounded, dd_DualUnbounded
+} dd_LPStatusType;
+
+typedef struct matrixdata *dd_MatrixPtr;
+typedef struct matrixdata {
+  dd_rowrange rowsize;
+  dd_rowset linset; 
+    /*  a subset of rows of linearity (ie, generators of
+        linearity space for V-representation, and equations
+        for H-representation. */
+  dd_colrange colsize;
+  dd_RepresentationType representation;
+  dd_NumberType numbtype;
+  dd_Amatrix matrix;
+  dd_LPObjectiveType objective;
+  dd_Arow rowvec;
+}  dd_MatrixType;
+
+typedef struct setfamily *dd_SetFamilyPtr;
+typedef struct setfamily {
+  dd_bigrange famsize;
+  dd_bigrange setsize;
+  dd_SetVector set;  
+} dd_SetFamilyType;
+
+typedef struct lpsolution *dd_LPSolutionPtr;
+typedef struct lpsolution {
+  dd_DataFileType filename;
+  dd_LPObjectiveType objective;
+  dd_LPSolverType solver; 
+  dd_rowrange m;
+  dd_colrange d;
+  dd_NumberType numbtype;
+
+  dd_LPStatusType LPS;  /* the current solution status */
+  mytype optvalue;  /* optimal value */
+  dd_Arow sol;   /* primal solution */
+  dd_Arow dsol;  /* dual solution */
+  dd_colindex nbindex;  /* current basis represented by nonbasic indices */
+  dd_rowrange re;  /* row index as a certificate in the case of inconsistency */
+  dd_colrange se;  /* col index as a certificate in the case of dual inconsistency */
+  long pivots[4]; 
+   /* pivots[0]=setup (to find a basis), pivots[1]=PhaseI or Criss-Cross,
+      pivots[2]=Phase II, pivots[3]=Anticycling */
+  long total_pivots;
+} dd_LPSolutionType;
+
+\end{verbatim}
+
+\section{Library Functions}  \label{LIBRARY}
+
+Here we list some of the most important library functions/procedures. 
+We use the following convention: 
+{\tt poly} is of type {\tt dd\_PolyhedraPtr},
+{\tt matrix}, {\tt matrix1} and {\tt matrix2} are of type {\tt dd\_MatrixPtr},
+{\tt err} is of type {\tt dd\_ErrorType*}, 
+{\tt ifile} and {\tt ofile} are of type {\tt char*},
+{\tt A} is of type {\tt dd\_Amatrix},
+{\tt point} and {\tt vector} are of type {\tt dd\_Arow},
+{\tt d} is of type {\tt dd\_colrange}, 
+{\tt m} and {\tt i} are of type {\tt dd\_rowrange},
+{\tt x} is of type {\tt mytype}, 
+{\tt a} is of type {\tt signed long integer},
+{\tt b} is of type {\tt double},
+{\tt set} is of type {\tt set\_type}.
+  Also,
+{\tt setfam} is of type {\tt dd\_SetFamilyPtr},
+{\tt lp} is of type {\tt dd\_LPPtr},
+{\tt solver} is of type {\tt dd\_LPSolverType}.
+
+
+\subsection{Library Initialization}  \label{Initialization}
+
+\begin{description}
+
+\item[{\tt void dd\_set\_global\_constants(void)}]:\\
+This is to set the global constants such as {\tt dd\_zero},
+{\tt dd\_purezero} and
+{\tt dd\_one} for sign recognition and basic arithmetic
+operations.  {Every program to use cddlib must call this function}
+before doing any computation.    Just call this once.
+\end{description}
+
+\subsection{Core Functions}  \label{CoreLibrary}
+
+There are two types of core functions in cddlib.  The first type
+runs the double description (DD) algorithm and does a representation
+conversion of a specified polyhedron.  The standard header
+for this type is {\tt dd\_DD*}.  The second type solves
+an linear program and the standard naming is
+{\tt dd\_LP*}.   Both computations are nontrivial
+and the users (especially for the DD algorithm) must
+know that there is a serous limit in the sizes of problems
+that can be practically solved. 
+Please check *.ext and *.ine files that come with cddlib to get
+ideas of tractable problems. 
+
+
+\begin{description}
+\item[{\tt dd\_PolyhedraPtr dd\_DDMatrix2Poly(matrix, err)}]:\\
+Store the representation given by {\tt matrix} in a polyhedra data, and
+generate the second representation of {\tt *poly}.  It returns
+a pointer to the data. {\tt *err}
+returns {\tt dd\_NoError} if the computation terminates normally.  Otherwise,
+it returns a value according to the error occured.
+
+\item[{\tt boolean dd\_DDInputAppend(\&poly, matrix, \&err)}]:\\
+Modify the input representation in {\tt *poly}
+by appending the matrix of {\tt *matrix}, and compute
+the second representation.  The number of columns in
+{\tt *matrix} must be equal to the input representation.
+
+\item[{\tt boolean dd\_LPSolve(lp, solver, \&err)}]:\\
+Solve {\tt lp} by the algorithm {\tt solver} and save
+the solututions in {\tt *lp}.  Unlike the earlier versions
+(dplex, cdd+), it can deal with equations and totally zero right
+hand sides.
+
+\item[{\tt dd\_boolean dd\_Redundant(matrix, i, point, \&err)}]:\\
+Check whether $i$th data in {\tt matrix} is redundant for the representation.
+If it is nonredundant, it returns a certificate.  For H-representation,
+it is a {\tt point} in $R^d$ which satisfies
+all inequalities except for the $i$th inequality.  If $i$ is a linearity,
+it does nothing and always returns FALSE.
+
+\item[{\tt dd\_rowset dd\_RedundantRows(matrix, \&err)}]:\\
+Returns a maximal set of row indices such that the associated rows
+can be eliminated without changing the polyhedron.  
+The function works for both V- and H-representations.
+
+\item[{\tt dd\_boolean dd\_ImplicitLinearity(matrix, i, \&err)}]:\\
+Check whether $i$th inequality
+in the input is forced to be linearity (equality 
+for H-representation).
+If $i$ is linearity itself, 
+it does nothing and always returns FALSE.
+
+\item[{\tt dd\_rowset dd\_ImplicitLinearityRows(matrix, \&err)}]:\\
+Returns the set of indices of rows that are 
+implicitly linearity.  It simply calls
+{\tt dd\_ImplicitLinearity} for each inequality and collects
+the row indices for which the answer is TRUE.
+
+\item[{\tt dd\_rowrange dd\_RayShooting(matrix, point, vector)}]:\\
+Finds the index of a halfspace first left by the ray starting from
+{\tt point} toward the direction {\tt vector}.  It resolves
+the tie by a lexicographic perturbation.  Those inequalities violated
+by {\tt point} will be simply ignored.
+
+\end{description}
+
+
+\subsection{Data Manipulations}  \label{DataLibrary}
+
+\subsubsection{Number Assignments}
+\begin{description}
+
+\item[{\tt void dd\_set\_si(x, a)}]:\\
+This is to set a {\tt mytype} variable {\tt x} to the
+value of signed long integer {\tt a}.  One
+ cannot use such expressions as {\tt x=(mytype)a}.
+This is a price to pay for the generality:
+cddlib uses an abstract number type ({\tt mytype}) 
+so that it can compute with various 
+number types such as C double and GMP rational.
+User can easily add a new number type by redefining
+arithmetic operations in cddmp.h and cddmp.c.
+
+\item[{\tt void dd\_set\_d(x, b)}]:\\
+This is to set a {\tt mytype} variable {\tt x} to the
+value of double {\tt b}.  This is available only
+when the library is compiled without {\tt -DGMPRATIONAL}
+compiler option.
+
+\end{description}
+
+\subsubsection{Polyhedra Data Manipulation}
+\begin{description}
+
+\item[{\tt dd\_MatrixPtr dd\_PolyFile2Matrix (f, err)}]:\\
+Read a Polyhedra data from {\tt f} and store it in {\tt matrixdata}
+and return a pointer to the data.
+
+\item[{\tt dd\_MatrixPtr dd\_CopyInequalities(poly)}]:\\
+Copy the inequality representation pointed by poly to {\tt matrixdata}
+and return {\tt dd\_MatrixPtr}.
+
+\item[{\tt dd\_MatrixPtr dd\_CopyGenerators(poly)}]:\\ 
+Copy the generator representation pointed by poly to {\tt matrixdata}
+and return {\tt dd\_MatrixPtr}.
+
+\item[{\tt dd\_SetFamilyPtr dd\_CopyIncidence(poly)}]:\\ 
+Copy the incidence representation of the computed representation
+pointed by poly to {\tt setfamily}
+and return {\tt dd\_SetFamilyPtr}.  The computed representation is
+{\tt Inequality} if the input is {\tt Generator}, and the vice visa.
+
+\item[{\tt dd\_SetFamilyPtr dd\_CopyAdjacency(poly)}]:\\ 
+Copy the adjacency representation of the computed representation
+pointed by poly to {\tt setfamily}
+and return {\tt dd\_SetFamilyPtr}.  The computed representation is
+{\tt Inequality} if the input is {\tt Generator}, and the vice visa.
+
+\item[{\tt dd\_SetFamilyPtr dd\_CopyInputIncidence(poly)}]:\\ 
+Copy the incidence representation of the input representation
+pointed by poly to {\tt setfamily}
+and return {\tt d\_SetFamilyPtr}.
+
+\item[{\tt dd\_SetFamilyPtr dd\_CopyInputAdjacency(poly)}]:\\ 
+Copy the adjacency representation of the input representation
+pointed by poly to {\tt setfamily}
+and return {\tt d\_SetFamilyPtr}.
+
+\item[{\tt void dd\_FreePolyhedra(poly)}]:\\
+Free memory allocated to {\tt poly}.
+
+\end{description}
+
+\subsubsection{LP Data Manipulation}
+\begin{description}
+
+\item[{\tt dd\_LPPtr dd\_MakeLPforInteriorFinding(lp)}]:\\
+Set up an LP to find an interior point of the feasible region of {\tt lp}
+and return a pointer to the LP.  The new LP has one new variable
+$x_{d+1}$ and one more constraint:
+$\max x_{d+1}$ subject to $b - A x - x_{d+1} \ge 0$ and $x_{d+1} \le K$,
+where $K$ is a positive constant.
+
+\item[{\tt dd\_LPPtr dd\_Matrix2LP(matrix, err)}]:\\
+Load {\tt matrix} to {\tt lpdata} and return a pointer to the data.
+
+\item[{\tt dd\_LPSolutionPtr dd\_CopyLPSolution(lp)}]:\\
+Load the solutions of {\tt lp} to {\tt lpsolution} and
+return a pointer to the data.  This replaces the old name
+{\tt dd\_LPSolutionLoad(lp)}.
+
+\item[{\tt void dd\_FreeLPData(lp)}]:\\
+Free memory allocated to {\tt lp}.
+
+\end{description}
+
+\subsubsection{Matrix Manipulation}
+\begin{description}
+
+\item[{\tt dd\_MatrixPtr dd\_CopyMatrix(matrix)}]:\\
+Make a copy of matrixdata pointed by {\tt matrix} and return
+a pointer to the copy.
+
+\item[{\tt dd\_MatrixPtr dd\_AppendMatrix(matrix1, matrix2)}]:\\
+Make a matrixdata by copying {\tt *matrix1} and appending
+the matrix in {\tt *matrix2} and return
+a pointer to the data.  The colsize must be equal in
+the two input matrices.  It returns a {\tt NULL} pointer
+if the input matrices are not appropriate.
+Its {\tt rowsize} is set to
+the sum of the rowsizes of {\tt matrix1} and {\tt matrix2}.
+ The new matrixdata inherits everything else
+(i.e. numbertype, representation, etc)
+from the first matrix. 
+
+\item[{\tt int dd\_MatrixAppendTo(\& matrix1, matrix2)}]:\\
+Same as {\tt dd\_AppendMatrix} except that the first matrix
+is modified to take the result.
+
+\item[{\tt int dd\_MatrixRowRemove(\& matrix, i)}]:\\
+Remove the $i$th row of {\tt matrix}.
+
+\item[{\tt dd\_MatrixPtr dd\_MatrixSubmatrix(matrix, set)}]:\\
+Generate the submatrix of {\tt matrix} by removing the
+rows indexed by {\tt set} and return a matrixdata pointer.
+
+\end{description}
+
+\subsection{Input/Output Functions}  \label{IOLibrary}
+
+\begin{description}
+
+\item[{\tt boolean dd\_DDFile2File(ifile, ofile, err)}]:\\
+Compute the representation conversion for a polyhedron given
+by a Polyhedra file ifile, and write the other representation
+in a Polyhedra file ofile.  {\tt *err}
+returns {\tt dd\_NoError} if the computation terminates normally.  Otherwise,
+it returns a value according to the error occured.
+
+\item[{\tt void dd\_WriteMatrix(f, matrix)}]:\\
+Write {\tt  matrix} to stream {\tt f}.
+
+\item[{\tt void dd\_WriteNumber(f, x)}]:\\
+Write {\tt x} to stream {\tt f}.  If {\tt x} is of GMP mpq\_t rational $p/q$,
+the output is $p/q$.  If it is of C double, it is formated as a double float
+with a decimal point.
+
+\item[{\tt void dd\_WritePolyFile(f, poly)}]:\\
+Write {tt poly} to stream {\tt f} in Polyhedra format.
+
+\item[{\tt void dd\_WriteErrorMessages(f, err)}]:\\
+Write error messages given by {\tt err} to stream {\tt f}.
+
+\item[{\tt void dd\_WriteSetFamily(f, setfam)}]:\\
+Write the set family pointed by {\tt setfam} to stream {\tt f}.
+For each set, it outputs its index, its cardinality,
+a colon ``:'' and a ordered list of its elements.
+
+\item[{\tt void dd\_WriteSetFamilyCompressed(f, setfam)}]:\\
+Write the set family pointed by {\tt setfam} to stream {\tt f}.
+For each set, it outputs its index, its cardinality or the
+negative of the cardinality, a colon ``:''
+ and the elements in the set or its complements whichever is smaller.
+Whenever it outputs the complements, the cardinality is negated
+so that there is no ambiguity.
+This will be considered standard for
+outputing incidence (*.icd, *ecd) and adjacency 
+(*.iad, *.ead) data in cddlib.   But there is some minor incompatibility
+with cdd/cdd+ standalone codes.
+
+\item[{\tt void dd\_WriteProgramDescription(f)}]:\\
+Write the cddlib version information to stream {\tt f}.
+
+\item[{\tt void dd\_WriteDDTimes(f, poly)}]:\\
+Write the representation conversion time information on {\tt poly}
+ to stream {\tt f}.
+
+\end{description}
+
+\subsection{Obsolete Functions}  \label{ObsoleteFunctions}
+\begin{description}
+\item[{\tt boolean dd\_DoubleDescription(poly, err)}]: 
+(removed in Version 0.90c)\\
+The new function
+{\tt dd\_DDMatrix2Poly(matrix, err)} (see Section~\ref{CoreLibrary}) 
+replaces (and actually combines) both this and 
+{\tt dd\_Matrix2Poly(matrix, err)}.
+
+\item[{\tt dd\_PolyhedraPtr dd\_Matrix2Poly(matrix, err)}]: 
+(removed in Version 0.90c)\\
+See above for the reason for removal.
+
+\item[{\tt dd\_LPSolutionPtr dd\_LPSolutionLoad(lp)}]:
+(renamed in Version 0.90c)\\
+This function is now called {\tt dd\_CopyLPSolution(lp)}.
+
+\end{description}
+
+\section{How to Use}  \label{HOWTO}
+
+For the moment, the best documentation of usage are 
+the examples, testcdd*.c , testlp*.c, redcheck.c
+and simplecdd.c.
+
+\section{Numerical Accuracy}  \label{accuracy}
+ A little caution is in order.  Many people have observed 
+numerical problems of cddlib when the floating version of cddlib
+is used.   As we all know, floating-point computation
+might not give a correct answer, especially when an input
+data is very sensitive to a small perturbation.  When
+some strange behavior is observed, it is always wise
+to create a rationalization of the input
+(for example, one can replace 0.3333333 with 1/3)
+and to compute it with cddlib compiled with gmp rational
+to see what a correct behavior should be.  Whenever the time
+is not important, it is safer to use gmp rational arithmetic.
+
+If you need speedy computation with floating-point arithmetic,
+you might want to ``play with'' the constant {\tt dd\_almostzero} 
+defined in cdd.h:
+
+\begin{verbatim}
+   #define dd_almostzero  1.0E-7
+\end{verbatim}
+\noindent
+This number is used to recognize whether a number is zero:  
+a number whose absolute value is smaller
+than {\tt dd\_almostzero} is considered zero, and nonzero otherwise.
+You can change this to modify the behavior of cddlib.  One might
+consider the default setting is rather large for double
+precision arithmetic.  This is because cddlib is made
+to deal with highly degenerate data and it works better
+to treat a relatively large ``epsilon'' as zero.
+
+Another thing one can do is scaling.  If the values in one column of
+an input is of smaller magnitude than those in another column, 
+scale one so that they become comparable.
+
+\section{FTP site}  \label{FTP}
+An anonymous \htmladdnormallink{ftp}
+{ftp://ftp.ifor.math.ethz.ch/pub/fukuda/cdd/} site for the programs is set at:
+\begin{verbatim}
+   ftpsite:  ftp.ifor.math.ethz.ch
+   directory: pub/fukuda/cdd
+   filenames: cddlib-***.tar.gz
+\end{verbatim}
+Since the file is compressed binary file, it is necessary to use binary mode for
+file transfer.
+
+\section{Other Useful Codes}  \label{CODES}
+There are several other useful codes available for vertex enumeration and/or
+convex hull computation  such as lrs, qhull, porta and irisa-polylib.
+The pointers to these codes are available at
+\begin{enumerate}
+\item lrs by D. Avis \cite{a-uglrs-97} (C implementation of the reverse search algorithm 
+\cite{af-pachv-92}). 
+
+\item qhull by C.B. Barber \cite{bdh-qach-95} (C implementation of
+the beneath-beyond method, see \cite{e-acg-87,m-cg-94},
+which is the dual of the dd method). 
+
+\item porta by T. Christof and A. L{\"o}bel \cite{cl-porta-97} (C implementation
+of the Fourier-Motzkin elimination).
+
+\item IRISA polyhedral library by D.K. Wilde
+\cite{w-ldpo-93b} (C implementation
+of a variation of the dd algorithm).
+
+\item pd by A. Marzetta \cite{m-pdcip-97} (C implementation of the primal-dual algorithm 
+\cite{bfm-pdmvf-97}). 
+
+ \item Geometry Center Software List by N. Amenta \cite{a-dcg}.
+
+ \item Computational Geometry Pages by J. Erickson \cite{e-cgp}.
+
+ \item Linear Programming FAQ by R. Fourer and J. Gregory \cite{fg-lpfaq-97}.
+
+ \item ZIB Berlin polyhedral software list:\\
+ \htmladdnormallink{ftp://elib.zib-berlin.de/pub/mathprog/polyth/index.html}
+{ftp://elib.zib-berlin.de/pub/mathprog/polyth/index.html}.
+
+\item Polyhedral Computation FAQ \cite{f-pcfaq-98}.
+\end{enumerate}
+
+
+\section*{Acknowledgements.} 
+I am  grateful to Th. M. Liebling who
+provided me with an ideal opportunity to visit EPFL
+for the academic year 1993-1994.  Without his 
+support, the present form of this program would not have existed.
+Later, H.-J. L\"uthi (ETHZ) joined to support the 
+the development of cdd codes (cdd, cdd+, cddlib).
+There are many people who helped me to improve cdd, in particular,
+I am indebted to David Avis, 
+Alexander Bockmayr, David Bremner, Henry Crapo, Istvan Csabai, 
+Francois Margot, Marc Pfetsch, Alain Prodon, J\"org Rambau,
+Shawn Rusaw, Matthew Saltzman, Masanori Sato.
+
+\bibliographystyle{plain}
+
+\bibliography{fukuda1,fukuda2}
+
+\end{document}
+
+

@@ -1,1 +1,0 @@
-../src/setoper.h

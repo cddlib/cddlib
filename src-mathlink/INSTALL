@@ -1,0 +1,12 @@
+This directory contains additional files necessary to
+create cddmathlink.  It does not follow the autoconfig
+structure and the user must edit Makefile so that it
+conforms to the local Mathematica installation.
+Once a correct Makefile is created, just type 
+"make all" or "make ml".  
+
+Before cddmathlink compilation, one must compile 
+the cddlib library (libcdd.a) which is supposed to be 
+in the lib-src directory.  It is perhaps necessary
+to compile cddlib using the GNU gcc compiler.
+

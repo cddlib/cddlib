@@ -1,0 +1,82 @@
+2001-12-19 (December 19, 2001)
+---------------------------------------------
+C-Library cddlib (version 0.92a) What's new? 
+---------------------------------------------
+
+0. To learn what's new in this version,
+please check the history file HISTORY.cdd as well.
+
+The version 0.92a is a new packaging of the version 0.92
+using autoconf (with a great help of Joerg Rambau, thanks!)
+Please use "GNU make" for installation. 
+
+1. cddlib-092 adds new functions to check
+redundancy of H- and V- representations, such as,
+dd_Redundant, dd_RedundantRows, dd_ImplicitLinearity,
+dd_ImplicitLinearityRows.  To see how these functions
+can be used, please look at the code redcheck.c which
+removes redundancies in H- or V-representations.
+One can run this code by 
+
+% redcheck sampleh7.ine
+
+Try redcheck with samplev3.ext and sampleh8.ine.  With
+exact arithmetic, use redcheck_gmp .
+
+Also some basic operations on dd_MatrixPtr have been added 
+such as dd_MatrixAppendTo, dd_MatrixRowRemove, dd_MatrixSubmatrix.
+
+The names of enumeration type variables have been modified.
+Now all names have prefix "dd_", e.g. Rational, Integer are
+now dd_Rational and dd_Integer.  This applies to TRUE and FALSE,
+which are now dd_TRUE and dd_FALSE.
+
+2. cddlib comes with a simple standalone code simplecdd.c.
+Once you "make all" at the subdirectory "makedir", 
+you will have "scdd" (simple cdd).  Just run it at the command line.
+For example, sample.ine contains a representation of a 3D cube.
+
+% scdd sample.ine
+
+computes all the extreme points and writes them in the file 
+
+sample.ext
+
+Then it generates the four auxiliary files, 
+
+sample.ead  (adjacency of extreme points) 
+sample.iad  (adjacency of inequalities)
+sample.ecd  (incidence of extreme points and inequalities)
+sample.icd  (incidence of inequalities and  extreme points).
+
+The program simplecdd.c should explain how some of the
+basic cddlib functions can be called.  Run the same thing
+with the exact solver scdd_gmp (created by "make gmp")
+
+% scdd_gmp sample.ine
+
+This does the same thing but with GMP exact rational
+arithmetic.
+
+3. David Avis contributed a sample cddlib code, lcdd.c, which 
+runs like his convex hull code, lrs.  In particular, it generates
+standard output stream for piping in unix.  Just run lcdd as
+
+% lcdd < sample.ine
+
+It writes the extreme points (the content of simple.ext above)
+to standard output.
+
+
+4. For more information, contact
+   Komei Fukuda (fukuda@cs.mcgill.ca)
+   School of Computer Science
+   McGill University
+   McConnel Engineering Building
+   3480 University Street
+   Montreal, Quebec
+   Canada H3A 2A7
+
+// END of NEWS 
+
+
