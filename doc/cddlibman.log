@@ -1,4 +1,4 @@
-This is TeX, Version 3.14159 (Web2C 7.3.7) (format=latex 2002.4.4)  18 JUL 2003 12:14
+This is TeX, Version 3.14159 (Web2C 7.3.7) (format=latex 2002.4.4)  10 AUG 2003 20:15
 **cddlibman.tex
 (./cddlibman.tex
 LaTeX2e <2001/06/01>
@@ -58,62 +58,56 @@ LaTeX Font Info:    External font `cmex10' loaded for size
  [1
 
 ] [2] [3]
-Overfull \hbox (33.39438pt too wide) in paragraph at lines 364--364
+Overfull \hbox (33.39438pt too wide) in paragraph at lines 367--367
 []\OT1/cmtt/m/n/10.95 typedef mytype **dd_Amatrix;  /* mytype is either GMP mpq
 _t or 1-dim double array. */[] 
  []
 
 [4]
-Overfull \hbox (56.38913pt too wide) in paragraph at lines 364--364
+Overfull \hbox (56.38913pt too wide) in paragraph at lines 367--367
 []  \OT1/cmtt/m/n/10.95 dd_IFileNotFound, dd_OFileNotOpen, dd_NoLPObjective, dd
 _NoRealNumberSupport, dd_NoError[] 
  []
 
 [5]
-Overfull \hbox (4.65094pt too wide) in paragraph at lines 364--364
+Overfull \hbox (4.65094pt too wide) in paragraph at lines 367--367
 []  \OT1/cmtt/m/n/10.95 dd_rowrange re;  /* row index as a certificate in the c
 ase of inconsistency */[] 
  []
 
 
-Overfull \hbox (33.39438pt too wide) in paragraph at lines 364--364
+Overfull \hbox (33.39438pt too wide) in paragraph at lines 367--367
 []  \OT1/cmtt/m/n/10.95 dd_colrange se;  /* col index as a certificate in the c
 ase of dual inconsistency */[] 
  []
 
-[6]
-Overfull \hbox (41.90791pt too wide) in paragraph at lines 476--481
-\OT1/cmr/m/n/10.95 Returns the set of in-dices of rows that are im-plic-itly li
-n-ear-ity. It sim-ply calls \OT1/cmtt/m/n/10.95 dd[]ImplicitLinearity
- []
-
-[7]
-Overfull \hbox (7.42538pt too wide) in paragraph at lines 551--554
+[6] [7] [8] [9]
+Overfull \hbox (7.42538pt too wide) in paragraph at lines 688--691
 \OT1/cmr/m/n/10.95 Copy the in-equal-ity rep-re-sen-ta-tion pointed by poly to 
 \OT1/cmtt/m/n/10.95 matrixdata \OT1/cmr/m/n/10.95 and re-turn \OT1/cmtt/m/n/10.
 95 dd[]MatrixPtr\OT1/cmr/m/n/10.95 . 
  []
 
 
-Overfull \hbox (5.35706pt too wide) in paragraph at lines 555--558
+Overfull \hbox (5.35706pt too wide) in paragraph at lines 692--695
 \OT1/cmr/m/n/10.95 Copy the gen-er-a-tor rep-re-sen-ta-tion pointed by poly to 
 \OT1/cmtt/m/n/10.95 matrixdata \OT1/cmr/m/n/10.95 and re-turn \OT1/cmtt/m/n/10.
 95 dd[]MatrixPtr\OT1/cmr/m/n/10.95 . 
  []
 
 
-Overfull \hbox (0.36716pt too wide) in paragraph at lines 571--575
+Overfull \hbox (0.36716pt too wide) in paragraph at lines 708--712
 \OT1/cmr/m/n/10.95 Copy the in-ci-dence rep-re-sen-ta-tion of the in-put rep-re
 -sen-ta-tion pointed by poly to \OT1/cmtt/m/n/10.95 setfamily
  []
 
 
-Overfull \hbox (3.40884pt too wide) in paragraph at lines 576--580
+Overfull \hbox (3.40884pt too wide) in paragraph at lines 713--717
 \OT1/cmr/m/n/10.95 Copy the ad-ja-cency rep-re-sen-ta-tion of the in-put rep-re
 -sen-ta-tion pointed by poly to \OT1/cmtt/m/n/10.95 setfamily
  []
 
-[8] [9] [10] [11] (./cddlibman.bbl
+[10] [11] [12] [13] (./cddlibman.bbl
 Underfull \hbox (badness 10000) in paragraph at lines 4--9
 []\OT1/cmr/m/n/10.95 N. Amenta.  Di-rec-tory of com-pu-ta-tional ge-om-e-try.
  []
@@ -130,24 +124,20 @@ Underfull \hbox (badness 3000) in paragraph at lines 30--36
 -port avail-able from
  []
 
-[12]
+
 Underfull \hbox (badness 1072) in paragraph at lines 56--61
 []\OT1/cmr/m/n/10.95 J. Er-ick-son.  Com-pu-ta-tional ge-om-e-try pages, list o
 f soft-ware li-braries and codes.
  []
 
-) [13] (./cddlibman.aux)
-
-LaTeX Warning: Label(s) may have changed. Rerun to get cross-references right.
-
- ) 
+[14]) [15] (./cddlibman.aux) ) 
 Here is how much of TeX's memory you used:
  374 strings out of 30801
- 4081 string characters out of 444459
+ 4087 string characters out of 444459
  51591 words of memory out of 1000001
  3371 multiletter control sequences out of 10000+30000
  10254 words of font info for 36 fonts, out of 400000 for 1000
  54 hyphenation exceptions out of 1000
  21i,9n,19p,180b,301s stack positions out of 300i,100n,500p,50000b,4000s
 
-Output written on cddlibman.dvi (13 pages, 45336 bytes).
+Output written on cddlibman.dvi (15 pages, 52540 bytes).

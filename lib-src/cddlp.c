@@ -1,6 +1,6 @@
 /* cddlp.c:  dual simplex method c-code
    written by Komei Fukuda, fukuda@ifor.math.ethz.ch
-   Version 0.93, July 18, 2003
+   Version 0.93a, August 11, 2003
 */
 
 /* cddlp.c : C-Implementation of the dual simplex method for
@@ -23,7 +23,7 @@
 #include "cdd_f.h"
 #endif
 
-#define dd_CDDLPVERSION  "Version 0.93 (July 18, 2003)"
+#define dd_CDDLPVERSION  "Version 0.93a (August 11, 2003)"
 
 #define dd_FALSE 0
 #define dd_TRUE 1
@@ -933,7 +933,7 @@ void dd_FindLPBasis2(dd_rowrange m_size,dd_colrange d_size,
   */
   int chosen,stop;
   long pivots_p0=0,rank;
-  dd_colset ColSelected;
+  dd_colset ColSelected,DependentCols;
   dd_rowset RowSelected, NopivotRow;
   mytype val;
   dd_boolean localdebug=dd_FALSE;
@@ -945,6 +945,7 @@ void dd_FindLPBasis2(dd_rowrange m_size,dd_colrange d_size,
   *found=dd_FALSE; *cs=0; rank=0;
 
   set_initialize(&RowSelected,m_size);
+  set_initialize(&DependentCols,d_size);
   set_initialize(&ColSelected,d_size);
   set_initialize(&NopivotRow,m_size);
   set_addelem(RowSelected,objrow);
@@ -954,15 +955,17 @@ void dd_FindLPBasis2(dd_rowrange m_size,dd_colrange d_size,
   for (j=2; j<=d_size; j++) 
     if (nbindex[j]>0) 
        set_delelem(NopivotRow, nbindex[j]);
-    else if (nbindex[j]<0) 
+    else if (nbindex[j]<0){ 
        negcount++;       
-     
+       set_addelem(DependentCols, -nbindex[j]); 
+       set_addelem(ColSelected, -nbindex[j]); 
+    }
+ 
   set_uni(RowSelected, RowSelected, NopivotRow);  /* RowSelected is the set of rows not allowed to poviot on */
 
   stop=dd_FALSE;
   do {   /* Find a LP basis */
-    dd_SelectPivot2(m_size,d_size,A,T,dd_MinIndex,OV,equalityset,
-      m_size,RowSelected,ColSelected,&r,&s,&chosen);
+    dd_SelectPivot2(m_size,d_size,A,T,dd_MinIndex,OV,equalityset, m_size,RowSelected,ColSelected,&r,&s,&chosen);
     if (chosen) {
       set_addelem(RowSelected,r);
       set_addelem(ColSelected,s);
@@ -979,8 +982,22 @@ void dd_FindLPBasis2(dd_rowrange m_size,dd_colrange d_size,
       stop=dd_TRUE;
     }
     if (rank==d_size-1-negcount) {
-      stop = dd_TRUE;
-      *found=dd_TRUE;
+      if (negcount){
+        /* Now it tries to pivot on rows that are supposed to be dependent. */ 
+        set_diff(ColSelected, ColSelected, DependentCols); 
+        dd_SelectPivot2(m_size,d_size,A,T,dd_MinIndex,OV,equalityset, m_size,RowSelected,ColSelected,&r,&s,&chosen);
+        if (chosen) *found=dd_FALSE;  /* not supposed to be independent */
+        else *found=dd_TRUE;
+        if (localdebug){
+          printf("Try to check the dependent cols:");
+          set_write(DependentCols);
+          if (chosen) printf("They are not dependent.  Can still pivot on (%ld, %ld)\n",r, s);
+          else printf("They are indeed dependent.\n");
+        }
+      } else {
+        *found=dd_TRUE;
+     }   
+     stop = dd_TRUE;
     }
   } while (!stop);
 
@@ -989,6 +1006,7 @@ void dd_FindLPBasis2(dd_rowrange m_size,dd_colrange d_size,
   set_free(RowSelected);
   set_free(ColSelected);
   set_free(NopivotRow);
+  set_free(DependentCols);
   dd_clear(val);
 }
 
@@ -1796,6 +1814,74 @@ dd_LPPtr dd_CreateLP_V_Redundancy(dd_MatrixPtr M, dd_rowrange itest)
   return lp;
 }
 
+dd_LPPtr dd_CreateLP_V_SRedundancy(dd_MatrixPtr M, dd_rowrange itest)
+{
+/*
+     V-representation (=boundary problem)
+       g* = maximize  
+         1^T b_{I-itest} x_0 + 1^T A_{I-itest}    (the sum of slacks)
+       subject to
+         b_itest x_0     + A_itest x      =  0 (the point has to lie on the boundary)
+         b_{I-itest} x_0 + A_{I-itest} x >=  0 (all nonlinearity generators in one side)
+         1^T b_{I-itest} x_0 + 1^T A_{I-itest} x <=  1 (to make an LP bounded)
+         b_L x_0         + A_L x = 0.  (linearity generators)
+         
+    The redundant row is strongly redundant if and only if g* is zero.
+*/
+
+  dd_rowrange m, i, irev, linc;
+  dd_colrange d, j;
+  dd_LPPtr lp;
+  dd_boolean localdebug=dd_FALSE;
+
+  linc=set_card(M->linset);
+  m=M->rowsize+1+linc+2; 
+     /* We represent each equation by two inequalities.
+        This is not the best way but makes the code simple.
+        Two extra constraints are for the first equation and the bouding inequality.
+        */
+  d=(M->colsize)+1;  
+     /* One more column.  This is different from the H-reprentation case */
+  
+/* The below must be modified for V-representation!!!  */
+
+  lp=dd_CreateLPData(M->objective, M->numbtype, m, d);
+  lp->Homogeneous = dd_FALSE;
+  lp->objective = dd_LPmax;
+  lp->eqnumber=linc;  /* this records the number of equations */
+
+  irev=M->rowsize; /* the first row of the linc reversed inequalities. */
+  for (i = 1; i <= M->rowsize; i++) {
+    if (i==itest){
+      dd_set(lp->A[i-1][0],dd_purezero);  /* this is a half of the boundary constraint. */
+    } else {
+      dd_set(lp->A[i-1][0],dd_purezero);  /* It is almost completely degerate LP */
+    }
+    if (set_member(i, M->linset) || i==itest) {
+      irev=irev+1;
+      set_addelem(lp->equalityset,i);    /* it is equality. */
+            /* the reversed row irev is not in the equality set. */
+      for (j = 2; j <= (M->colsize)+1; j++) {
+        dd_neg(lp->A[irev-1][j-1],M->matrix[i-1][j-2]);
+      }  /*of j*/
+      if (localdebug) fprintf(stderr,"equality row %ld generates the reverse row %ld.\n",i,irev);
+    }
+    for (j = 2; j <= (M->colsize)+1; j++) {
+      dd_set(lp->A[i-1][j-1],M->matrix[i-1][j-2]);
+      dd_add(lp->A[m-1][j-1],lp->A[m-1][j-1],lp->A[i-1][j-1]);  /* the objective is the sum of all ineqalities */
+    }  /*of j*/
+  }  /*of i*/
+  for (j = 2; j <= (M->colsize)+1; j++) {
+    dd_neg(lp->A[m-2][j-1],lp->A[m-1][j-1]);
+      /* to make an LP bounded.  */
+  }  /*of j*/
+  dd_set(lp->A[m-2][0],dd_one);   /* the constant term for the bounding constraint is 1 */
+
+  if (localdebug) dd_WriteLP(stdout, lp);
+
+  return lp;
+}
+
 dd_boolean dd_Redundant(dd_MatrixPtr M, dd_rowrange itest, dd_Arow certificate, dd_ErrorType *error)  
   /* 092 */
 {
@@ -1898,6 +1984,165 @@ dd_rowset dd_RedundantRows(dd_MatrixPtr M, dd_ErrorType *error)  /* 092 */
       dd_MatrixRowRemove(&Mcopy, i);
     } else {
       if (localdebug) printf("dd_RedundantRows: the row %ld is essential.\n", i);
+    }
+    if (*error!=dd_NoError) goto _L99;
+  }
+_L99:
+  dd_FreeMatrix(Mcopy);
+  dd_FreeArow(d, cvec);
+  return redset;
+}
+
+dd_boolean dd_SRedundant(dd_MatrixPtr M, dd_rowrange itest, dd_Arow certificate, dd_ErrorType *error)  
+  /* 093a */
+{
+  /* Checks whether the row itest is strongly redundant for the representation.
+     A row is strongly redundant in H-representation if every point in
+     the polyhedron satisfies it with strict inequality.
+     A row is strongly redundant in V-representation if this point is in
+     the interior of the polyhedron.
+     
+     All linearity rows are not checked and considered NOT strongly redundant. 
+     This code works for both H- and V-representations.  A certificate is
+     given in the case of non-redundancy, showing a solution x violating only the itest
+     inequality for H-representation, a hyperplane RHS and normal (x_0, x) that
+     separates the itest from the rest.  More explicitly, the LP to be setup is
+
+     H-representation
+       f* = minimize  
+         b_itest     + A_itest x
+       subject to
+         b_itest + 1 + A_itest x     >= 0 (relaxed inequality to make an LP bounded)
+         b_{I-itest} + A_{I-itest} x >= 0 (all inequalities except for itest)
+         b_L         + A_L x = 0.  (linearity)
+
+     V-representation (=separation problem)
+       f* = minimize  
+         b_itest x_0     + A_itest x
+       subject to
+         b_itest x_0     + A_itest x     >= -1 (to make an LP bounded)
+         b_{I-itest} x_0 + A_{I-itest} x >=  0 (all nonlinearity generators except for itest in one side)
+         b_L x_0         + A_L x = 0.  (linearity generators)
+    
+    Here, the input matrix is considered as (b, A), i.e. b corresponds to the first column of input
+    and the row indices of input is partitioned into I and L where L is the set of linearity.
+    In H-representation, the itest data is strongly redundant if and only if the optimal value f* is positive.
+    In V-representation, the itest data is redundant if and only if the optimal value f* is zero (as the LP
+    is homogeneous and the optimal value is always non-positive).  To recognize strong redundancy, one
+    can set up a second LP
+    
+     V-representation (=boundary problem)
+       g* = maximize  
+         1^T b_{I-itest} x_0 + 1^T A_{I-itest}    (the sum of slacks)
+       subject to
+         b_itest x_0     + A_itest x      =  0 (the point has to lie on the boundary)
+         b_{I-itest} x_0 + A_{I-itest} x >=  0 (all nonlinearity generators in one side)
+         1^T b_{I-itest} x_0 + 1^T A_{I-itest} x <=  1 (to make an LP bounded)
+         b_L x_0         + A_L x = 0.  (linearity generators)
+         
+    The redundant row is strongly redundant if and only if g* is zero.
+
+    The certificate has dimension one more for V-representation case.
+  */
+
+  dd_colrange j;
+  dd_LPPtr lp;
+  dd_LPSolutionPtr lps;
+  dd_ErrorType err=dd_NoError;
+  dd_boolean answer=dd_FALSE,localdebug=dd_FALSE;
+
+  *error=dd_NoError;
+  if (set_member(itest, M->linset)){
+    if (localdebug) printf("The %ld th row is linearity and strong redundancy checking is skipped.\n",itest);
+    goto _L99;
+  }
+  
+  /* Create an LP data for redundancy checking */
+  if (M->representation==dd_Generator){
+    lp=dd_CreateLP_V_Redundancy(M, itest);
+  } else {
+    lp=dd_CreateLP_H_Redundancy(M, itest);
+  }
+
+  dd_LPSolve(lp,dd_DualSimplex,&err);
+  if (err!=dd_NoError){
+    *error=err;
+    goto _L999;
+  } else {
+    lps=dd_CopyLPSolution(lp);
+
+    for (j=0; j<lps->d; j++) {
+      dd_set(certificate[j], lps->sol[j]);
+    }
+
+    if (localdebug){
+      printf("Optimum value:");
+      dd_WriteNumber(stdout, lps->optvalue);
+      printf("\n");
+    }
+
+    if (M->representation==dd_Inequality){
+       if (dd_Positive(lps->optvalue)){
+          answer=dd_TRUE;
+          if (localdebug) fprintf(stderr,"==> %ld th inequality is strongly redundant.\n",itest);
+        } else {
+          answer=dd_FALSE;
+          if (localdebug) fprintf(stderr,"==> %ld th inequality is not strongly redundant.\n",itest);
+        } 
+    } else {
+       if (dd_Negative(lps->optvalue)){
+          answer=dd_FALSE;
+          if (localdebug) fprintf(stderr,"==> %ld th point is not strongly redundant.\n",itest);
+        } else {
+          /* for V-representation, we have to solve another LP */
+          dd_FreeLPData(lp);
+          dd_FreeLPSolution(lps);
+          lp=dd_CreateLP_V_SRedundancy(M, itest);
+          dd_LPSolve(lp,dd_DualSimplex,&err);
+          lps=dd_CopyLPSolution(lp);
+          if (localdebug) dd_WriteLPResult(stdout,lp,err);
+          if (dd_Positive(lps->optvalue)){
+            answer=dd_FALSE;
+            if (localdebug) fprintf(stderr,"==> %ld th point is not strongly redundant.\n",itest);
+          } else {
+            answer=dd_TRUE;
+            if (localdebug) fprintf(stderr,"==> %ld th point is strongly redundant.\n",itest);
+          }
+       }
+    } 
+    dd_FreeLPSolution(lps);
+  }
+  _L999:
+  dd_FreeLPData(lp);
+_L99:
+  return answer;
+}
+
+dd_rowset dd_SRedundantRows(dd_MatrixPtr M, dd_ErrorType *error)  /* 093a */
+{
+  dd_rowrange i,m;
+  dd_colrange d;
+  dd_rowset redset;
+  dd_MatrixPtr Mcopy;
+  dd_Arow cvec; /* certificate */  
+  dd_boolean localdebug=dd_FALSE;
+
+  m=M->rowsize;
+  if (M->representation==dd_Generator){
+    d=(M->colsize)+1;
+  } else {
+    d=M->colsize;
+  }
+  Mcopy=dd_MatrixCopy(M);
+  dd_InitializeArow(d,&cvec); 
+  set_initialize(&redset, m);
+  for (i=m; i>=1; i--) {
+    if (dd_SRedundant(Mcopy, i, cvec, error)) {
+      if (localdebug) printf("dd_SRedundantRows: the row %ld is strongly redundant.\n", i);
+      set_addelem(redset, i);
+      dd_MatrixRowRemove(&Mcopy, i);
+    } else {
+      if (localdebug) printf("dd_SRedundantRows: the row %ld is not strongly redundant.\n", i);
     }
     if (*error!=dd_NoError) goto _L99;
   }
@@ -2022,7 +2267,7 @@ dd_rowset dd_RedundantRowsViaShooting(dd_MatrixPtr M, dd_ErrorType *error)  /* 0
 
 dd_SetFamilyPtr dd_Matrix2Adjacency(dd_MatrixPtr M, dd_ErrorType *error)  /* 093 */
 {
-  /* This is to generate the graph of a polyheron representation given by M using LPs.
+  /* This is to generate the (facet) graph of a polyheron (H) V-represented by M using LPs.
      Since it does not use the representation conversion, it should work for a large
      scale problem.
   */
@@ -2044,6 +2289,43 @@ dd_SetFamilyPtr dd_Matrix2Adjacency(dd_MatrixPtr M, dd_ErrorType *error)  /* 093
     if (!set_member(i, M->linset)){
       set_addelem(Mcopy->linset, i);
       redset=dd_RedundantRows(Mcopy, error);  /* redset should contain all nonadjacent ones */
+      set_uni(redset, redset, Mcopy->linset); /* all linearity elements should be nonadjacent */
+      set_compl(F->set[i-1], redset); /* set the adjacency list of vertex i */
+      set_delelem(Mcopy->linset, i);
+      set_free(redset);
+      if (*error!=dd_NoError) goto _L99;
+    }
+  }
+_L99:
+  dd_FreeMatrix(Mcopy);
+_L999:
+  return F;
+}
+
+dd_SetFamilyPtr dd_Matrix2WeakAdjacency(dd_MatrixPtr M, dd_ErrorType *error)  /* 093a */
+{
+  /* This is to generate the weak-adjacency (facet) graph of a polyheron (H) V-represented by M using LPs.
+     Since it does not use the representation conversion, it should work for a large
+     scale problem.
+  */
+  dd_rowrange i,m;
+  dd_colrange d;
+  dd_rowset redset;
+  dd_MatrixPtr Mcopy;
+  dd_SetFamilyPtr F=NULL;
+
+  m=M->rowsize;
+  d=M->colsize;
+  if (m<=0 ||d<=0) {
+    *error=dd_EmptyRepresentation;
+    goto _L999;
+  }
+  Mcopy=dd_MatrixCopy(M);
+  F=dd_CreateSetFamily(m, m);
+  for (i=1; i<=m; i++) {
+    if (!set_member(i, M->linset)){
+      set_addelem(Mcopy->linset, i);
+      redset=dd_SRedundantRows(Mcopy, error);  /* redset should contain all weakly nonadjacent ones */
       set_uni(redset, redset, Mcopy->linset); /* all linearity elements should be nonadjacent */
       set_compl(F->set[i-1], redset); /* set the adjacency list of vertex i */
       set_delelem(Mcopy->linset, i);
@@ -2318,6 +2600,7 @@ arithmetics.
 
   if (localdebug) {
     printf("dd_BasisStatusMaximize: a specified basis exists.\n");
+    if (m_size <=100 && d_size <=20)
     dd_WriteTableau(stdout,m_size,d_size,A,T,nbindex,bflag);
   }
 

@@ -1,6 +1,6 @@
 /* cddmp.c       (cddlib arithmetic operations using gmp)
    Copyright: Komei Fukuda 2000, fukuda@ifor.math.ethz.ch
-   Version 0.93, July 18, 2003
+   Version 0.93a, July 23, 2003
 */
 /* This program is free software; you can redistribute it and/or modify
    it under the terms of the GNU General Public License as published by
@@ -82,6 +82,11 @@ void ddd_set_d(mytype a,double b)
 void ddd_set_si(mytype a,signed long b)
 {
   a[0]=(double)b;
+}
+
+void ddd_set_si2(mytype a,signed long b, unsigned long c)
+{
+  a[0]=(double)b/(double)c;
 }
 
 void ddd_add(mytype a,mytype b,mytype c)

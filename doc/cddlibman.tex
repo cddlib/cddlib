@@ -27,11 +27,11 @@ Montreal, Quebec\\
 Canada H3A 2A7\\ \\
 email: fukuda@cs.mcgill.ca\\
 }
-\date{ (cddlib ver. 093, manual ver. July 18, 2003)}
+\date{ (cddlib ver. 093a, manual ver. August 10, 2003)}
 
 \maketitle
 \begin{abstract}
-This is a reference manual for cddlib-093.  
+This is a reference manual for cddlib-093a.  
 The manual is not quite satisfactory
 but explains the most important functions of polyhedral
 representation conversion in cddlib.  
@@ -272,6 +272,9 @@ distribution.
 
 \begin{verbatim}
 
+#define dd_FALSE 0
+#define dd_TRUE 1
+
 typedef long dd_rowrange;
 typedef long dd_colrange;
 typedef long dd_bigrange;
@@ -396,6 +399,9 @@ This is to set the global constants such as {\tt dd\_zero},
 {\tt dd\_one} for sign recognition and basic arithmetic
 operations.  {Every program to use cddlib must call this function}
 before doing any computation.    Just call this once.
+ See Section \ref{constants} for the definitions of
+constants.
+
 \end{description}
 
 \subsection{Core Functions}  \label{CoreLibrary}
@@ -443,7 +449,16 @@ the second representation.  The number of columns in
 Solve {\tt lp} by the algorithm {\tt solver} and save
 the solututions in {\tt *lp}.  Unlike the earlier versions
 (dplex, cdd+), it can deal with equations and totally zero right
-hand sides.  
+hand sides.   It is recommended that {\tt solver} is
+{\tt dd\_DualSimplex}, the revised dual simplex method
+that updates a $d\times d$ dual basis matrix in each pivot (where
+$d$ is the column size of lp).
+
+The revised dual simplex method is ideal for dense LPs in small number of variables 
+(i.e. small column size, typically less than $100$)
+and many inequality constraints (i.e. large row size, can be a few ten thousands).  
+If your LP has many variables but only few constraints, solve the dual LP by
+this function.
 
 When it is compiled for GMP rational
 arithmetics, it first tries to solve an LP with C  double
@@ -459,25 +474,33 @@ Check whether $i$th data in {\tt matrix} is redundant for the representation.
 If it is nonredundant, it returns a certificate.  For H-representation,
 it is a {\tt point} in $R^d$ which satisfies
 all inequalities except for the $i$th inequality.  If $i$ is a linearity,
-it does nothing and always returns FALSE.
+it does nothing and always returns {\tt dd\_FALSE}.
 
 \item[{\tt dd\_rowset dd\_RedundantRows(matrix, err)}]:\\
 Returns a maximal set of row indices such that the associated rows
 can be eliminated without changing the polyhedron.  
 The function works for both V- and H-representations.
 
+\item[{\tt dd\_boolean dd\_SRedundant(matrix, i, point, err)}]:\\
+Check whether $i$th data in {\tt matrix} is strongly redundant for the representation.
+If $i$ is a linearity, it does nothing and always returns {\tt dd\_FALSE}.
+Here,  $i$th inequality in H-representation is {\em strongly redundant\/} if it is redundant 
+and there is no point in the polyhedron satisfying the inequality with equality.
+In V-representation,  $i$th point is {\em strongly redundant\/} if it is redundant 
+and it is in the relative interior of the polyhedron. If it is not strongly redundant, it returns a certificate.
+ 
 \item[{\tt dd\_boolean dd\_ImplicitLinearity(matrix, i, err)}]:\\
 Check whether $i$th row
 in the input is forced to be linearity (equality 
 for H-representation).
 If $i$ is linearity itself, 
-it does nothing and always returns FALSE.
+it does nothing and always returns {\tt dd\_FALSE}.
 
 \item[{\tt dd\_rowset dd\_ImplicitLinearityRows(matrix, err)}]:\\
 Returns the set of indices of rows that are 
-implicitly linearity.  It simply calls
+implicitly linearity.  It simply calls the library function
 {\tt dd\_ImplicitLinearity} for each inequality and collects
-the row indices for which the answer is TRUE.
+the row indices for which the answer is {\tt dd\_TRUE}.
 
 \item[{\tt dd\_SetFamilyPtr dd\_Matrix2Adjacency(matrix, err)}]:\\
 Computes the adjacency list of input rows using
@@ -488,11 +511,25 @@ It is required that the input matrix is a minimal representation.
 Run redundancy removal functions before calling this function,
 see the sample code adjacency.c. 
 
+
+\item[{\tt dd\_SetFamilyPtr dd\_Matrix2WeakAdjacency(matrix, err)}]:\\
+Computes the weak adjacency list of input rows using
+the LP solver and without running the representation conversion.  When
+the input is H-representation, it gives the graph where its nodes are the facets
+two nodes  are adjacent if and only if the associated facets have
+some intersection.
+For V-representation, it gives the graph where its nodes are the vertices
+and two nodes are adjacent if and only if the associated vertices
+are on a common facet.
+It is required that the input matrix is a minimal representation.
+Run redundancy removal functions before calling this function,
+see the sample code adjacency.c. 
+
 \item[{\tt dd\_MatrixPtr dd\_FourierElimination(matrix, err)}]:\\
 Eliminate the last variable from a system of linear inequalities
 given by matrix by using the Fourier's Elimination.  If the 
-input matrix is V-representation, it returns
-{\tt  err}$=$ {\tt dd\_NotAvailForV}.   This function does not
+input matrix is V-representation, {\tt  *err} returns
+{\tt dd\_NotAvailForV}.   This function does not
 remove redundancy  and one might want to call
 redundancy removal functions afterwards. See the sample code fourier.c.
 
@@ -502,8 +539,7 @@ given by matrix by using the extreme rays of the dual linear system.
 See comments in the code cddproj.c for details.  This might be
 a faster way to eliminate variables than the repeated FourierElimination when
 the number of variables to eliminate is large. 
-If the input matrix is V-representation, it returns
-{\tt  err}$=$ {\tt dd\_NotAvailForV}.
+If the input matrix is V-representation, {\tt  *err}  returns {\tt dd\_NotAvailForV}.
 This function does not remove redundancy  and one might want to call
 redundancy removal functions afterwards. See the sample code projection.c.
 
@@ -520,18 +556,33 @@ by {\tt point} will be simply ignored.
 \subsection{Data Manipulations}  \label{DataLibrary}
 
 \subsubsection{Number Assignments}
-\begin{description}
-
-\item[{\tt void dd\_set\_si(x, a)}]:\\
-This is to set a {\tt mytype} variable {\tt x} to the
-value of signed long integer {\tt a}.  One
- cannot use such expressions as {\tt x=(mytype)a}.
-This is a price to pay for the generality:
-cddlib uses an abstract number type ({\tt mytype}) 
+For number assignments, one cannot use such expressions as {\tt x=(mytype)a}.
+This is because cddlib uses an abstract number type ({\tt mytype}) 
 so that it can compute with various 
 number types such as C double and GMP rational.
 User can easily add a new number type by redefining
 arithmetic operations in cddmp.h and cddmp.c.
+
+\begin{description}
+
+
+\item[{\tt void dd\_init(x)}]:\\
+This is to initialize a {\tt mytype} variable {\tt x} and to set it
+to zero.    This initialization has to be called before
+any {\tt mytype} variable to be used.
+
+\item[{\tt void dd\_clear(x)}]:\\
+This is to free the space allocated to a {\tt mytype} variable {\tt x}.
+
+\item[{\tt void dd\_set\_si(x, a)}]:\\
+This is to set a {\tt mytype} variable {\tt x} to the
+value of signed long integer {\tt a}.  
+
+\item[{\tt void dd\_set\_si2(x, a, b)}]:\\
+This is to set a {\tt mytype} variable {\tt x} to the
+value of  the rational expression {\tt a/b}, where
+{\tt a} is signed long and  {\tt b} is unsigned long
+integers.  
 
 \item[{\tt void dd\_set\_d(x, b)}]:\\
 This is to set a {\tt mytype} variable {\tt x} to the
@@ -540,6 +591,92 @@ when the library is compiled without {\tt -DGMPRATIONAL}
 compiler option.
 
 \end{description}
+
+
+\subsubsection{Arithmetic Operations for {\tt mytype} Numbers}
+
+Below  {\tt x}, {\tt y}, {\tt z}  are of type {\tt mytype}.
+
+\begin{description}
+
+\item[{\tt void dd\_add(x, y, z)}]:\\
+Set {\tt x} to be the sum of  {\tt y} and  {\tt z}.
+
+\item[{\tt void dd\_sub(x, y, z)}]:\\
+Set {\tt x} to be the substraction of  {\tt z}  from  {\tt y}.
+
+\item[{\tt void dd\_mul(x, y, z)}]:\\
+Set {\tt x} to be the multiplication of  {\tt y}  and  {\tt z}.
+
+\item[{\tt void dd\_div(x, y, z)}]:\\
+Set {\tt x} to be the division of  {\tt y}  over  {\tt z}.
+
+\item[{\tt void dd\_inv(x, y)}]:\\
+Set {\tt x} to be the reciplocal of  {\tt y}.
+
+\end{description}
+
+
+\subsubsection{Predefined  Constants} \label{constants}
+
+There are several {\tt mytype} constants defined when {\tt dd\_set\_global\_constants(void)} is called.
+Some constants depend on the double constant {\tt dd\_almostzero} which is normally set to $10^{-7}$ in cdd.h. 
+This value can be modified depending on how numerically delicate your problems are but an extra
+caution should be taken.
+
+\begin{description}
+
+\item[{\tt mytype dd\_purezero}]:\\
+This represents the mathematical zero $0$.
+
+\item[{\tt mytype dd\_zero}]:\\
+This represents the largest positive number which should be considered to be zero.  In the GMPRATIONAL
+mode, it is equal to {\tt dd\_purezero}.   In the C double mode, it is set to the value of {\tt dd\_almostzero}.
+
+\item[{\tt mytype dd\_minuszero}]:\\
+The negative of {\tt dd\_zero}.
+
+\item[{\tt mytype dd\_one}]:\\
+This represents the mathematical one $1$.
+
+
+\end{description}
+
+\subsubsection{Sign Evaluation and Comparison for {\tt mytype} Numbers}
+
+Below {\tt x}, {\tt y}, {\tt z} are of type {\tt mytype}.  
+
+\begin{description}
+
+\item[{\tt dd\_boolean dd\_Positive(x)}]:\\
+Returns {\tt dd\_TRUE} if {\tt x} is considered positive,  and  {\tt dd\_FALSE} otherwise.
+In the GMPRATIONAL mode, the positivity recognition is exact.  In the C double mode,
+this means the value is strictly larger than  {\tt dd\_zero}.
+
+{\tt dd\_boolean dd\_Negative(x)} works similarly.
+
+\item[{\tt dd\_boolean dd\_Nonpositive(x)}]:\\
+Returns the negation of {\tt dd\_Positive(x)}.   {\tt dd\_Nonnegative(x)} works similarly.
+
+\item[{\tt dd\_boolean dd\_EqualToZero(x)}]:\\
+Returns {\tt dd\_TRUE} if {\tt x} is considered zero,  and  {\tt dd\_FALSE} otherwise.
+In the GMPRATIONAL mode, the zero recognition is exact.  In the C double mode,
+this means the value is inbetween {\tt dd\_minuszero} and  {\tt dd\_zero}
+inclusive.
+
+\item[{\tt dd\_boolean dd\_Larger(x, y)}]:\\
+Returns {\tt dd\_TRUE} if {\tt x} is strictly larger than {\tt y},  and  {\tt dd\_FALSE} otherwise.
+This is implemented as {dd\_Positive(z)} where {\tt z} is the subtraction of {\tt y}
+from {\tt x}.
+{\tt dd\_Smaller(x, y)} works similarly.
+
+\item[{\tt dd\_boolean dd\_Equal(x, y)}]:\\
+Returns {\tt dd\_TRUE} if {\tt x} is considered equal to  {\tt y},  and  {\tt dd\_FALSE} otherwise.
+This is implemented as {dd\_EqualToZero(z)} where {\tt z} is the subtraction of {\tt y}
+from {\tt x}.
+\end{description}
+
+
 
 \subsubsection{Polyhedra Data Manipulation}
 \begin{description}

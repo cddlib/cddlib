@@ -1,6 +1,6 @@
 /* testlp2.c: Main test program to call the cdd lp library
    written by Komei Fukuda, fukuda@ifor.math.ethz.ch
-   Version 0.90c, June 12, 2000
+   Version 0.93a, July 23, 2003
    Standard ftp site: ftp.ifor.math.ethz.ch, Directory: pub/fukuda/cdd
 */
 
@@ -56,19 +56,19 @@ int main(int argc, char *argv[])
 /*
   max  0 + 3 x1 + 4 x2 
   s.t.
-       4 - 2 x1 -   x2  >= 0
-       2        -   x2  >= 0
-             x1         >= 0
-                    x2  >= 0
+       4/3 - 2 x1 -   x2  >= 0
+       2/3        -   x2  >= 0
+               x1         >= 0
+                      x2  >= 0
 
   For this LP, we set up a matrix A as 4 x 3 matrix and a row vector:
 
-      4  -2  -1   <- 1st constraint
-      2   0  -1
-      0   1   0
-      0   0   1   <- last constraint
+      4/3  -2  -1   <- 1st constraint
+      2/3   0  -1
+      0     1   0
+      0     0   1   <- last constraint
 
-      0   3   4   <- objective row
+      0     3   4   <- objective row
 */
 
   dd_set_global_constants();
@@ -77,8 +77,8 @@ int main(int argc, char *argv[])
   m=4;    /* number of rows  */
   n=3;    /* number of columns */
   A=dd_CreateMatrix(m,n);
-  dd_set_si(A->matrix[0][0],4); dd_set_si(A->matrix[0][1],-2); dd_set_si(A->matrix[0][2],-1);
-  dd_set_si(A->matrix[1][0],2); dd_set_si(A->matrix[1][1], 0); dd_set_si(A->matrix[1][2],-1);
+  dd_set_si2(A->matrix[0][0],4,3); dd_set_si(A->matrix[0][1],-2); dd_set_si(A->matrix[0][2],-1);
+  dd_set_si2(A->matrix[1][0],2,3); dd_set_si(A->matrix[1][1], 0); dd_set_si(A->matrix[1][2],-1);
   dd_set_si(A->matrix[2][0],0); dd_set_si(A->matrix[2][1], 1); dd_set_si(A->matrix[2][2], 0);
   dd_set_si(A->matrix[3][0],0); dd_set_si(A->matrix[3][1], 0); dd_set_si(A->matrix[3][2], 1);
 
@@ -87,6 +87,10 @@ int main(int argc, char *argv[])
   A->objective=dd_LPmax;
   lp=dd_Matrix2LP(A, &err); /* load an LP */
   if (lp==NULL) goto _L99;
+
+/* Print the LP. */
+  printf("\n--- LP to be solved  ---\n");
+  dd_WriteLP(stdout, lp);
 
 /* Solve the LP by cdd LP solver. */
   printf("\n--- Running dd_LPSolve ---\n");

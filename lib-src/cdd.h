@@ -1,6 +1,6 @@
 /* cdd.h: Header file for cddlib.c 
    written by Komei Fukuda, fukuda@ifor.math.ethz.ch
-   Version 0.93, July 18, 2003
+   Version 0.93a, August 11, 2003
 */
 
 /* cddlib.c : C-Implementation of the double description method for
@@ -34,7 +34,7 @@ extern mytype dd_one;
 extern mytype dd_purezero;
 extern mytype dd_minuszero;
    /* to be used to avoid creating temporary spaces for mytype */
-#define dd_almostzero  1.0E-6
+#define dd_almostzero  1.0E-7
 
 /* ---------- FUNCTIONS MEANT TO BE PUBLIC ---------- */
 
@@ -84,12 +84,15 @@ dd_PolyhedraPtr dd_DDMatrix2Poly(dd_MatrixPtr, dd_ErrorType *);
 dd_PolyhedraPtr dd_DDMatrix2Poly2(dd_MatrixPtr, dd_RowOrderType, dd_ErrorType *);
 dd_boolean dd_Redundant(dd_MatrixPtr, dd_rowrange, dd_Arow, dd_ErrorType *);  /* 092 */
 dd_rowset dd_RedundantRows(dd_MatrixPtr, dd_ErrorType *);  /* 092 */
+dd_boolean dd_SRedundant(dd_MatrixPtr, dd_rowrange, dd_Arow, dd_ErrorType *);  /* 093a */
+dd_rowset dd_SRedundantRows(dd_MatrixPtr, dd_ErrorType *);  /* 093a */
 dd_rowset dd_RedundantRowsViaShooting(dd_MatrixPtr, dd_ErrorType *); /* 092 */
 dd_rowrange dd_RayShooting(dd_MatrixPtr, dd_Arow intpt, dd_Arow direction);  /* 092 */ 
  /* 092, find the first inequality "hit" by a ray from an intpt.  */
 dd_boolean dd_ImplicitLinearity(dd_MatrixPtr, dd_rowrange, dd_Arow, dd_ErrorType *);  /* 092 */
 dd_rowset dd_ImplicitLinearityRows(dd_MatrixPtr, dd_ErrorType *);  /* 092  */
 dd_SetFamilyPtr dd_Matrix2Adjacency(dd_MatrixPtr, dd_ErrorType *);  /* 093 */
+dd_SetFamilyPtr dd_Matrix2WeakAdjacency(dd_MatrixPtr, dd_ErrorType *);  /* 093a */
 long dd_MatrixRank(dd_MatrixPtr, dd_rowset, dd_colset, dd_rowset *, dd_colset *);
 
 /* Matrix Basic Operations */

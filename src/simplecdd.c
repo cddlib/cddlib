@@ -1,6 +1,6 @@
 /* simplecdd.c: Main test program to call the cdd library cddlib
    written by Komei Fukuda, fukuda@ifor.math.ethz.ch
-   Version 0.93, July 18, 2003
+   Version 0.93, July 15, 2003
    Standard ftp site: ftp.ifor.math.ethz.ch, Directory: pub/fukuda/cdd
 */
 
@@ -138,7 +138,7 @@ int main(int argc, char *argv[])
 
   } else { /* solve the LP */
     lp=dd_Matrix2LP(M, &err);  if (err!=dd_NoError) goto _L99;
-    dd_LPSolve0(lp,dd_DualSimplex,&err);  if (err!=dd_NoError) goto _L99;
+    dd_LPSolve(lp,dd_DualSimplex,&err);  if (err!=dd_NoError) goto _L99;
 
     dd_SetWriteFileName(inputfile, outputfile, 's', M->representation);
     SetWriteFile(&writing, outputfile);

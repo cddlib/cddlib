@@ -1,6 +1,6 @@
 /* cddproj.c:  Polyhedral Projections in cddlib
    written by Komei Fukuda, fukuda@cs.mcgill.ca
-   Version 0.93, July 18, 2003
+   Version 0.93a, August 11, 2003
 */
 
 /* cddlib : C-library of the double description method for
@@ -40,7 +40,7 @@ dd_MatrixPtr dd_BlockElimination(dd_MatrixPtr M, dd_colset delset, dd_ErrorType 
   mytype temp,prod;
   dd_PolyhedraPtr dualpoly;
   dd_ErrorType err=dd_NoError;
-  dd_boolean localdebug=dd_TRUE;
+  dd_boolean localdebug=dd_FALSE;
 
   *error=dd_NoError;
   m= M->rowsize;
@@ -129,7 +129,7 @@ dd_MatrixPtr dd_FourierElimination(dd_MatrixPtr M,dd_ErrorType *error)
   dd_colrange j,d,dnew;
   dd_rowindex posrowindex, negrowindex,zerorowindex;
   mytype temp1,temp2;
-  dd_boolean localdebug=dd_TRUE;
+  dd_boolean localdebug=dd_FALSE;
 
   *error=dd_NoError;
   m= M->rowsize;

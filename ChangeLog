@@ -1,6 +1,11 @@
-libcdd, cdd & cdd+ HISTORY file    (as of July 18, 2003)
+libcdd, cdd & cdd+ HISTORY file    (as of August 11, 2003)
 
 *** libcdd version (date) / changes ***
+
+Version 093a (Augst 11, 2003) /
+ - The LP basis finding procedure dd_FindLPBasis2 has been
+   updated.  The functions dd_Matrix2WeakAdjacency, dd_SRedundant and
+   dd_SRedundantRows are added.  The manual has been updated.
 
 Version 093 (July 18, 2003) /
  - dd_LPSolve with GMP now runs fisrt with floating point arithmetics 
@@ -379,6 +384,10 @@ Version C0.21 (November 10, 1993) /
    without any p2c libraries.
 
 *** cdd+ version (date) / changes ***
+
+cdd+ Version 0.77beta (April 20, 2003) /
+   This version is made so that it can be compiled with
+   newer gcc. such as gcc 3.1.*.
 
 cdd+ Version 0.76 (March 17, 1999) /
    This is functionally the same as Ver. 075.  This version can

@@ -1,6 +1,6 @@
 /* cddmp.h       (cddlib arithmetic operations using gmp)
    Copyright: Komei Fukuda 2000, fukuda@ifor.math.ethz.ch
-   Version 0.93, July 18, 2003
+   Version 0.93a, July 23, 2003
 */
 
 /* This program is free software; you can redistribute it and/or modify
@@ -34,6 +34,7 @@
  #define dd_clear(a)             mpq_clear(a)     
  #define dd_set(a, b)            mpq_set(a,b)     
  #define dd_set_si(a, b)         ddd_mpq_set_si(a,b)  /* defined in cddgmp.c */
+ #define dd_set_si2(a, b, c)     mpq_set_si(a,b,c)    /* gmp 3.1 or higher */
  #define dd_add(a, b, c)         mpq_add(a,b,c)
  #define dd_sub(a, b, c)         mpq_sub(a,b,c)
  #define dd_mul(a, b, c)         mpq_mul(a,b,c)
@@ -53,6 +54,7 @@
  #define dd_set(a, b)            mpf_set(a,b)     
  #define dd_set_d(a, b)          mpf_set_d(a,b)     
  #define dd_set_si(a, b)         mpf_set_si(a,b)     
+ #define dd_set_si2(a, b, c)     mpf_set_si(a,b,c)    /* gmp 3.1 or higher */
  #define dd_add(a, b, c)         mpf_add(a,b,c)
  #define dd_sub(a, b, c)         mpf_sub(a,b,c)
  #define dd_mul(a, b, c)         mpf_mul(a,b,c)
@@ -70,6 +72,7 @@
  #define dd_clear(a)             ddd_clear(a)     
  #define dd_set(a, b)            ddd_set(a,b)     
  #define dd_set_si(a, b)         ddd_set_si(a,b)     
+ #define dd_set_si2(a, b, c)     ddd_set_si2(a,b,c)  
  #define dd_set_d(a, b)          ddd_set_d(a,b)     
  #define dd_add(a, b, c)         ddd_add(a,b,c)
  #define dd_sub(a, b, c)         ddd_sub(a,b,c)
@@ -98,6 +101,7 @@ void ddd_clear(mytype);
 void ddd_set(mytype,mytype);
 void ddd_set_d(mytype,double);
 void ddd_set_si(mytype,signed long);
+void ddd_set_si2(mytype,signed long, unsigned long);
 void ddd_add(mytype,mytype,mytype);
 void ddd_sub(mytype,mytype,mytype);
 void ddd_mul(mytype,mytype,mytype);
