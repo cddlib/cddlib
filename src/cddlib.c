@@ -1,6 +1,6 @@
 /* cddlib.c: cdd library  (library version of cdd)
    written by Komei Fukuda, fukuda@ifor.math.ethz.ch
-   Version 0.91, Sept. 15, 2000
+   Version 0.91a, Feb. 16, 2000
    Standard ftp site: ftp.ifor.math.ethz.ch, Directory: pub/fukuda/cdd
 */
 
@@ -78,6 +78,7 @@ void DDMain(dd_ConePtr cone)
     goto _L99;
   }
   if (localdebug) {
+     fprintf(stdout,"\nRunning cddlib in NOISY mode.  To turn off the console output below,\nSet localdebug=FALSE in the procedure DDMain of cddlib.c.\n");
      fprintf(stdout,"(Initially added rows ) = ");
      set_fwrite(stdout,cone->InitialHalfspaces);
   }

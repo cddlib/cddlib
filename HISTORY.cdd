@@ -1,6 +1,14 @@
-libcdd, cdd & cdd+ HISTORY file    (as of Sept. 15, 2000)
+libcdd, cdd & cdd+ HISTORY file    (as of February 16, 2001)
 
 *** libcdd version (date) / changes ***
+
+Version 091a (February 16, 2001) /
+ - Memory leak problems when GMP is used are fixed for
+   dd_InitializeAmatrix, dd_CreateMatrix and
+   dd_Larger.  These bugs, reported by Marc Pfetsch,
+   can be fatal if GMP is used and the functions are
+   called many times.  It has no effect for floating-point
+   arithmetic computation.
 
 Version 091 (Sept. 25, 2000) /
  - Memory leak in FreeDDMemory (cddcore.c) 

@@ -1,6 +1,7 @@
 /* cddcore.c:  Core Procedures for cddlib
    written by Komei Fukuda, fukuda@ifor.math.ethz.ch
    Version 0.91, Sept. 15, 2000
+   Modified on Feb 14, 2001 (based on a bug report by Marc Pfetsch).
 */
 
 /* cddlib : C-library of the double description method for
@@ -660,11 +661,6 @@ void dd_InitializeAmatrix(dd_rowrange m,dd_colrange d,dd_Amatrix *A)
   for (i = 0; i < m; i++) {
     dd_InitializeArow(d,&((*A)[i]));
   }
-  for (i = 0; i < m; i++) {
-    for (j = 0; j < d; j++) {
-      dd_init((*A)[i][j]);
-    }
-  }
 }
 
 void dd_FreeAmatrix(dd_rowrange m,dd_colrange d,dd_Amatrix A)
@@ -796,14 +792,6 @@ dd_MatrixPtr dd_CreateMatrix(dd_rowrange m_size,dd_colrange d_size)
   M->rowsize=m0;
   set_initialize(&(M->linset), m1);
   M->colsize=d0;
-  for (i = 1; i <= m1; i++) {
-    for (j = 1; j <= d1; j++) {
-      dd_init(M->matrix[i - 1][j - 1]);
-    }
-  }
-  for (j = 1; j <= d1; j++) {
-    dd_init(M->rowvec[j - 1]);
-  }
   return M;
 }
 
@@ -1888,11 +1876,13 @@ boolean dd_Equal(mytype val1,mytype val2)
 boolean dd_Larger(mytype val1,mytype val2)
 {
   mytype temp;
+  boolean answer;
 
   dd_init(temp);
   dd_sub(temp,val1, val2);
-  return dd_Positive(temp);
+  answer=dd_Positive(temp);
   dd_clear(temp);
+  return answer;
 }
 
 boolean dd_Smaller(mytype val1,mytype val2)
