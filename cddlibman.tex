@@ -1,7 +1,7 @@
 % The name of this file: cddlibman.tex
 % written by by Komei Fukuda
 % created March 15, 1999
-% modified June 25, 2000
+% modified July 12, 2000
 %
 \documentclass[11pt]{article}
 \usepackage{html}
@@ -25,11 +25,11 @@ ETH-Zentrum, CH-8092 Zurich, Switzerland\\
 fukuda@ifor.math.ethz.ch \\and\\
 Department of Mathematics\\
 ETFL, CH-1015 Lausanne, Switzerland}
-\date{ (cddlib ver. 090d,  June 25, 2000)}
+\date{ (cddlib ver. 090e,  July 12, 2000)}
 
 \maketitle
 \begin{abstract}
-This is a reference manual for cddlib-090c.  
+This is a reference manual for cddlib-090.  
 It is still imcomplete but explains the most basic functions for polyhedral
 representation conversion in cddlib.  
 Please use the accompanying README file and test programs to complement the incompleteness.
@@ -566,6 +566,35 @@ This function is now called {\tt dd\_CopyLPSolution(lp)}.
 
 See the examples, testcdd*.c , testlp*.c and simplecdd.c.
 
+
+\section{Numerical Accuracy}  \label{accuracy}
+ A little caution is in order.  Many people have observed 
+numerical problems of cddlib when the floating version of cddlib
+is used.   As we all know, floating-point computation
+might not give a correct answer, especially when an input
+data is very sensitive to a small perturbation.  When
+some strange behavior is observed, it is always wise
+to create a rational approximation of the input
+(for example, one can replace 0.3333333 with 1/3)
+and to compute it with cddlib compiled with gmp rational
+to see what a correct behavior should be.  Whenever the time
+is not important, it is safer to use gmp rational arithmetic.
+
+If you need speedy computation with floating-point arithmetic,
+you might want to ``play with'' the constant {\tt dd\_almostzero} 
+defined in cdd.h:
+
+\begin{verbatim}
+   #define dd_almostzero  1.0E-6
+\end{verbatim}
+\noindent
+This number is used to recognize whether a number is zero:  
+a number whose absolute value is smaller
+than {\tt dd\_almostzero} is considered zero, and nonzero otherwise.
+You can change this to modify the behavior of cddlib.
+Another thing one can do is scaling.  If the values in one column of
+an input is of smaller magnitude than those in another column, 
+scale one so that they become comparable.
 
 \section{FTP site}  \label{FTP}
 An anonymous \htmladdnormallink{ftp}

@@ -1,6 +1,11 @@
-libcdd, cdd & cdd+ HISTORY file    (as of June 25, 2000)
+libcdd, cdd & cdd+ HISTORY file    (as of July 12, 2000)
 
 *** libcdd version (date) / changes ***
+
+Version 090e (July 12, 2000) /
+ - A bug of reading very large integer values incorrectly
+   is fixed.  The previous versions were truncating very large 
+   integer values to a number representable by long integer.
 
 Version 090d (June 25, 2000) /
  - Serious bugs of dd_CopyOutput, dd_CopyInequalities are fixed.

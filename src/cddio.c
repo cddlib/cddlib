@@ -1,6 +1,6 @@
 /* cddio.c:  Basic Input and Output Procedures for cddlib
    written by Komei Fukuda, fukuda@ifor.math.ethz.ch
-   Version 0.90d, June 25, 2000
+   Version 0.90e, July 12, 2000
 */
 
 /* cddlib : C-library of the double description method for
@@ -1339,12 +1339,11 @@ void sread_rational_value (char *s, mytype value)
    /* reads a rational value from the specified string "s" and assigns it to "value"    */
    
 {
-   char     *numerator_s=0, *denominator_s=0, *position;
+   char     *numerator_s=NULL, *denominator_s=NULL, *position;
    int      sign = 1;
    double   numerator, denominator;
 #if defined GMPRATIONAL
-   long num;
-   unsigned long den;
+   mpz_t znum, zden;
 #else
    double rvalue;
 #endif
@@ -1381,9 +1380,16 @@ void sread_rational_value (char *s, mytype value)
 */
 
 #if defined GMPRATIONAL
-   num=(long)sign * numerator;
-   den=(unsigned long) denominator;
-   mpq_set_si(value, num, den);
+   mpz_init_set_str(znum,numerator_s,10);
+   if (sign<0) mpz_neg(znum,znum);
+   mpz_init(zden); mpz_set_ui(zden,1);
+   if (denominator_s!=NULL) mpz_init_set_str(zden,denominator_s,10);
+   mpq_set_num(value,znum); mpq_set_den(value,zden);
+   mpq_canonicalize(value);
+   mpz_clear(znum); mpz_clear(zden);
+   /* num=(long)sign * numerator; */
+   /* den=(unsigned long) denominator; */
+   /* mpq_set_si(value, num, den); */
 #elif defined GMPFLOAT
    rvalue=sign * numerator/ (signed long) denominator;
    mpf_set_d(value, rvalue);
