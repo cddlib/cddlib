@@ -1,6 +1,6 @@
 /* cddlp.c:  dual simplex method c-code
    written by Komei Fukuda, fukuda@ifor.math.ethz.ch
-   Version 0.91b, Feb. 26, 2001
+   Version 0.91d, March 9, 2001
 */
 
 /* cddlp.c : C-Implementation of the dual simplex method for
@@ -78,12 +78,10 @@ dd_LPSolutionPtr dd_CopyLPSolution(dd_LPPtr lp)
   lps->LPS=lp->LPS;  /* the current solution status */
   dd_init(lps->optvalue);
   dd_set(lps->optvalue,lp->optvalue);  /* optimal value */
-  lps->sol=(mytype*) calloc(lp->d+1,sizeof(mytype));   /* primal solution */
-  lps->dsol=(mytype*) calloc(lp->d+1,sizeof(mytype));  /* dual solution */
+  dd_InitializeArow(lp->d+1,&(lps->sol));
+  dd_InitializeArow(lp->d+1,&(lps->dsol));
   lps->nbindex=(long*) calloc((lp->d)+1,sizeof(long));  /* dual solution */
   for (j=0; j<=lp->d; j++){
-    dd_init(lps->sol[j]);
-    dd_init(lps->dsol[j]); 
     dd_set(lps->sol[j],lp->sol[j]);
     dd_set(lps->dsol[j],lp->dsol[j]);
     lps->nbindex[j]=lp->nbindex[j];
@@ -177,15 +175,14 @@ dd_LPPtr dd_Matrix2LP(dd_MatrixPtr M, dd_ErrorType *err)
 void dd_FreeLPData(dd_LPPtr lp)
 {
   if ((lp)!=NULL){
-    dd_FreeAmatrix(lp->m_alloc,lp->d_alloc,lp->A);
-    dd_FreeBmatrix(lp->d_alloc,lp->B);
-    dd_FreeArow(lp->d_alloc,lp->sol);
-    dd_FreeArow(lp->d_alloc,lp->dsol);
-    set_free(lp->equalityset);
     dd_clear(lp->optvalue);
+    dd_FreeArow(lp->d_alloc,lp->dsol);
+    dd_FreeArow(lp->d_alloc,lp->sol);
+    dd_FreeBmatrix(lp->d_alloc,lp->B);
+    dd_FreeAmatrix(lp->m_alloc,lp->d_alloc,lp->A);
+    set_free(lp->equalityset);
     free(lp->nbindex);
     free(lp->given_nbindex);
-    dd_clear(lp->optvalue);
     free(lp);
   }
 }
@@ -193,8 +190,11 @@ void dd_FreeLPData(dd_LPPtr lp)
 void dd_FreeLPSolution(dd_LPSolutionPtr lps)
 {
   if (lps!=NULL){
-    free(lps->sol);
-    free(lps->dsol);
+    free(lps->nbindex);
+    dd_FreeArow(lps->d+1,lps->dsol);
+    dd_FreeArow(lps->d+1,lps->sol);
+    dd_clear(lps->optvalue);
+    
     free(lps);
   }
 }
@@ -1467,7 +1467,6 @@ void dd_WriteLPResult(FILE *f,dd_LPPtr lp,dd_ErrorType err)
   dd_WriteLPTimes(f, lp);
 _L99:;
 }
-
 
 /* end of cddlp.c */
 

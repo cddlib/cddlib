@@ -1,6 +1,10 @@
-libcdd, cdd & cdd+ HISTORY file    (as of February 27, 2001)
+libcdd, cdd & cdd+ HISTORY file    (as of March 9, 2001)
 
 *** libcdd version (date) / changes ***
+
+Version 091d (March 9, 2001) /
+ - Memory leak in dd_FreeLPData and dd_FreeLPSolution are
+   fixed.
 
 Version 091c (February 27, 2001) /
  - Bug to terminate before the completion of computation
