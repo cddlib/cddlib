@@ -1,6 +1,6 @@
 /* cddcore.c:  Core Procedures for cddlib
    written by Komei Fukuda, fukuda@ifor.math.ethz.ch
-   Version 0.90e, July 12, 2000
+   Version 0.91, Sept. 15, 2000
 */
 
 /* cddlib : C-library of the double description method for
@@ -525,8 +525,10 @@ void FreeDDMemory0(dd_ConePtr cone)
   free(cone->InitialRayIndex);
   free(cone->OrderVector);
   free(cone->newcol);
-  dd_FreeBmatrix(cone->d,cone->B);
-  dd_FreeBmatrix(cone->d,cone->Bsave);
+
+/* Fixed by Shawn Rusaw.  Originally it was cone->d instead of cone->d_alloc */
+  dd_FreeBmatrix(cone->d_alloc,cone->B);
+  dd_FreeBmatrix(cone->d_alloc,cone->Bsave);
 
 /*must replace (by Sato) */
   for (i=0; i<cone->m_alloc; i++){
@@ -581,6 +583,7 @@ void Normalize(dd_colrange d_size, mytype *V)
       dd_abs(temp,V[j]);
       if (dd_Positive(temp)){
         if (!nonzerofound || dd_Smaller(temp,min)){
+          nonzerofound=TRUE;
           dd_set(min, temp);  jmin=j;
         }
       }
@@ -1305,7 +1308,7 @@ void FeasibilityIndices(long *fnum, long *infnum, dd_rowrange i, dd_ConePtr cone
       dd_mul(tnext, cone->A[i - 1][j],Ptr->Ray[j]);
       dd_add(temp, temp, tnext);
     }
-    if (temp >= 0)
+    if (dd_Nonnegative(temp))
       (*fnum)++;
     else
       (*infnum)++;

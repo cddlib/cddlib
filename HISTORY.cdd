@@ -1,6 +1,18 @@
-libcdd, cdd & cdd+ HISTORY file    (as of July 12, 2000)
+libcdd, cdd & cdd+ HISTORY file    (as of Sept. 15, 2000)
 
 *** libcdd version (date) / changes ***
+
+Version 091 (Sept. 25, 2000) /
+ - Memory leak in FreeDDMemory (cddcore.c) 
+   is fixed.  This bug, which might cause a serious problem,
+   was reported by Shawn Rusaw.  Also, a bug reported by
+   Istvan Csabai on dynamic row ordering is fixed.  This
+   problem is most likely not affecting anyone, since the
+   dynamic row ordering option is not available via the
+   publicly released documentations.  David Avis contributed
+   a sample cddlib code, lcdd.c, which runs like his convex
+   hull code, lrs.  In particular, it is useful to generate
+   standard output stream for piping in unix.
 
 Version 090e (July 12, 2000) /
  - A bug of reading very large integer values incorrectly

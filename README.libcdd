@@ -1,6 +1,6 @@
-2000-07-12 (July 12, 2000)
+2000-09-15 (September 15, 2000)
 -----------------------------------------------
-C-Library cddlib (version 0.90e) README FILE
+C-Library cddlib (version 0.91) README FILE
 -----------------------------------------------
 1. The C-library  cddlib is a C implementation of the Double Description 
 Method of Motzkin et al. for generating all vertices (i.e. extreme points)
@@ -19,22 +19,22 @@ representation of a polyhedron with cdd.  Also, cdd can solve a linear
 programming problem, i.e. a problem of maximizing and minimizing 
 a linear function over P.
 
-The version 0.90 is the third release of libcdd.  It is a major
-upate in terms of functional interfaces and internal arithmetic
-handling.  It now runs in both floating-point and GMP rational
-arithmetic.   The user must be aware that the library is not
-yet stable and might contain elementary bugs.  The standalone
-codes cdd/cdd+ are more reliable for the moment.  Please use it
-with caution.  If you find some problems, please kindly report them to
+The version 0.91 is the forth release of libcdd.  While the previous
+version 0.90 was a major update in terms of functional interfaces 
+and internal arithmetic handling, this version is rather a maintenance
+release.   I believe that the library is getting more stable and
+reliable.
+
+If you find some problems or bugs, please kindly report them to
 fukuda@ifor.math.ethz.ch.  Please read README.whatsnew for the changes 
 over the last release.
 
-The documentation (cddlibman.tex) is incomplete but contains 
+The documentation (cddlibman.tex) is still incomplete but contains 
 descriptions of the most important functions. Please look at the examples,
-testcdd*.c, testlp*.c and simplecdd.c for how these functions
+testcdd*.c, testlp*.c, simplecdd.c, lcdd.c for how these functions
 can be used from user's C-codes.
 
-2. One nice feature of cddlib is the ability
+2. One convenient feature of cddlib is the ability
 to handle essentially any data.  More precisely, it can
 generate an H-representation of a V-polyhedron which is not
 full-dimensional, and it can generate a V-representation

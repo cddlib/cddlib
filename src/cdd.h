@@ -1,6 +1,6 @@
 /* cddlib.h: Header file for cddlib.c 
    written by Komei Fukuda, fukuda@ifor.math.ethz.ch
-   Version 0.90e, July 12, 2000
+   Version 0.91, Sept. 15, 2000
 */
 
 /* cddlib.c : C-Implementation of the double description method for
@@ -90,7 +90,7 @@ void dd_WriteReal(FILE *, mytype);
 void dd_WriteNumber(FILE *f, mytype x); 
     /* write a number depending on the arithmetic used.  */
 void dd_WritePolyFile(FILE *, dd_PolyhedraPtr);
-void dd_WriteRunningMode(FILE *, dd_ConePtr);
+void dd_WriteRunningMode(FILE *, dd_PolyhedraPtr);
 void dd_WriteErrorMessages(FILE *, dd_ErrorType);
 void dd_WriteSetFamily(FILE *, dd_SetFamilyPtr);
 void dd_WriteSetFamilyCompressed(FILE *, dd_SetFamilyPtr);

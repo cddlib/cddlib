@@ -1,6 +1,6 @@
 /* simplecdd.c: Main test program to call the cdd library cddlib
    written by Komei Fukuda, fukuda@ifor.math.ethz.ch
-   Version 0.90c, June 12, 2000
+   Version 0.91, Sept. 15, 2000
    Standard ftp site: ftp.ifor.math.ethz.ch, Directory: pub/fukuda/cdd
 */
 
@@ -90,6 +90,7 @@ int main(int argc, char *argv[])
     dd_SetWriteFileName(inputfile, outputfile, 'o', poly->representation);
     SetWriteFile(&writing, outputfile);
     dd_WriteProgramDescription(writing);
+    dd_WriteRunningMode(writing, poly);
     switch (poly->representation) {
     case Inequality:
       fprintf(writing, "ext_file: Generators\n");

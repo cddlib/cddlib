@@ -1,6 +1,6 @@
 /* cddlib.c: cdd library  (library version of cdd)
    written by Komei Fukuda, fukuda@ifor.math.ethz.ch
-   Version 0.90e, July 12, 2000
+   Version 0.91, Sept. 15, 2000
    Standard ftp site: ftp.ifor.math.ethz.ch, Directory: pub/fukuda/cdd
 */
 
@@ -232,16 +232,18 @@ boolean dd_DDInputAppend(dd_PolyhedraPtr *poly, dd_MatrixPtr M,
 boolean dd_DDFile2File(char *ifile, char *ofile, dd_ErrorType *err)
 {
   /* The representation conversion from an input file to an outfile.  */
-  boolean found;
+  /* modified by D. Avis to allow stdin/stdout */
+  boolean found=TRUE;
   dd_ErrorType error;
   FILE *reading=NULL,*writing=NULL;
   dd_PolyhedraPtr poly;
   dd_MatrixPtr M, A, G;
 
-  if ( ( reading = fopen(ifile, "r") )!= NULL) {
+  if (strcmp(ifile,"**stdin") == 0 )
+     reading = stdin;
+  else if ( ( reading = fopen(ifile, "r") )!= NULL) {
     printf("input file %s is open\n", ifile);
-    found=TRUE;
-  }
+   }
   else{
     printf("The input file %s not found\n",ifile);
     found=FALSE;
@@ -249,15 +251,18 @@ boolean dd_DDFile2File(char *ifile, char *ofile, dd_ErrorType *err)
     goto _L99;
   }
 
-  if (found && (writing = fopen(ofile, "w")) != NULL){
-    printf("output file %s is open\n",ofile);
-    found=TRUE;
-  }
-  else{
-    printf("The output file %s cannot be opened\n",ofile);
-    found=FALSE;
-    error=OFileNotOpen;
-    goto _L99;
+  if (found){
+    if (strcmp(ofile,"**stdout") == 0 )
+      writing = stdout;
+    else if ( (writing = fopen(ofile, "w") ) != NULL){
+      printf("output file %s is open\n",ofile);
+      found=TRUE;
+    } else {
+      printf("The output file %s cannot be opened\n",ofile);
+      found=FALSE;
+      error=OFileNotOpen;
+      goto _L99;
+    }
   }
 
   M=dd_PolyFile2Matrix(reading, &error);
@@ -265,12 +270,13 @@ boolean dd_DDFile2File(char *ifile, char *ofile, dd_ErrorType *err)
   dd_FreeMatrix(M);
 
   if (error==NoError) {
+    dd_WriteRunningMode(writing, poly);
     A=dd_CopyInequalities(poly);
     G=dd_CopyGenerators(poly);
 
     if (poly->representation==Inequality) {
       dd_WriteMatrix(writing,G);
-    } else {
+     } else {
       dd_WriteMatrix(writing,A);
     }
 
@@ -284,6 +290,5 @@ _L99:  *err=error;
   if (writing!=NULL) fclose(writing);
   return found;
 }
-
 
 /* end of cddlib.c */

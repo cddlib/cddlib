@@ -1,6 +1,6 @@
 /* cddio.c:  Basic Input and Output Procedures for cddlib
    written by Komei Fukuda, fukuda@ifor.math.ethz.ch
-   Version 0.90e, July 12, 2000
+   Version 0.91, Sept. 15, 2000
 */
 
 /* cddlib : C-library of the double description method for
@@ -311,7 +311,7 @@ boolean InitializeConeData(dd_rowrange m, dd_colrange d, dd_ConePtr *cone)
   (*cone)->m=m;
   (*cone)->d=d;
   (*cone)->m_alloc=m+2; /* allocated row size of matrix A */
-  (*cone)->d_alloc=d;   /* allocated col size of matrix A */
+  (*cone)->d_alloc=d;   /* allocated col size of matrix A, B and Bsave */
   (*cone)->numbtype=Real;
   (*cone)->parent=NULL;
 
@@ -349,15 +349,14 @@ boolean InitializeConeData(dd_rowrange m, dd_colrange d, dd_ConePtr *cone)
   (*cone)->count_int_bad=0;
   (*cone)->rseed=1;  /* random seed for random row permutation */
  
-  dd_InitializeBmatrix((*cone)->d, &((*cone)->B));
-  dd_InitializeBmatrix((*cone)->d, &((*cone)->Bsave));
+  dd_InitializeBmatrix((*cone)->d_alloc, &((*cone)->B));
+  dd_InitializeBmatrix((*cone)->d_alloc, &((*cone)->Bsave));
   dd_InitializeAmatrix((*cone)->m_alloc,(*cone)->d_alloc,&((*cone)->A));
 
   (*cone)->Edges
      =(dd_AdjacencyType**) calloc((*cone)->m_alloc,sizeof(dd_AdjacencyType*));
   (*cone)->InitialRayIndex=(long*)calloc(d+1,sizeof(long));
   (*cone)->OrderVector=(long*)calloc((*cone)->m_alloc+1,sizeof(long));
-
 
   (*cone)->newcol=(long*)calloc(((*cone)->d)+1,sizeof(long));
   for (j=0; j<=(*cone)->d; j++) (*cone)->newcol[j]=j;  /* identity map, initially */
@@ -1024,10 +1023,11 @@ void dd_WriteLPTimes(FILE *f, dd_LPPtr lp)
   dd_WriteTimes(f,lp->starttime,lp->endtime);
 }
 
-void dd_WriteRunningMode(FILE *f, dd_ConePtr cone)
+void dd_WriteRunningMode(FILE *f, dd_PolyhedraPtr poly)
 {
-
-  switch (cone->HalfspaceOrder) {
+  if (poly->child!=NULL){
+    fprintf(f,"* roworder: ");
+    switch (poly->child->HalfspaceOrder) {
 
     case MinIndex:
       fprintf(f, "minindex\n");
@@ -1058,10 +1058,11 @@ void dd_WriteRunningMode(FILE *f, dd_ConePtr cone)
       break;
 
     case RandomRow:
-      fprintf(f, "random  %d\n",cone->rseed);
+      fprintf(f, "random  %d\n",poly->child->rseed);
       break;
 
     default: break;
+    }
   }
 }
 

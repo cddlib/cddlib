@@ -79,8 +79,8 @@ HFILES = cdd.h cddtypes.h cddmp.h setoper.h
 OFILES = cddio.o cddmp.o cddlib.o cddcore.o setoper.o cddlp.o
 OFILESGMP = cddio_gmp.o cddmp_gmp.o cdd_gmp.o cddcore_gmp.o setoper.o cddlp_gmp.o
 
-CDDTARGETS=libcdd.a scdd testcdd0 testcdd1 testcdd2 testlp1 testlp2 testlp3
-GMPTARGETS=libcddgmp.a scdd_gmp testcdd0_gmp testcdd1_gmp testcdd2_gmp testlp1_gmp testlp2_gmp testlp3_gmp
+CDDTARGETS=libcdd.a scdd lcdd testcdd1 testcdd2 testlp1 testlp2 testlp3
+GMPTARGETS=libcddgmp.a scdd_gmp lcdd_gmp testcdd1_gmp testcdd2_gmp testlp1_gmp testlp2_gmp testlp3_gmp
 
 cddio.o: cddio.c $(HFILES) 
 	$(CC) $(LIFLAGS) -c cddio.c
@@ -132,13 +132,13 @@ scdd: simplecdd.c libcdd.a
 scdd_gmp: simplecdd.c libcdd.a
 	$(CC) $(GMPLIFLAGS) $(GMPFLAGS) simplecdd.c -o scdd_gmp $(LFLAGS) -lcddgmp -lgmp
 
-testcdd0: testcdd0.c libcdd.a
-	$(CC) $(LIFLAGS) testcdd0.c -o testcdd0 $(LFLAGS) -lcdd
-	./testcdd0
+lcdd: lcdd.c libcdd.a
+	$(CC) $(LIFLAGS) lcdd.c -o lcdd $(LFLAGS) -lcdd
+	./lcdd sample.ine
 
-testcdd0_gmp: testcdd0.c libcddgmp.a
-	$(CC) $(GMPLIFLAGS) $(GMPFLAGS) testcdd0.c -o testcdd0_gmp $(LFLAGS) -lcddgmp -lgmp
-	./testcdd0_gmp
+lcdd_gmp: lcdd.c libcddgmp.a
+	$(CC) $(GMPLIFLAGS) $(GMPFLAGS) lcdd.c -o lcdd_gmp $(LFLAGS) -lcddgmp -lgmp
+	./lcdd_gmp sample.ine
 
 testcdd1: testcdd1.c libcdd.a
 	$(CC) $(LIFLAGS) testcdd1.c -o testcdd1 $(LFLAGS) -lcdd

@@ -1,27 +1,15 @@
-2000-07-12 (July 12, 2000)
+2000-09-15 (Sept. 15, 2000)
 ---------------------------------------------
-C-Library cddlib (version 0.90e) What's new? 
+C-Library cddlib (version 0.91) What's new? 
 ---------------------------------------------
 
 0. To learn what's new in this version,
 please check the history file HISTORY.cdd as well.
 
-1. cddlib-090 is a major revision of the previous
-version 085.  The most important change is the capability
-of running with rational exact arithmetic with GMP rational
-type mpq_t as well as the C double type.
+1. cddlib-091 is a maintenance release, fixing memory leak bugs
+of cddlib-090*.
 
-Also there are numerous bug fixes over the last release 085.  
-Many of these bugs were found by Mr. Masanori Sato of Tokyo 
-Institute of Technology.  After the version 090 had been released,
-Mr. Shawn Rusaw helped me in detecting various memory leaks
-and bugs.  Mr. Istvan Csabai reported a serious bug of
-dd_CopyOutput that copies an incorrect inequality description
-when the RHS is not nonnegative.   This is corrected in 0.90d.
-The newest version 0.90e fixes a bug of reading very large
-integer numbers incorrectly.
-
-cddlib comes with a simple standalone code simplecdd.c.
+2. cddlib comes with a simple standalone code simplecdd.c.
 Once you "make all" at the subdirectory "makedir", 
 you will have "scdd" (simple cdd).  Just run it at the command line.
 For example, sample.ine contains a representation of a 3D cube.
@@ -49,58 +37,17 @@ This does the same thing but with GMP exact rational
 arithmetic.
 
 
-2. There is an improvement of interfaces to the representation
-conversion code and lp solver (which was called dplex before).
-To see the change, look at the test C program  testlp1.c  in
-the subdirectory makedir.   The essential part is
+3. David Avis contributed a sample cddlib code, lcdd.c, which 
+runs like his convex hull code, lrs.  In particular, it generates
+standard output stream for piping in unix.  Just run lcdd as
 
-------------------------------------------------------------------------------
-  dd_MatrixPtr M,G;
-  dd_LPSolverType solver=DualSimplex; 
-    /* either DualSimplex or CrissCross */
-  dd_LPPtr lp;   
-   /* pointer to LP data structure that is not visible by user. */
-  dd_LPSolutionPtr lps1; 
-   /* pointer to LP solution data that is visible by user. */
-  dd_PolyhedraPtr poly;  
-   /* pointer to polyhedra data structure not visible by user. */
+% lcdd sample.ine
 
-  /* read an LP from a file and store it in the MatrixPtr M */
-  M=dd_PolyFile2Matrix(reading, &error);
-
-  /* solve the LP and write the result */
-  lp=dd_Matrix2LP(M, &error);
-  dd_LPSolve(lp,solver,&error);
-  dd_WriteLPResult(stdout, lp, error);
-
-  /* generate all generators of the feasible region and write the result */
-  poly=dd_DDMatrix2Poly(M, &error);  /* new in 090c */
-  G=dd_CopyGenerators(poly);
-  dd_WriteMatrix(stdout,G);
-------------------------------------------------------------------------------
-
-As soon as one sets a matrix data (pointed by MatrixPtr variable M),
-it is easy to load the data to a polytope or to an lp data pointer.
-In the makedir directory, run lptest1 (double) or lptest1_gmp with
-
-% lptest1
-
-or 
-
-% lptest1_gmp
-
-You are prompted to input an LP file name.  Try sample.ine
-
->> Input file: samplelp.ine
-
-If your installation was correct, you should get the same
-thing as those stored in files, 
-
-samplelp.testlp1_output and
-samplelp.testlp1_gmp_output.
+It writes the extreme points (the content of simple.ext above)
+to standard output.
 
 
-3. For more information, contact
+4. For more information, contact
    Komei Fukuda
    fukuda@ifor.math.ethz.ch
    Zurich  :IFOR, ETH Zentrum, CH-8092 Zurich, Switzerland  

@@ -1,6 +1,6 @@
 /* cddlp.c:  dual simplex method c-code
    written by Komei Fukuda, fukuda@ifor.math.ethz.ch
-   Version 0.90e, July 12, 2000
+   Version 0.91, Sept. 15, 2000
 */
 
 /* cddlp.c : C-Implementation of the dual simplex method for
@@ -19,7 +19,7 @@
 #include <math.h>
 #include <string.h>
 
-#define CDDLPVERSION   "Version 0.90e (July 12, 2000)"
+#define CDDLPVERSION   "Version 0.91 (Sept. 15, 2000)"
 
 #define FALSE 0
 #define TRUE 1
@@ -1257,8 +1257,6 @@ void SelectPreorderedNext2(dd_rowrange m_size,dd_colrange d_size,
     if (!set_member(k,excluded)) *hnext=k ;
   }
 }
-
-
 
 boolean dd_LPSolve(dd_LPPtr lp,dd_LPSolverType solver,dd_ErrorType *err)
 /* 

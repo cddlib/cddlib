@@ -1,7 +1,7 @@
 % The name of this file: cddlibman.tex
 % written by by Komei Fukuda
 % created March 15, 1999
-% modified July 12, 2000
+% modified Sept. 15, 2000
 %
 \documentclass[11pt]{article}
 \usepackage{html}
@@ -25,11 +25,11 @@ ETH-Zentrum, CH-8092 Zurich, Switzerland\\
 fukuda@ifor.math.ethz.ch \\and\\
 Department of Mathematics\\
 ETFL, CH-1015 Lausanne, Switzerland}
-\date{ (cddlib ver. 090e,  July 12, 2000)}
+\date{ (cddlib ver. 091,  Sept. 15, 2000)}
 
 \maketitle
 \begin{abstract}
-This is a reference manual for cddlib-090.  
+This is a reference manual for cddlib-091.  
 It is still imcomplete but explains the most basic functions for polyhedral
 representation conversion in cddlib.  
 Please use the accompanying README file and test programs to complement the incompleteness.
@@ -387,7 +387,7 @@ a pointer to the data. {\tt *err}
 returns {\tt dd\_NoError} if the computation terminates normally.  Otherwise,
 it returns a value according to the error occured.
 
-\item[{\tt dd\_DDInputAppend(\&poly, matrix, \&err)}]:\\
+\item[{\tt boolean dd\_DDInputAppend(\&poly, matrix, \&err)}]:\\
 Modify the input representation in {\tt *poly}
 by appending the matrix of {\tt *matrix}, and compute
 the second representation.  The number of columns in

@@ -1,6 +1,7 @@
-/* testcdd1.c: Main test program to call the cdd library cddlib
+/* lcdd.c: Main test program to call the cdd library cddlib
    written by Komei Fukuda, fukuda@ifor.math.ethz.ch
-   Version 0.90c, June 12, 2000
+   and  David Avis, avis@mutt.cs.mcgill.ca
+   Version 0.91, July 15, 2000
    Standard ftp site: ftp.ifor.math.ethz.ch, Directory: pub/fukuda/cdd
 */
 
@@ -19,6 +20,17 @@
     Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 */
 
+/*  This program behaves like lrs by David Avis.
+    Usage: lcdd filein fileout
+           lcdd filein          output to stdout
+           lcdd                 input stdin, output stdout
+
+    This allows things like
+    lcdd file | lcdd    (should give a minimal rep of the input file on stdout)
+    lcdd file | lrs
+    lcdd < filein
+*/
+
 #include "setoper.h"
 #include "cdd.h"
 #include <stdio.h>
@@ -34,9 +46,14 @@ int main(int argc, char *argv[])
 
   dd_set_global_constants();  /* First, this must be called. */
 
-  dd_DDFile2File("sample.ine","sample.out",&err);
+  if (argc > 2)  
+    dd_DDFile2File(argv[1],argv[2],&err);
+
+  else if (argc > 1)
+    dd_DDFile2File(argv[1],"**stdout",&err);
+  else
+    dd_DDFile2File("**stdin","**stdout",&err);
   return 0;
 }
 
-
-/* end of testcdd1.c */
+/* end of lcdd.c */
