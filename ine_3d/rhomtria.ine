@@ -33,8 +33,4 @@ begin
  .1  -1.54508497e-01 -5.90169944e-02 -9.54915028e-02
  .1  -1.90983006e-01 0 0
 end
-adjacency
-incidence
-input_adjacency
-input_incidence
 

@@ -1,0 +1,12 @@
+* file name: sample.ine
+* 3-cube
+H-representation
+begin
+    6    4    integer
+ 10/3  1  0  0
+ 10/3  0  1  0
+ 10/3  0  0  1
+ 10/3 -1  0  0
+ 10/3  0 -1  0
+ 10/3  0  0 -1
+end

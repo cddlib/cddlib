@@ -15,7 +15,3 @@ begin
  1  0  0  0  0 -1  0
  1  0  0  0  0  0 -1
 end
-incidence 
-adjacency
-stdout_off
-logfile_on

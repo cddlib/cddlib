@@ -1,0 +1,104 @@
+2000-05-29 (May 29, 2000)
+---------------------------------------------
+C-Library cddlib (version 0.90) What's new? 
+---------------------------------------------
+
+1. cddlib-090 is a major revision of the previous
+version 085.  The most important change is the capability
+of running with rational exact arithmetic with GMP rational
+type mpq_t as well as the C double type.
+
+Also there are numerous bug fixes over the last release 085.  
+Many of these bugs were found by Mr. Masanori Sato of Tokyo 
+Institute of Technology. 
+
+It comes with a simple standalone code simplecdd.c.
+Once you "make all" at the subdirectory "makedir", 
+you will have "scdd" (simple cdd).  Just run it at the command line.
+For example, sample.ine contains a representation of a 3D cube.
+
+% scdd sample.ine
+
+computes all the extreme points and writes them in the file 
+
+sample.ext
+
+Then it generates the four auxiliary files, 
+
+sample.ead  (adjacency of extreme points) 
+sample.iad  (adjacency of inequalities)
+sample.ecd  (incidence of extreme points and inequalities)
+sample.icd  (incidence of inequalities and  extreme points).
+
+The program simplecdd.c should explain how some of the
+basic cddlib functions can be called.  Run the same thing
+with the exact solver
+
+% scdd_gmp sample.ine
+
+This does the same thing but with GMP exact rational
+arithmetic.
+
+
+2. There is an improvement of interfaces to the representation
+conversion code and lp solver (which was called dplex before).
+To see the change, look at the test C program  testlp1.c  in
+the subdirectory makedir.   The essential part is
+
+------------------------------------------------------------------------------
+  dd_MatrixPtr M,G;
+  dd_LPSolverType solver=DualSimplex; 
+    /* either DualSimplex or CrissCross */
+  dd_LPPtr lp;   
+   /* pointer to LP data structure that is not visible by user. */
+  dd_LPSolutionPtr lps1; 
+   /* pointer to LP solution data that is visible by user. */
+  dd_PolyhedraPtr poly;  
+   /* pointer to polyhedra data structure not visible by user. */
+
+  /* read an LP from a file and store it in the MatrixPtr M */
+  M=dd_PolyFile2Matrix(reading, &error);
+
+  /* solve the LP and write the result */
+  lp=dd_Matrix2LP(M, &error);
+  dd_LPSolve(lp,solver,&error);
+  dd_WriteLPResult(stdout, lp, error);
+
+  /* generate all generators of the feasible region and write the result */
+  poly=dd_Matrix2Poly(M, &error);
+  dd_DoubleDescription(poly,&error);
+  G=dd_CopyGenerators(poly);
+  dd_WriteMatrix(stdout,G);
+------------------------------------------------------------------------------
+
+As soon as one sets a matrix data (pointed by MatrixPtr variable M),
+it is easy to load the data to a polytope or to an lp data pointer.
+In the makedir directory, run lptest1 (double) or lptest1_gmp with
+
+% lptest1
+
+or 
+
+% lptest1_gmp
+
+You are prompted to input an LP file name.  Try sample.ine
+
+>> Input file: samplelp.ine
+
+If your installation was correct, you should get the same
+thing as those stored in files, 
+
+samplelp.testlp1_output and
+samplelp.testlp1_gmp_output.
+
+
+3. For more information, contact
+   Komei Fukuda
+   fukuda@ifor.math.ethz.ch
+   Zurich  :IFOR, ETH Zentrum, CH-8092 Zurich, Switzerland  
+   Lausanne:DMA, EPFL, Ch-1015 Lausanne, Switzerland
+   homepage: http://www.ifor.math.ethz.ch/staff/fukuda/fukuda.html
+
+// END of README.whatsnew
+
+

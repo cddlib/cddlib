@@ -52,8 +52,4 @@ begin
   3 -3 -2  1
   3 -3 -2 -1
 end
-adjacency
-incidence
-input_adjacency
-input_incidence
 

@@ -30,7 +30,3 @@ begin
    5  0 -3 -3
    5 -3  0 -3 
 end
-adjacency
-incidence
-input_adjacency
-input_incidence

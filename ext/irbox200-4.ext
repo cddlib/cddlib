@@ -204,5 +204,3 @@ begin
   1    -27     40    -48 
   1    -31    -29    -23 
 end
-hull
-*for backward compatibility safe to put "hull" option.

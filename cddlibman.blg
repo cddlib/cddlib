@@ -1,0 +1,46 @@
+This is BibTeX, Version 0.99c (Web2C 7.3.1)
+The top-level auxiliary file: cddlibman.aux
+The style file: plain.bst
+Database file #1: fukuda1.bib
+Database file #2: fukuda2.bib
+You've used 16 entries,
+            2118 wiz_defined-function locations,
+            594 strings with 7191 characters,
+and the built_in function-call counts, 4478 in all, are:
+= -- 429
+> -- 204
+< -- 3
++ -- 82
+- -- 63
+* -- 244
+:= -- 761
+add.period$ -- 53
+call.type$ -- 16
+change.case$ -- 72
+chr.to.int$ -- 0
+cite$ -- 16
+duplicate$ -- 174
+empty$ -- 383
+format.name$ -- 63
+if$ -- 946
+int.to.chr$ -- 0
+int.to.str$ -- 16
+missing$ -- 9
+newline$ -- 86
+num.names$ -- 36
+pop$ -- 112
+preamble$ -- 1
+purify$ -- 61
+quote$ -- 0
+skip$ -- 126
+stack$ -- 0
+substring$ -- 184
+swap$ -- 36
+text.length$ -- 3
+text.prefix$ -- 0
+top$ -- 0
+type$ -- 60
+warning$ -- 0
+while$ -- 44
+width$ -- 18
+write$ -- 177

@@ -1,0 +1,32 @@
+* cdd: a double description code:Version 0.90gmp (May 19, 2000)
+* compiled for GMP rational arithmetic.
+* Copyright (C) 1996, Komei Fukuda, fukuda@ifor.math.ethz.ch
+ext_file: Generators
+V-representation
+begin
+ 20 11 rational
+ 1 0 0 0 0 0 0 0 0 0 1
+ 1 1 0 0 0 0 0 0 0 0 0
+ 1 0 1 0 0 0 0 0 0 0 0
+ 1 0 0 1 0 0 0 0 0 0 0
+ 1 0 0 0 1 0 0 0 0 0 0
+ 1 0 0 0 0 1 0 0 0 0 0
+ 1 0 0 0 0 0 1 0 0 0 0
+ 1 0 0 0 0 0 0 1 0 0 0
+ 1 0 0 0 0 0 0 0 1 0 0
+ 1 0 0 0 0 0 0 0 0 1 0
+ 1 0 0 0 0 0 0 0 0 0 -1
+ 1 0 0 0 0 0 0 0 0 -1 0
+ 1 0 0 0 0 0 0 0 -1 0 0
+ 1 0 0 0 0 0 0 -1 0 0 0
+ 1 0 0 0 0 0 -1 0 0 0 0
+ 1 0 0 0 0 -1 0 0 0 0 0
+ 1 0 0 0 -1 0 0 0 0 0 0
+ 1 0 0 -1 0 0 0 0 0 0 0
+ 1 0 -1 0 0 0 0 0 0 0 0
+ 1 -1 0 0 0 0 0 0 0 0 0
+end
+*Computation starts     at Fri May 19 15:45:32 2000
+*            terminates at Fri May 19 15:59:30 2000
+*Total processor time = 838 seconds
+*                     = 0 h 13 m 58 s

@@ -37,8 +37,4 @@ begin
   1   0.              2.              5.2360679775
   1   2.              5.2360679775    0.
 end
-adjacency
-incidence
-input_adjacency
-input_incidence
 

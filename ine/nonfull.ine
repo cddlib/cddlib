@@ -1,5 +1,5 @@
 * filename: nonfull.ine
-* non fulll-dimensional polyhedron
+* non full-dimensional polyhedron
 H-representation
 begin
     6      4    integer
@@ -10,5 +10,3 @@ begin
  -1    0   1   0
  -1    0   0   1
 end
-incidence
-adjacency

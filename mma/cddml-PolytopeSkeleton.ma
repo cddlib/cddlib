@@ -51,7 +51,7 @@ Visualizing Convex Polytope Skeletons (with cddmathlink)
 :[font = subtitle; inactive; preserveAspect]
 Komei Fukuda, fukuda@ifor.math.ethz.ch
 Swiss Federal Institute of Technology, Lausanne and Zurich
-March 14, 1999
+January 9, 2000
 ;[s]
 1:0,0;113,-1;
 1:1,15,12,Times,3,17,0,0,0;
@@ -66,10 +66,10 @@ Off[General::spell1]; Off[General::spell]
 $Path = Append[$Path,"~/Math"]; 
 (*
 :[font = text; inactive; initialization; preserveAspect]
-We use an extra graphics package available from MathSource.    It is called View3D, wrtten by  Tom Wickham-Jones (twj@wri.com). If you install it in a directory which in not in the $Path, you need to append the directory to $Path.
+We use an extra graphics package available from MathSource.    It is called View3D which is a part of ExtendGraphics  package wrtten by  Tom Wickham-Jones .  The package is available at http://www.mathsource.com/.  If you install it in a directory which in not in the $Path, you need to append the directory to $Path.
 ;[s]
-3:0,0;48,1;58,2;230,-1;
-3:1,11,8,Times,0,12,0,0,0;1,10,8,Times,2,12,0,0,0;1,11,8,Times,0,12,0,0,0;
+5:0,0;48,1;58,2;186,3;212,4;318,-1;
+5:1,11,8,Times,0,12,0,0,0;1,10,8,Times,2,12,0,0,0;1,11,8,Times,0,12,0,0,0;1,10,8,Courier,1,12,0,0,0;1,11,8,Times,0,12,0,0,0;
 :[font = input; initialization; preserveAspect; startGroup]
 *)
 $Path

@@ -10,7 +10,3 @@ begin
  1  0 -1  0
  1  0  0 -1
 end
-adjacency
-incidence
-input_adjacency
-input_incidence

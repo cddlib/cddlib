@@ -1,0 +1,136 @@
+/* cddmp.c       (cddlib arithmetic operations using gmp)  */
+/* Copyright: Komei Fukuda 2000, fukuda@ifor.math.ethz.ch  */
+/* Version 090, May 28, 2000                               */
+
+/* This program is free software; you can redistribute it and/or modify
+   it under the terms of the GNU General Public License as published by
+   the Free Software Foundation; either version 2 of the License, or
+   (at your option) any later version.
+
+   This program is distributed in the hope that it will be useful,
+   but WITHOUT ANY WARRANTY; without even the implied warranty of
+   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+   GNU General Public License for more details.
+
+   You should have received a copy of the GNU General Public License
+   along with this program; if not, write to the Free Software
+   Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
+ */
+
+#include "setoper.h"  /* set operation library header (Ver. March 16,1995 or later) */
+#include "cdd.h"
+
+void dd_set_global_constants()
+{
+ dd_init(dd_zero);
+ dd_init(dd_minuszero);
+ dd_init(dd_one);
+ dd_init(dd_purezero);
+#if defined GMPRATIONAL
+ mpq_set_ui(dd_zero,0U,1U);
+ mpq_set_ui(dd_purezero,0U,1U);
+ mpq_set_ui(dd_one,1U,1U);
+#elif defined GMPFLOAT
+ mpf_set_d(dd_zero,dd_almostzero);
+ mpf_set_ui(dd_purezero,0U);
+ mpf_set_ui(dd_one,1U);
+#else
+ dd_zero[0]= dd_almostzero;  /*real zero */
+ dd_purezero[0]= 0.0;
+ dd_one[0]= 1L;
+#endif
+ dd_neg(dd_minuszero,dd_zero);
+}
+
+#if defined GMPRATIONAL
+void ddd_mpq_set_si(mytype a,signed long b)
+{
+  mpz_t nz, dz;
+
+  mpz_init(nz); mpz_init(dz);
+
+  mpz_set_si(nz, b);
+  mpz_set_ui(dz, 1U);
+  mpq_set_num(a, nz);
+  mpq_set_den(a, dz);
+  mpz_clear(nz);  mpz_clear(dz);
+}
+#endif
+
+#if defined CDOUBLE
+void ddd_init(mytype a)   
+{
+  a[0]=0L;
+}
+  
+void ddd_clear(mytype a)
+{
+  a[0]=0L;
+}
+
+void ddd_set(mytype a,mytype b)
+{
+  a[0]=b[0];
+}
+
+void ddd_set_d(mytype a,double b)
+{
+  a[0]=b;
+}
+
+void ddd_set_si(mytype a,signed long b)
+{
+  a[0]=(double)b;
+}
+
+void ddd_add(mytype a,mytype b,mytype c)
+{
+  a[0]=b[0]+c[0];
+}
+
+void ddd_sub(mytype a,mytype b,mytype c)
+{
+  a[0]=b[0]-c[0];
+}
+
+void ddd_mul(mytype a,mytype b,mytype c)
+{
+  a[0]=b[0]*c[0];
+}
+
+void ddd_div(mytype a,mytype b,mytype c)
+{
+  a[0]=b[0]/c[0];
+}
+
+void ddd_neg(mytype a,mytype b)
+{
+  a[0]=-b[0];
+}
+
+void ddd_inv(mytype a,mytype b)
+{
+  a[0]=1/b[0];
+}
+
+int ddd_cmp(mytype a,mytype b)
+{
+  if (a[0]-b[0]>0) return 1;
+  else if (a[0]-b[0]>=0) return 0;
+  else return -1;
+}
+
+int ddd_sgn(mytype a)
+{
+  if (a[0]>0) return 1;
+  else if (a[0]>=0) return 0;
+  else return -1;
+}
+
+double ddd_get_d(mytype a)
+{
+  return a[0];
+}
+#endif
+
+/* end of  cddmp.h  */

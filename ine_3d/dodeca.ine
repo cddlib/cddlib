@@ -16,7 +16,3 @@ begin
   1  1.  0  -0.61803398874989485
   1  -0.61803398874989485  1.  0
 end
-adjacency
-incidence
-input_adjacency
-input_incidence

@@ -1,1 +1,1 @@
-../cddmathlink.tm
+../src/cddmathlink.tm
