@@ -1,7 +1,6 @@
 /* cddcore.c:  Core Procedures for cddlib
    written by Komei Fukuda, fukuda@ifor.math.ethz.ch
-   Version 0.91, Sept. 15, 2000
-   Modified on Feb 14, 2001 (based on a bug report by Marc Pfetsch).
+   Version 0.91b, Feb. 26, 2001
 */
 
 /* cddlib : C-library of the double description method for
@@ -43,7 +42,7 @@ void CheckAdjacency(dd_ConePtr cone,
   if (set_card(Face)< cone->d - 2) {
     *adjacent = FALSE;
     if (localdebug) {
-      printf("non adjacent: set_card(face) %ld < %ld = cone->d.\n",
+      fprintf(stderr,"non adjacent: set_card(face) %ld < %ld = cone->d.\n",
         set_card(Face),cone->d);
     }
     return;
@@ -66,6 +65,7 @@ void Eliminate(dd_ConePtr cone, dd_RayPtr*Ptr)
 {
   /*eliminate the record pointed by Ptr^.Next*/
   dd_RayPtr TempPtr;
+  dd_colrange j;
 
   TempPtr = (*Ptr)->Next;
   (*Ptr)->Next = (*Ptr)->Next->Next;
@@ -73,6 +73,11 @@ void Eliminate(dd_ConePtr cone, dd_RayPtr*Ptr)
     cone->FirstRay = (*Ptr)->Next;
   if (TempPtr == cone->LastRay)   /*Update the last pointer*/
     cone->LastRay = *Ptr;
+
+  /* Added, Marc Pfetsch 010219 */
+  for (j=0;j < cone->d;j++)dd_clear(TempPtr->Ray[j]);
+  dd_clear(TempPtr->ARay);
+
   free(TempPtr->Ray);          /* free the ray vector memory */
   set_free(TempPtr->ZeroSet);  /* free the ZeroSet memory */
   free(TempPtr);   /* free the dd_Ray structure memory */
@@ -101,7 +106,8 @@ void AValue(mytype *val, dd_colrange d_size, dd_Amatrix A, mytype *p, dd_rowrang
   mytype x;
 
   dd_init(x); 
-  dd_init(*val);
+  dd_set(*val,dd_purezero); /* Changed by Marc Pfetsch 010219 */
+
   for (j = 0; j < d_size; j++){
     dd_mul(x,A[i - 1][j], p[j]);
     dd_add(*val, *val, x);
@@ -128,25 +134,25 @@ void StoreRay1(dd_ConePtr cone, mytype *p, boolean *feasible)
     k=cone->OrderVector[i];
     AValue(&temp, cone->d, cone->A, p, k);
     if (localdebug) {
-      printf("StoreRay1: AValue at row %ld =",k);
-      dd_WriteNumber(stdout, temp);
-      printf("\n");
+      fprintf(stderr,"StoreRay1: AValue at row %ld =",k);
+      dd_WriteNumber(stderr, temp);
+      fprintf(stderr,"\n");
     }
     if (dd_EqualToZero(temp)) {
       set_addelem(RR->ZeroSet, k);
       if (localdebug) {
-        printf("recognized zero!\n");
+        fprintf(stderr,"recognized zero!\n");
       }
     }
     if (dd_Negative(temp)){
       if (localdebug) {
-        printf("recognized negative!\n");
+        fprintf(stderr,"recognized negative!\n");
       }
       *feasible = FALSE;
       if (fii>cone->m) fii=i;  /* the first violating inequality index */
       if (localdebug) {
-        printf("this ray is not feasible, neg comp = %ld\n", fii);
-        dd_WriteNumber(stdout, temp);  printf("\n");
+        fprintf(stderr,"this ray is not feasible, neg comp = %ld\n", fii);
+        dd_WriteNumber(stderr, temp);  fprintf(stderr,"\n");
       }
     }
   }
@@ -210,7 +216,7 @@ void AddRay(dd_ConePtr cone, mytype *p)
     for (j=0; j<cone->d; j++) dd_init(cone->FirstRay->Ray[j]);
     dd_init(cone->FirstRay->ARay);
     if (debug)
-      printf("Create the first ray pointer\n");
+      fprintf(stderr,"Create the first ray pointer\n");
     cone->LastRay = cone->FirstRay;
     cone->ArtificialRay->Next = cone->FirstRay;
   } else {
@@ -218,7 +224,7 @@ void AddRay(dd_ConePtr cone, mytype *p)
     cone->LastRay->Next->Ray = (mytype *) calloc(cone->d, sizeof(mytype));
     for (j=0; j<cone->d; j++) dd_init(cone->LastRay->Next->Ray[j]);
     dd_init(cone->LastRay->Next->ARay);
-    if (debug) printf("Create a new ray pointer\n");
+    if (debug) fprintf(stderr,"Create a new ray pointer\n");
     cone->LastRay = cone->LastRay->Next;
   }
   cone->LastRay->Next = NULL;
@@ -226,7 +232,7 @@ void AddRay(dd_ConePtr cone, mytype *p)
   cone->TotalRayCount++;
   if (debug) {
     if (cone->TotalRayCount % 100 == 0) {
-      printf("*Rays (Total, Currently Active, Feasible) =%8ld%8ld%8ld\n",
+      fprintf(stderr,"*Rays (Total, Currently Active, Feasible) =%8ld%8ld%8ld\n",
 	 cone->TotalRayCount, cone->RayCount, cone->FeasibleRayCount);
     }
   }
@@ -253,7 +259,7 @@ void AddArtificialRay(dd_ConePtr cone)
   if (cone->d<=0) d1=1; else d1=cone->d;
   dd_InitializeArow(d1, &zerovector);
   if (cone->ArtificialRay != NULL) {
-    printf("Warning !!!  FirstRay in not nil.  Illegal Call\n");
+    fprintf(stderr,"Warning !!!  FirstRay in not nil.  Illegal Call\n");
     free(zerovector); /* 086 */
     return;
   }
@@ -262,11 +268,8 @@ void AddArtificialRay(dd_ConePtr cone)
   for (j=0; j<d1; j++) dd_init(cone->ArtificialRay->Ray[j]);
   dd_init(cone->ArtificialRay->ARay);
 
-  if (debug)
-    printf("Create the artificial ray pointer\n");
-  for (j = 0; j < d1; j++){
-    dd_init(zerovector[j]);
-  }
+  if (debug) fprintf(stderr,"Create the artificial ray pointer\n");
+
   cone->LastRay=cone->ArtificialRay;
   StoreRay1(cone, zerovector, &feasible);  
     /* This stores a vector to the record pointed by cone->LastRay */
@@ -313,14 +316,14 @@ void ConditionalAddEdge(dd_ConePtr cone,
   ZSmin = Rmin->ZeroSet;
   ZSmax = Rmax->ZeroSet;
   if (localdebug) {
-    printf("ConditionalAddEdge: FMIN = %ld (row%ld)   FMAX=%ld\n",
+    fprintf(stderr,"ConditionalAddEdge: FMIN = %ld (row%ld)   FMAX=%ld\n",
       fmin, cone->OrderVector[fmin], fmax);
   }
   if (fmin==fmax){
-    if (localdebug) printf("ConditionalAddEdge: equal FII value-> No edge added\n");
+    if (localdebug) fprintf(stderr,"ConditionalAddEdge: equal FII value-> No edge added\n");
   }
   else if (set_member(cone->OrderVector[fmin],ZSmax)){
-    if (localdebug) printf("ConditionalAddEdge: No strong separation -> No edge added\n");
+    if (localdebug) fprintf(stderr,"ConditionalAddEdge: No strong separation -> No edge added\n");
   }
   else {  /* the pair will be separated at the iteration fmin */
     lastchance=TRUE;
@@ -328,12 +331,12 @@ void ConditionalAddEdge(dd_ConePtr cone,
     set_int(Face1, ZSmax, ZSmin);
     (cone->count_int)++;
     if (localdebug){
-      printf("Face: ");
+      fprintf(stderr,"Face: ");
       for (it=1; it<=cone->m; it++) {
         it_row=cone->OrderVector[it];
-        if (set_member(it_row, Face1)) printf("%ld ",it_row);
+        if (set_member(it_row, Face1)) fprintf(stderr,"%ld ",it_row);
       }
-      printf("\n");
+      fprintf(stderr,"\n");
     }
     for (it=cone->Iteration+1; it < fmin && lastchance; it++){
       it_row=cone->OrderVector[it];
@@ -341,7 +344,7 @@ void ConditionalAddEdge(dd_ConePtr cone,
         lastchance=FALSE;
         (cone->count_int_bad)++;
         if (localdebug){
-          printf("There will be another chance iteration %ld (row %ld) to store the pair\n", it, it_row);
+          fprintf(stderr,"There will be another chance iteration %ld (row %ld) to store the pair\n", it, it_row);
         }
       }
     }
@@ -351,14 +354,14 @@ void ConditionalAddEdge(dd_ConePtr cone,
       /* adjacent checking */
       set_int(Face, Face1, cone->AddedHalfspaces);
       if (localdebug){
-        printf("Check adjacency\n");
-        printf("AddedHalfspaces: "); set_write(cone->AddedHalfspaces);
-        printf("Face: ");
+        fprintf(stderr,"Check adjacency\n");
+        fprintf(stderr,"AddedHalfspaces: "); set_fwrite(stderr,cone->AddedHalfspaces);
+        fprintf(stderr,"Face: ");
         for (it=1; it<=cone->m; it++) {
           it_row=cone->OrderVector[it];
-          if (set_member(it_row, Face)) printf("%ld ",it_row);
+          if (set_member(it_row, Face)) fprintf(stderr,"%ld ",it_row);
         }
-        printf("\n");
+        fprintf(stderr,"\n");
       }
       if (set_card(Face)< cone->d - 2) {
         adjacent = FALSE;
@@ -372,7 +375,7 @@ void ConditionalAddEdge(dd_ConePtr cone,
           if (TempRay != Ray1 && TempRay != Ray2) {
             set_int(Face1, TempRay->ZeroSet, cone->AddedHalfspaces);
             if (set_subset(Face, Face1)) {
-              if (localdebug) set_write(Face1);
+              if (localdebug) set_fwrite(stderr,Face1);
               adjacent = FALSE;
             }
           }
@@ -380,7 +383,7 @@ void ConditionalAddEdge(dd_ConePtr cone,
         }
       }
       if (adjacent){
-        if (localdebug) printf("The pair is adjacent and the pair must be stored for iteration %ld (row%ld)\n",
+        if (localdebug) fprintf(stderr,"The pair is adjacent and the pair must be stored for iteration %ld (row%ld)\n",
           fmin, cone->OrderVector[fmin]);
         NewEdge=(dd_AdjacencyPtr) malloc(sizeof *NewEdge);
         NewEdge->Ray1=Rmax;  /* save the one remains in iteration fmin in the first */
@@ -390,7 +393,7 @@ void ConditionalAddEdge(dd_ConePtr cone,
         (cone->TotalEdgeCount)++;
         if (cone->Edges[fmin]==NULL){
           cone->Edges[fmin]=NewEdge;
-          if (localdebug) printf("Create a new edge list of %ld\n", fmin);
+          if (localdebug) fprintf(stderr,"Create a new edge list of %ld\n", fmin);
         }else{
           NewEdge->Next=cone->Edges[fmin];
           cone->Edges[fmin]=NewEdge;
@@ -409,7 +412,7 @@ void CreateInitialEdges(dd_ConePtr cone)
 
   cone->Iteration=cone->d;  /* CHECK */
   if (cone->FirstRay ==NULL || cone->LastRay==NULL){
-  /*  printf("Warning: CreateInitialEdges called with NULL pointer(s)\n"); */
+    /* fprintf(stderr,"Warning: CreateInitialEdges called with NULL pointer(s)\n"); */
     goto _L99;
   }
   Ptr1=cone->FirstRay;
@@ -419,7 +422,7 @@ void CreateInitialEdges(dd_ConePtr cone)
     while(Ptr2!=NULL){
       fii2=Ptr2->FirstInfeasIndex;
       count++;
-      if (localdebug) printf("CreateInitialEdges: edge %ld \n",count);
+      if (localdebug) fprintf(stderr,"CreateInitialEdges: edge %ld \n",count);
       CheckAdjacency(cone, &Ptr1, &Ptr2, &adj);
       if (fii1!=fii2 && adj) 
         ConditionalAddEdge(cone, Ptr1, Ptr2, cone->FirstRay);
@@ -446,7 +449,7 @@ void UpdateEdges(dd_ConePtr cone, dd_RayPtr RRbegin, dd_RayPtr RRend)
   totalpairs=(cone->ZeroRayCount-1.0)*(cone->ZeroRayCount-2.0)+1.0;
   Ptr2begin = NULL; 
   if (RRbegin ==NULL || RRend==NULL){
-    if (1) printf("Warning: UpdateEdges called with NULL pointer(s)\n");
+    if (1) fprintf(stderr,"Warning: UpdateEdges called with NULL pointer(s)\n");
     goto _L99;
   }
   Ptr1=RRbegin;
@@ -467,7 +470,7 @@ void UpdateEdges(dd_ConePtr cone, dd_RayPtr RRbegin, dd_RayPtr RRend)
       quit=FALSE;
       for (Ptr2=Ptr2begin; !quit ; Ptr2=Ptr2->Next){
         count++;
-        if (localdebug) printf("UpdateEdges: edge %ld \n",count);
+        if (localdebug) fprintf(stderr,"UpdateEdges: edge %ld \n",count);
         ConditionalAddEdge(cone, Ptr1,Ptr2,RRbegin);
         if (Ptr2==RRend || Ptr2->Next==NULL) quit=TRUE;
       }
@@ -476,7 +479,7 @@ void UpdateEdges(dd_ConePtr cone, dd_RayPtr RRbegin, dd_RayPtr RRend)
     pos1++;
     workleft = 100.0 * (cone->ZeroRayCount-pos1) * (cone->ZeroRayCount - pos1-1.0) / totalpairs;
     if (cone->ZeroRayCount>=500 && debug && pos1%10 ==0 && prevworkleft-workleft>=10 ) {
-      printf("*Work of iteration %5ld(/%ld): %4ld/%4ld => %4.1f%% left\n",
+      fprintf(stderr,"*Work of iteration %5ld(/%ld): %4ld/%4ld => %4.1f%% left\n",
 	     cone->Iteration, cone->m, pos1, cone->ZeroRayCount, workleft);
       prevworkleft=workleft;
     }    
@@ -488,7 +491,7 @@ void FreeDDMemory0(dd_ConePtr cone)
 {
   dd_RayPtr Ptr, PrevPtr;
   long count;
-  dd_rowrange i;
+  dd_colrange j;
   boolean localdebug=FALSE;
   
   /* THIS SHOULD BE REWRITTEN carefully */
@@ -496,6 +499,10 @@ void FreeDDMemory0(dd_ConePtr cone)
   if (PrevPtr!=NULL){
     count=0;
     for (Ptr=cone->ArtificialRay->Next; Ptr!=NULL; Ptr=Ptr->Next){
+      /* Added Marc Pfetsch 2/19/01 */
+      for (j=0;j < cone->d;j++)dd_clear(PrevPtr->Ray[j]);
+      dd_clear(PrevPtr->ARay);
+
       free(PrevPtr->Ray);
       free(PrevPtr->ZeroSet);
       free(PrevPtr);
@@ -503,16 +510,18 @@ void FreeDDMemory0(dd_ConePtr cone)
       PrevPtr=Ptr;
     };
     cone->FirstRay=NULL;
-/* must add (by Sato) */
+    /* Added Marc Pfetsch 010219 */
+    for (j=0;j < cone->d;j++)dd_clear(cone->LastRay->Ray[j]);
+    dd_clear(cone->LastRay->ARay);
+
     free(cone->LastRay->Ray);
     cone->LastRay->Ray = NULL;
     set_free(cone->LastRay->ZeroSet);
     cone->LastRay->ZeroSet = NULL;
     free(cone->LastRay);
-/*    */
     cone->LastRay = NULL;
     cone->ArtificialRay=NULL;
-    if (localdebug) printf("%ld ray storage spaces freed\n",count);
+    if (localdebug) fprintf(stderr,"%ld ray storage spaces freed\n",count);
   }
 /* must add (by Sato) */
   free(cone->Edges);
@@ -531,13 +540,8 @@ void FreeDDMemory0(dd_ConePtr cone)
   dd_FreeBmatrix(cone->d_alloc,cone->B);
   dd_FreeBmatrix(cone->d_alloc,cone->Bsave);
 
-/*must replace (by Sato) */
-  for (i=0; i<cone->m_alloc; i++){
-    free(cone->A[i]);
-    cone->A[i] = NULL;
-  }
-
-  free(cone->A);
+/* Fixed by Marc Pfetsch 010219*/
+  dd_FreeAmatrix(cone->m_alloc,cone->d_alloc,cone->A);
   cone->A = NULL;
 
   free(cone);
@@ -602,13 +606,16 @@ void ZeroIndexSet(dd_rowrange m_size, dd_colrange d_size, dd_Amatrix A, mytype *
   dd_rowrange i;
   mytype temp;
 
+  /* Changed by Marc Pfetsch 010219 */
+  dd_init(temp);
   set_emptyset(ZS);
   for (i = 1; i <= m_size; i++) {
     AValue(&temp, d_size, A, x, i);
-/*    if (fabs(temp) < zero)*/
-    if (dd_EqualToZero(temp))
-      set_addelem(ZS, i);
+    if (dd_EqualToZero(temp)) set_addelem(ZS, i);
   }
+
+  /* Changed by Marc Pfetsch 010219 */
+  dd_clear(temp);
 }
 
 void CopyBmatrix(dd_colrange d_size, dd_Bmatrix T, dd_Bmatrix TCOPY)
@@ -655,7 +662,6 @@ void dd_InitializeArow(dd_colrange d,dd_Arow *a)
 void dd_InitializeAmatrix(dd_rowrange m,dd_colrange d,dd_Amatrix *A)
 {
   dd_rowrange i;
-  dd_colrange j;
 
   if (m>0) (*A)=(mytype**) calloc(m,sizeof(mytype*));
   for (i = 0; i < m; i++) {
@@ -771,8 +777,8 @@ void dd_FreeSetFamily(dd_SetFamilyPtr F)
 dd_MatrixPtr dd_CreateMatrix(dd_rowrange m_size,dd_colrange d_size)
 {
   dd_MatrixPtr M;
-  dd_rowrange i,m0,m1;
-  dd_colrange j,d0,d1;
+  dd_rowrange m0,m1;
+  dd_colrange d0,d1;
 
   if (m_size<=0){ 
     m0=0; m1=1;  
@@ -837,16 +843,16 @@ void ColumnReduce(dd_ConePtr cone)
         for (i=1; i<=cone->m; i++) dd_set(cone->A[i-1][j1-1],cone->A[i-1][j-1]);
         cone->newcol[j]=j1;
         if (localdebug){
-          printf("shifting the column %ld to column %ld\n", j, j1);
+          fprintf(stderr,"shifting the column %ld to column %ld\n", j, j1);
         }
           /* shifting forward */
       }
     } else {
       cone->newcol[j]=0;
       if (localdebug) {
-        printf("a generator (or an equation) of the linearity space: ");
-        for (i=1; i<=cone->d; i++) dd_WriteNumber(stdout, cone->B[i-1][j-1]);
-        printf("\n");
+        fprintf(stderr,"a generator (or an equation) of the linearity space: ");
+        for (i=1; i<=cone->d; i++) dd_WriteNumber(stderr, cone->B[i-1][j-1]);
+        fprintf(stderr,"\n");
       }
     }
   }
@@ -876,7 +882,7 @@ void FindBasis(dd_ConePtr cone, long *rank)
       SelectPivot2(cone->m, cone->d,cone->A,cone->B,cone->HalfspaceOrder,cone->OrderVector,
        cone->EqualitySet,cone->m, NopivotRow, ColSelected, &r, &s, &chosen);
       if (debug && chosen) 
-        printf("Procedure FindBasis: pivot on (r,s) =(%ld, %ld).\n", r, s);
+        fprintf(stderr,"Procedure FindBasis: pivot on (r,s) =(%ld, %ld).\n", r, s);
       if (chosen) {
         set_addelem(cone->InitialHalfspaces, r);
         set_addelem(NopivotRow, r);
@@ -884,7 +890,7 @@ void FindBasis(dd_ConePtr cone, long *rank)
         cone->InitialRayIndex[s]=r;    /* cone->InitialRayIndex[s] stores the corr. row index */
         (*rank)++;
         GaussianColumnPivot(cone->m, cone->d, cone->A, cone->B, r, s);
-        if (localdebug) dd_WriteBmatrix(stdout,cone->d,cone->B);
+        if (localdebug) dd_WriteBmatrix(stderr,cone->d,cone->B);
       } else {
         stop=TRUE;
       }
@@ -910,24 +916,24 @@ void FindInitialRays(dd_ConePtr cone, boolean *found)
     cone->PreOrderedRun=FALSE;
   }
   else cone->PreOrderedRun=TRUE;
-  if (debug) dd_WriteBmatrix(stdout, cone->d, cone->B);
+  if (debug) dd_WriteBmatrix(stderr, cone->d, cone->B);
   for (i = 1; i <= cone->m; i++)
     if (!set_member(i,cone->NonequalitySet)) set_addelem(CandidateRows, i);
     /*all rows not in NonequalitySet are candidates for initial cone*/
   FindBasis(cone, &rank);
-  if (debug) dd_WriteBmatrix(stdout, cone->d, cone->B);
-  if (debug) printf("FindInitialRays: rank of Amatrix = %ld\n", rank);
+  if (debug) dd_WriteBmatrix(stderr, cone->d, cone->B);
+  if (debug) fprintf(stderr,"FindInitialRays: rank of Amatrix = %ld\n", rank);
   cone->LinearityDim=cone->d - rank;
-  if (debug) printf("Linearity Dimension = %ld\n", cone->LinearityDim);
+  if (debug) fprintf(stderr,"Linearity Dimension = %ld\n", cone->LinearityDim);
   if (cone->LinearityDim > 0) {
      ColumnReduce(cone);
      FindBasis(cone, &rank);
   }
   if (!set_subset(cone->EqualitySet,cone->InitialHalfspaces)) {
     if (debug) {
-      printf("Equality set is dependent. Equality Set and an initial basis:\n");
-      set_write(cone->EqualitySet);
-      set_write(cone->InitialHalfspaces);
+      fprintf(stderr,"Equality set is dependent. Equality Set and an initial basis:\n");
+      set_fwrite(stderr,cone->EqualitySet);
+      set_fwrite(stderr,cone->InitialHalfspaces);
     };
   }
   *found = TRUE;
@@ -947,7 +953,7 @@ void CheckEquality(dd_colrange d_size, dd_RayPtr*RP1, dd_RayPtr*RP2, boolean *eq
   long j;
 
   if (debug)
-    printf("Check equality of two rays\n");
+    fprintf(stderr,"Check equality of two rays\n");
   *equal = TRUE;
   j = 1;
   while (j <= d_size && *equal) {
@@ -956,7 +962,7 @@ void CheckEquality(dd_colrange d_size, dd_RayPtr*RP1, dd_RayPtr*RP2, boolean *eq
     j++;
   }
   if (*equal)
-    printf("Equal records found !!!!\n");
+    fprintf(stderr,"Equal records found !!!!\n");
 }
 
 void CreateNewRay(dd_ConePtr cone, 
@@ -983,24 +989,24 @@ void CreateNewRay(dd_ConePtr cone,
   AValue(&a1, cone->d, cone->A, Ptr1->Ray, ii);
   AValue(&a2, cone->d, cone->A, Ptr2->Ray, ii);
   if (localdebug) {
-    printf("CreatNewRay: Ray1 ="); WriteArow(stdout, cone->d, Ptr1->Ray);
-    printf("CreatNewRay: Ray2 ="); WriteArow(stdout, cone->d, Ptr2->Ray);
+    fprintf(stderr,"CreatNewRay: Ray1 ="); WriteArow(stderr, cone->d, Ptr1->Ray);
+    fprintf(stderr,"CreatNewRay: Ray2 ="); WriteArow(stderr, cone->d, Ptr2->Ray);
   }
   dd_abs(v1,a1);
   dd_abs(v2,a2);
   if (localdebug){
-    printf("AValue1 and ABS");  dd_WriteNumber(stdout,a1); dd_WriteNumber(stdout,v1); printf("\n");
-    printf("AValue2 and ABS");  dd_WriteNumber(stdout,a2); dd_WriteNumber(stdout,v2); printf("\n");
+    fprintf(stderr,"AValue1 and ABS");  dd_WriteNumber(stderr,a1); dd_WriteNumber(stderr,v1); fprintf(stderr,"\n");
+    fprintf(stderr,"AValue2 and ABS");  dd_WriteNumber(stderr,a2); dd_WriteNumber(stderr,v2); fprintf(stderr,"\n");
   }
   for (j = 0; j < cone->d; j++){
     dd_lincomb(NewRay[j], Ptr1->Ray[j],v2,Ptr2->Ray[j],v1);
   }
   if (localdebug) {
-    printf("CreatNewRay: New ray ="); WriteArow(stdout, cone->d, NewRay);
+    fprintf(stderr,"CreatNewRay: New ray ="); WriteArow(stderr, cone->d, NewRay);
   }
   Normalize(cone->d, NewRay);
   if (localdebug) {
-    printf("CreatNewRay: Normalized ray ="); WriteArow(stdout, cone->d, NewRay);
+    fprintf(stderr,"CreatNewRay: Normalized ray ="); WriteArow(stderr, cone->d, NewRay);
   }
   AddRay(cone, NewRay);
   dd_clear(a1); dd_clear(a2); dd_clear(v1); dd_clear(v2);
@@ -1021,7 +1027,7 @@ void EvaluateARay1(dd_rowrange i, dd_ConePtr cone)
   Ptr = cone->FirstRay;
   PrevPtr = cone->ArtificialRay;
   if (PrevPtr->Next != Ptr) {
-    printf("Error.  Artificial Ray does not point to FirstRay!!!\n");
+    fprintf(stderr,"Error.  Artificial Ray does not point to FirstRay!!!\n");
   }
   while (Ptr != NULL) {
     dd_set(temp,dd_purezero);
@@ -1032,7 +1038,7 @@ void EvaluateARay1(dd_rowrange i, dd_ConePtr cone)
     dd_set(Ptr->ARay,temp);
 /*    if ( temp <= -zero && Ptr != cone->FirstRay) {*/
     if ( dd_Negative(temp) && Ptr != cone->FirstRay) {
-      /* printf("Moving an infeasible record w.r.t. %ld to FirstRay\n",i); */
+      /* fprintf(stderr,"Moving an infeasible record w.r.t. %ld to FirstRay\n",i); */
       if (Ptr==cone->LastRay) cone->LastRay=PrevPtr;
       TempPtr=Ptr;
       Ptr = Ptr->Next;
@@ -1062,6 +1068,7 @@ void EvaluateARay2(dd_rowrange i, dd_ConePtr cone)
   dd_RayPtr Ptr, NextPtr;
   boolean zerofound=FALSE,negfound=FALSE,posfound=FALSE;
 
+  if (cone==NULL || cone->TotalRayCount<=0) goto _L99;  
   dd_init(temp); dd_init(tnext);
   cone->PosHead=NULL;cone->ZeroHead=NULL;cone->NegHead=NULL;
   cone->PosLast=NULL;cone->ZeroLast=NULL;cone->NegLast=NULL;
@@ -1152,6 +1159,7 @@ void EvaluateARay2(dd_rowrange i, dd_ConePtr cone)
   cone->ArtificialRay->Next=cone->FirstRay;
   cone->LastRay->Next=NULL;
   dd_clear(temp); dd_clear(tnext);
+  _L99:;  
 }
 
 void DeleteNegativeRays(dd_ConePtr cone)
@@ -1175,7 +1183,7 @@ void DeleteNegativeRays(dd_ConePtr cone)
   PrevPtr= cone->ArtificialRay;
   Ptr = cone->FirstRay;
   if (PrevPtr->Next != Ptr) 
-    printf("Error at DeleteNegativeRays: ArtificialRay does not point the FirstRay.\n");
+    fprintf(stderr,"Error at DeleteNegativeRays: ArtificialRay does not point the FirstRay.\n");
   completed=FALSE;
   while (Ptr != NULL && !completed){
 /*    if ( (Ptr->ARay) < -zero ){ */
@@ -1194,11 +1202,11 @@ void DeleteNegativeRays(dd_ConePtr cone)
   while (Ptr != NULL) {
     NextPtr=Ptr->Next;  /* remember the Next record */
     dd_set(temp,Ptr->ARay);
-    if (localdebug) {printf("Ptr->ARay :"); dd_WriteNumber(stdout, temp);}
+    if (localdebug) {fprintf(stderr,"Ptr->ARay :"); dd_WriteNumber(stderr, temp);}
 /*    if ( temp < -zero) {*/
     if ( dd_Negative(temp)) {
       if (!negfound){
-        printf("Error: An infeasible ray found after their removal\n");
+        fprintf(stderr,"Error: An infeasible ray found after their removal\n");
         negfound=TRUE;
       }
     }
@@ -1232,7 +1240,7 @@ void DeleteNegativeRays(dd_ConePtr cone)
           }
           else ZeroPtr1=ZeroPtr0;
         }
-        /* printf("insert position found \n %d  index %ld\n",found, fiitest); */
+        /* fprintf(stderr,"insert position found \n %d  index %ld\n",found, fiitest); */
         if (!found){           /* the new record must be stored at the end of list */
           cone->ZeroLast->Next=Ptr;
           cone->ZeroLast=Ptr;
@@ -1240,12 +1248,12 @@ void DeleteNegativeRays(dd_ConePtr cone)
         }
         else{
           if (ZeroPtr1==NULL){ /* store the new one at the head, and update the head ptr */
-            /* printf("Insert at the head\n"); */
+            /* fprintf(stderr,"Insert at the head\n"); */
             Ptr->Next=cone->ZeroHead;
             cone->ZeroHead=Ptr;
           }
           else{                /* store the new one inbetween ZeroPtr1 and 0 */
-            /* printf("Insert inbetween\n");  */
+            /* fprintf(stderr,"Insert inbetween\n");  */
             Ptr->Next=ZeroPtr1->Next;
             ZeroPtr1->Next=Ptr;
           }
@@ -1400,7 +1408,7 @@ void AddNewHalfspace1(dd_ConePtr cone, dd_rowrange hnew)
     pos1++;
     progress = 100.0 * ((double)pos1 / pos2) * (2.0 * pos2 - pos1) / pos2;
     if (progress-prevprogress>=10 && pos1%10==0 && debug) {
-      printf("*Progress of iteration %5ld(/%ld):   %4ld/%4ld => %4.1f%% done\n",
+      fprintf(stderr,"*Progress of iteration %5ld(/%ld):   %4ld/%4ld => %4.1f%% done\n",
 	     cone->Iteration, cone->m, pos1, pos2, progress);
       prevprogress=progress;
     }
@@ -1433,14 +1441,14 @@ void AddNewHalfspace2(dd_ConePtr cone, dd_rowrange hnew)
   
   if (localdebug){
     pos1=0;
-    printf("(pos, FirstInfeasIndex, A Ray)=\n");
+    fprintf(stderr,"(pos, FirstInfeasIndex, A Ray)=\n");
     for (RayPtr0=cone->FirstRay; RayPtr0!=NULL; RayPtr0=RayPtr0->Next){
       pos1++;
-      printf("(%ld,%ld,",pos1,RayPtr0->FirstInfeasIndex);
-      dd_WriteNumber(stdout,RayPtr0->ARay); 
-      printf(") ");
+      fprintf(stderr,"(%ld,%ld,",pos1,RayPtr0->FirstInfeasIndex);
+      dd_WriteNumber(stderr,RayPtr0->ARay); 
+      fprintf(stderr,") ");
    }
-    printf("\n");
+    fprintf(stderr,"\n");
   }
   
   if (cone->ZeroHead==NULL) cone->ZeroHead=cone->LastRay;
@@ -1467,7 +1475,7 @@ void AddNewHalfspace2(dd_ConePtr cone, dd_rowrange hnew)
 
   if (cone->Iteration<cone->m){
     if (cone->ZeroHead!=NULL && cone->ZeroHead!=cone->LastRay){
-      if (cone->ZeroRayCount>200 && debug) printf("*New edges being scanned...\n");
+      if (cone->ZeroRayCount>200 && debug) fprintf(stderr,"*New edges being scanned...\n");
       UpdateEdges(cone, cone->ZeroHead, cone->LastRay);
     }
   }
@@ -1534,7 +1542,7 @@ void SelectNextHalfspace2(dd_ConePtr cone, dd_rowset excluded, dd_rowrange *hnex
     }
   }
   if (debug) {
-    printf("*infeasible rays (min) =%5ld, #feas rays =%5ld\n", infmin, fi);
+    fprintf(stderr,"*infeasible rays (min) =%5ld, #feas rays =%5ld\n", infmin, fi);
   }
 }
 
@@ -1555,7 +1563,7 @@ void SelectNextHalfspace3(dd_ConePtr cone, dd_rowset excluded, dd_rowrange *hnex
     }
   }
   if (debug) {
-    printf("*infeasible rays (max) =%5ld, #feas rays =%5ld\n", infmax, fi);
+    fprintf(stderr,"*infeasible rays (max) =%5ld, #feas rays =%5ld\n", infmax, fi);
   }
 }
 
@@ -1584,9 +1592,9 @@ void SelectNextHalfspace4(dd_ConePtr cone, dd_rowset excluded, dd_rowrange *hnex
   if (!debug)
     return;
   if (max == fi) {
-    printf("*infeasible rays (min) =%5ld, #feas rays =%5ld\n", infi, fi);
+    fprintf(stderr,"*infeasible rays (min) =%5ld, #feas rays =%5ld\n", infi, fi);
   } else {
-    printf("*infeasible rays (max) =%5ld, #feas rays =%5ld\n", infi, fi);
+    fprintf(stderr,"*infeasible rays (max) =%5ld, #feas rays =%5ld\n", infi, fi);
   }
 }
 
@@ -1692,11 +1700,11 @@ void RandomPermutation(dd_rowindex OV, long t, unsigned int seed)
     u=r/rand_max;
     xk=j*u +1;
     k=xk;
-    if (localdebug) printf("u=%g, k=%ld, r=%g, randmax= %g\n",u,k,r,rand_max);
+    if (localdebug) fprintf(stderr,"u=%g, k=%ld, r=%g, randmax= %g\n",u,k,r,rand_max);
     ovj=OV[j];
     OV[j]=OV[k];
     OV[k]=ovj;
-    if (localdebug) printf("row %ld is exchanged with %ld\n",j,k); 
+    if (localdebug) fprintf(stderr,"row %ld is exchanged with %ld\n",j,k); 
   }
 }
 
@@ -1751,14 +1759,14 @@ in highest order.
   if (debug) localdebug=TRUE;
   found=TRUE;
   rr=set_card(PriorityRows);
-  if (localdebug) set_write(PriorityRows);
+  if (localdebug) set_fwrite(stderr,PriorityRows);
   for (i=1; i<=rr; i++){
     found=FALSE;
     for (j=i; j<=cone->m && !found; j++){
       oj=cone->OrderVector[j];
       if (set_member(oj, PriorityRows)){
         found=TRUE;
-        if (localdebug) printf("%ldth in sorted list (row %ld) is in PriorityRows\n", j, oj);
+        if (localdebug) fprintf(stderr,"%ldth in sorted list (row %ld) is in PriorityRows\n", j, oj);
         j1=j;
       }
     }
@@ -1768,13 +1776,13 @@ in highest order.
         for (k=j1; k>=i; k--) cone->OrderVector[k]=cone->OrderVector[k-1];
         cone->OrderVector[i]=oj;
         if (localdebug){
-          printf("OrderVector updated to:\n");
-          for (j = 1; j <= cone->m; j++) printf(" %2ld", cone->OrderVector[j]);
-          printf("\n");
+          fprintf(stderr,"OrderVector updated to:\n");
+          for (j = 1; j <= cone->m; j++) fprintf(stderr," %2ld", cone->OrderVector[j]);
+          fprintf(stderr,"\n");
         }
       }
     } else {
-      printf("UpdateRowOrder: Error.\n");
+      fprintf(stderr,"UpdateRowOrder: Error.\n");
       goto _L99;
     }
   }
@@ -1796,13 +1804,13 @@ void SelectNextHalfspace(dd_ConePtr cone, dd_rowset excluded, dd_rowrange *hh)
 {
   if (cone->PreOrderedRun){
     if (debug) {
-      printf("debug SelectNextHalfspace: Use PreorderNext\n");
+      fprintf(stderr,"debug SelectNextHalfspace: Use PreorderNext\n");
     }
     SelectPreorderedNext(cone, excluded, hh);
   }
   else {
     if (debug) {
-      printf("debug SelectNextHalfspace: Use DynamicOrderedNext\n");
+      fprintf(stderr,"debug SelectNextHalfspace: Use DynamicOrderedNext\n");
     }
 
     switch (cone->HalfspaceOrder) {

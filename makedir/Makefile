@@ -29,6 +29,7 @@ RL=ranlib
 # ----------- cddlib Compilation Environment ---------- 
 # Compiler options
 CFLAGS = -g -O3
+#CFLAGS = -g -DDEBUGMEM
 #CFLAGS = -pg -Wall -O
 #CFLAGS = -O3
 

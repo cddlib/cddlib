@@ -1,6 +1,6 @@
 /* simplecdd.c: Main test program to call the cdd library cddlib
    written by Komei Fukuda, fukuda@ifor.math.ethz.ch
-   Version 0.91, Sept. 15, 2000
+   Version 0.91b, Feb. 26, 2001
    Standard ftp site: ftp.ifor.math.ethz.ch, Directory: pub/fukuda/cdd
 */
 

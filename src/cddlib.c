@@ -1,6 +1,6 @@
 /* cddlib.c: cdd library  (library version of cdd)
    written by Komei Fukuda, fukuda@ifor.math.ethz.ch
-   Version 0.91a, Feb. 16, 2000
+   Version 0.91b, Feb. 26, 2001
    Standard ftp site: ftp.ifor.math.ethz.ch, Directory: pub/fukuda/cdd
 */
 
@@ -78,15 +78,16 @@ void DDMain(dd_ConePtr cone)
     goto _L99;
   }
   if (localdebug) {
-     fprintf(stdout,"\nRunning cddlib in NOISY mode.  To turn off the console output below,\nSet localdebug=FALSE in the procedure DDMain of cddlib.c.\n");
-     fprintf(stdout,"(Initially added rows ) = ");
-     set_fwrite(stdout,cone->InitialHalfspaces);
+     fprintf(stderr,"(Initially added rows ) = ");
+     set_fwrite(stderr,cone->InitialHalfspaces);
   }
-  while (cone->Iteration <= cone->m) {
+  while (cone->CompStatus!=AllFound && 
+         cone->CompStatus!=RegionEmpty &&
+         cone->Iteration <= cone->m) {
     SelectNextHalfspace(cone, cone->WeaklyAddedHalfspaces, &hh);
     if (set_member(hh,cone->NonequalitySet)){  /* Skip the row hh */
       if (debug) {
-        printf("*The row # %3ld should be inactive and thus skipped.\n", hh);
+        fprintf(stderr,"*The row # %3ld should be inactive and thus skipped.\n", hh);
       }
       set_addelem(cone->WeaklyAddedHalfspaces, hh);
     } else {
@@ -107,7 +108,7 @@ void DDMain(dd_ConePtr cone)
         /* store the dynamic ordering in ordervec */
     }
     if (localdebug){
-      printf("(Iter, Row, #Total, #Curr, #Feas)= %5ld %5ld %9ld %6ld %6ld\n",
+      fprintf(stderr,"(Iter, Row, #Total, #Curr, #Feas)= %5ld %5ld %9ld %6ld %6ld\n",
         cone->Iteration, hh, cone->TotalRayCount, cone->RayCount,
         cone->FeasibleRayCount);
     }
@@ -171,14 +172,14 @@ void dd_InitialDataSetup(dd_ConePtr cone)
     ZeroIndexSet(cone->m, cone->d, cone->A, Vector1, ZSet);
     if (set_subset(cone->EqualitySet, ZSet)){
       if (debug) {
-        printf("add an initial ray with zero set:");
-        set_write(ZSet);
+        fprintf(stderr,"add an initial ray with zero set:");
+        set_fwrite(stderr,ZSet);
       }
       AddRay(cone, Vector1);
       if (cone->InitialRayIndex[r]==0) {
         AddRay(cone, Vector2);
         if (debug) {
-          printf("and add its negative also.\n");
+          fprintf(stderr,"and add its negative also.\n");
         }
       }
     }
@@ -243,10 +244,10 @@ boolean dd_DDFile2File(char *ifile, char *ofile, dd_ErrorType *err)
   if (strcmp(ifile,"**stdin") == 0 )
      reading = stdin;
   else if ( ( reading = fopen(ifile, "r") )!= NULL) {
-    printf("input file %s is open\n", ifile);
+    fprintf(stderr,"input file %s is open\n", ifile);
    }
   else{
-    printf("The input file %s not found\n",ifile);
+    fprintf(stderr,"The input file %s not found\n",ifile);
     found=FALSE;
     error=IFileNotFound;
     goto _L99;
@@ -256,10 +257,10 @@ boolean dd_DDFile2File(char *ifile, char *ofile, dd_ErrorType *err)
     if (strcmp(ofile,"**stdout") == 0 )
       writing = stdout;
     else if ( (writing = fopen(ofile, "w") ) != NULL){
-      printf("output file %s is open\n",ofile);
+      fprintf(stderr,"output file %s is open\n",ofile);
       found=TRUE;
     } else {
-      printf("The output file %s cannot be opened\n",ofile);
+      fprintf(stderr,"The output file %s cannot be opened\n",ofile);
       found=FALSE;
       error=OFileNotOpen;
       goto _L99;

@@ -1,6 +1,6 @@
 /* cddlp.c:  dual simplex method c-code
    written by Komei Fukuda, fukuda@ifor.math.ethz.ch
-   Version 0.91, Sept. 15, 2000
+   Version 0.91b, Feb. 26, 2001
 */
 
 /* cddlp.c : C-Implementation of the dual simplex method for
@@ -19,7 +19,7 @@
 #include <math.h>
 #include <string.h>
 
-#define CDDLPVERSION   "Version 0.91 (Sept. 15, 2000)"
+#define CDDLPVERSION   "Version 0.91b (Feb. 26, 2001)"
 
 #define FALSE 0
 #define TRUE 1
@@ -144,7 +144,7 @@ dd_LPPtr dd_Matrix2LP(dd_MatrixPtr M, dd_ErrorType *err)
      /* We represent each equation by two inequalities.
         This is not the best way but makes the code simple. */
   d=M->colsize;
-  if (localdebug) printf("number of equalities = %ld\n", linc);
+  if (localdebug) fprintf(stderr,"number of equalities = %ld\n", linc);
   
   lp=CreateLPData(M->objective, M->numbtype, m, d);
   lp->Homogeneous = TRUE;
@@ -159,7 +159,7 @@ dd_LPPtr dd_Matrix2LP(dd_MatrixPtr M, dd_ErrorType *err)
       for (j = 1; j <= M->colsize; j++) {
         dd_neg(lp->A[irev-1][j-1],M->matrix[i-1][j-1]);
       }  /*of j*/
-      if (localdebug) printf("equality row %ld generates the reverse row %ld.\n",i,irev);
+      if (localdebug) fprintf(stderr,"equality row %ld generates the reverse row %ld.\n",i,irev);
     }
     for (j = 1; j <= M->colsize; j++) {
       dd_set(lp->A[i-1][j-1],M->matrix[i-1][j-1]);
@@ -381,8 +381,8 @@ void SelectDualSimplexPivot(dd_rowrange m_size,dd_colrange d_size,
     } /* end of while */
   }
   if (localdebug) {
-     if (Phase1) printf("Phase 1 : select %ld,%ld\n",*r,*s);
-     else printf("Phase 2 : select %ld,%ld\n",*r,*s);
+     if (Phase1) fprintf(stderr,"Phase 1 : select %ld,%ld\n",*r,*s);
+     else fprintf(stderr,"Phase 2 : select %ld,%ld\n",*r,*s);
   }
   dd_clear(val); dd_clear(minval); dd_clear(rat); dd_clear(minrat);
 }
@@ -432,7 +432,7 @@ void SelectPivot2(dd_rowrange m_size,dd_colrange d_size,dd_Amatrix A,dd_Bmatrix 
     rtemp=0; i=1;
     while (i<=m_size && rtemp==0) {  /* equalityset vars have highest priorities */
       if (set_member(i,equalityset) && !set_member(i,rowexcluded)){
-        if (localdebug) printf("marked set %ld chosen as a candidate\n",i);
+        if (localdebug) fprintf(stderr,"marked set %ld chosen as a candidate\n",i);
         rtemp=i;
       }
       i++;
@@ -492,8 +492,8 @@ void GaussianColumnPivot(dd_rowrange m_size, dd_colrange d_size,
   }
   dd_set(Xtemp0,Rtemp[s-1]);
   if (localdebug) {
-    printf("Gaussian Pivot: pivot entry = "); dd_WriteNumber(stdout,Xtemp0);
-    printf("\n");
+    fprintf(stderr,"Gaussian Pivot: pivot entry = "); dd_WriteNumber(stderr,Xtemp0);
+    fprintf(stderr,"\n");
   }
   for (j = 1; j <= d_size; j++) {
     if (j != s) {
@@ -504,12 +504,12 @@ void GaussianColumnPivot(dd_rowrange m_size, dd_colrange d_size,
         dd_sub(T[j1-1][j-1],T[j1-1][j-1],Xtemp1);
  /*     T[j1-1][j-1] -= T[j1-1][s - 1] * Xtemp / Xtemp0;  */
         if (localdebug){
-          dd_WriteNumber(stdout, T[j1-1][j-1]);
+          dd_WriteNumber(stderr, T[j1-1][j-1]);
         }
       }
-      if (localdebug) printf("\n");
+      if (localdebug) fprintf(stderr,"\n");
     }
-    if (localdebug) printf("\n");
+    if (localdebug) fprintf(stderr,"\n");
   }
   for (j = 1; j <= d_size; j++)
     dd_div(T[j-1][s - 1],T[j-1][s - 1],Xtemp0);
@@ -532,10 +532,10 @@ void GaussianColumnPivot2(dd_rowrange m_size,dd_colrange d_size,
   bflag[r]=s;     /* the nonbasic variable r corresponds to column s */
   nbindex[s]=r;   /* the nonbasic variable on s column is r */
   if (localdebug) {
-    fprintf(stdout,"Column pivot: (leaving, entering) = (%ld, %ld)\n", r,entering);
+    fprintf(stderr,"Column pivot: (leaving, entering) = (%ld, %ld)\n", r,entering);
     if (m_size <=10){
-      dd_WriteBmatrix(stdout,d_size,T);
-      dd_WriteTableau(stdout,m_size,d_size,A,T,nbindex,bflag);
+      dd_WriteBmatrix(stderr,d_size,T);
+      dd_WriteTableau(stderr,m_size,d_size,A,T,nbindex,bflag);
     }
   }
 
@@ -872,9 +872,9 @@ void FindDualFeasibleBasis(dd_rowrange m_size,dd_colrange d_size,
   ms=0;  /* ms will be the index of column which has the largest reduced cost */
   for (j=1; j<=d_size; j++){
     if (j!=rhscol){
-      if (localdebug) printf("checking the column %ld var %ld\n",j,nbindex[j]); 
+      if (localdebug) fprintf(stderr,"checking the column %ld var %ld\n",j,nbindex[j]); 
       TableauEntry(&(rcost[j-1]),local_m_size,d_size,A,T,objrow,j);
-      if (localdebug) {printf("reduced cost = "); dd_WriteNumber(stdout, rcost[j-1]); }
+      if (localdebug) {fprintf(stderr,"reduced cost = "); dd_WriteNumber(stderr, rcost[j-1]); }
       if (dd_Larger(rcost[j-1],maxcost)) {dd_set(maxcost,rcost[j-1]); ms = j;}
     }
   }
@@ -891,10 +891,10 @@ void FindDualFeasibleBasis(dd_rowrange m_size,dd_colrange d_size,
       }
     }
     if (localdebug){
-      printf("FindDualFeasibleBasis: curruent basis is not dual feasible.\n");
-      printf("because of the column %ld assoc. with var %ld   dual cost =",
+      fprintf(stderr,"FindDualFeasibleBasis: curruent basis is not dual feasible.\n");
+      fprintf(stderr,"because of the column %ld assoc. with var %ld   dual cost =",
        ms,nbindex[ms]);
-      dd_WriteNumber(stdout, maxcost);
+      dd_WriteNumber(stderr, maxcost);
     }
 
     /* Pivot on (local_m_size,ms) so that the dual basic solution becomes feasible */
@@ -925,9 +925,9 @@ void FindDualFeasibleBasis(dd_rowrange m_size,dd_colrange d_size,
               r_val=i;
               dd_set(minval,val);
               if (localdebug) {
-                printf("update minval with = ");
-                dd_WriteNumber(stdout, minval);
-                printf("  r_val = %ld\n",r_val);
+                fprintf(stderr,"update minval with = ");
+                dd_WriteNumber(stderr, minval);
+                fprintf(stderr,"  r_val = %ld\n",r_val);
               }
             }
           }
@@ -948,7 +948,7 @@ void FindDualFeasibleBasis(dd_rowrange m_size,dd_colrange d_size,
         if (bflag[local_m_size]<0) {
           stop=TRUE; 
           if (localdebug) 
-            printf("Dual Phase I: the auxiliary variable entered the basis, go to phase II\n");
+            fprintf(stderr,"Dual Phase I: the auxiliary variable entered the basis, go to phase II\n");
         }
       }
     } while(!stop);
@@ -1098,16 +1098,16 @@ the LP.
       TableauEntry(&x,m_size,d_size,A,T,objrow,j);
       dd_neg(dsol[j-1],x);
       TableauEntry(optvalue,m_size,d_size,A,T,objrow,rhscol);
-      if (localdebug) {printf("dsol[%ld]= ",nbindex[j]); dd_WriteNumber(stdout, dsol[j-1]); }
+      if (localdebug) {fprintf(stderr,"dsol[%ld]= ",nbindex[j]); dd_WriteNumber(stderr, dsol[j-1]); }
     }
     break;
   case Inconsistent:
-    if (localdebug) printf("DualSimplexSolve: LP is inconsistent.\n");
+    if (localdebug) fprintf(stderr,"DualSimplexSolve: LP is inconsistent.\n");
     for (j=1;j<=d_size; j++) {
       dd_set(sol[j-1],T[j-1][rhscol-1]);
       TableauEntry(&x,m_size,d_size,A,T,re,j);
       dd_neg(dsol[j-1],x);
-      if (localdebug) {printf("dsol[%ld]= ",nbindex[j]); dd_WriteNumber(stdout,dsol[j-1]);}
+      if (localdebug) {fprintf(stderr,"dsol[%ld]= ",nbindex[j]); dd_WriteNumber(stderr,dsol[j-1]);}
     }
     break;
   case DualInconsistent:
@@ -1115,7 +1115,7 @@ the LP.
       dd_set(sol[j-1],T[j-1][se-1]);
       TableauEntry(&x,m_size,d_size,A,T,objrow,j);
       dd_neg(dsol[j-1],x);
-      if (localdebug) {printf("dsol[%ld]= \n",nbindex[j]);dd_WriteNumber(stdout,dsol[j-1]);}
+      if (localdebug) {fprintf(stderr,"dsol[%ld]= \n",nbindex[j]);dd_WriteNumber(stderr,dsol[j-1]);}
     }
     if (localdebug) printf( "DualSimplexSolve: LP is dual inconsistent.\n");
     break;
@@ -1128,9 +1128,9 @@ the LP.
       dd_mul(sol[j-1],sw,T[j-1][se-1]);
       TableauEntry(&x,m_size,d_size,A,T,objrow,j);
       dd_neg(dsol[j-1],x);
-      if (localdebug) {printf("dsol[%ld]= ",nbindex[j]);dd_WriteNumber(stdout,dsol[j-1]);}
+      if (localdebug) {fprintf(stderr,"dsol[%ld]= ",nbindex[j]);dd_WriteNumber(stderr,dsol[j-1]);}
     }
-    if (localdebug) printf( "DualSimplexSolve: LP is dual inconsistent.\n");
+    if (localdebug) fprintf(stderr,"DualSimplexSolve: LP is dual inconsistent.\n");
     break;
 
   default:break;
@@ -1145,8 +1145,8 @@ long dd_Partition(dd_rowindex OV,long p,long r,dd_Amatrix A,long dmax)
   long i,j,ovi;
   
   x=A[OV[p]-1];
-  printf("x = "); for (j=1; j<=dmax; j++) dd_WriteNumber(stdout, x[j-1]);
-  printf("\n");
+  fprintf(stderr,"x = "); for (j=1; j<=dmax; j++) dd_WriteNumber(stderr, x[j-1]);
+  fprintf(stderr,"\n");
 
   i=p-1;
   j=r+1;
@@ -1196,11 +1196,11 @@ void RandomPermutation2(dd_rowindex OV,long t,unsigned int seed)
     u=r/rand_max;
     xk=j*u +1;
     k=xk;
-    if (localdebug) printf("u=%g, k=%ld, r=%g, randmax= %g\n",u,k,r,rand_max);
+    if (localdebug) fprintf(stderr,"u=%g, k=%ld, r=%g, randmax= %g\n",u,k,r,rand_max);
     ovj=OV[j];
     OV[j]=OV[k];
     OV[k]=ovj;
-    if (localdebug) printf("row %ld is exchanged with %ld\n",j,k); 
+    if (localdebug) fprintf(stderr,"row %ld is exchanged with %ld\n",j,k); 
   }
 }
 
@@ -1335,7 +1335,7 @@ dd_LPPtr dd_MakeLPforInteriorFinding(dd_LPPtr lp)
       dd_set(bmax,lp->A[i-1][lp->rhscol-1]);
   }
   dd_mul(bceil,bm,bmax);
-  if (localdebug) {printf("bceil is set to "); dd_WriteNumber(stdout, bceil);}
+  if (localdebug) {fprintf(stderr,"bceil is set to "); dd_WriteNumber(stderr, bceil);}
   
   for (i=1; i <= lp->m; i++) {
     for (j=1; j <= lp->d; j++) {
@@ -1357,8 +1357,8 @@ dd_LPPtr dd_MakeLPforInteriorFinding(dd_LPPtr lp)
   }
   dd_set(lpnew->A[m-1][d-1],dd_one);    /* new obj row with (0,...,0,1) */
  
-  if (localdebug) dd_WriteAmatrix(stdout, lp->A, lp->m, lp->d);
-  if (localdebug) dd_WriteAmatrix(stdout, lpnew->A, lpnew->m, lpnew->d);
+  if (localdebug) dd_WriteAmatrix(stderr, lp->A, lp->m, lp->d);
+  if (localdebug) dd_WriteAmatrix(stderr, lpnew->A, lpnew->m, lpnew->d);
   dd_clear(bm); dd_clear(bmax); dd_clear(bceil);
 
   return lpnew;
@@ -1399,7 +1399,7 @@ void dd_WriteLPResult(FILE *f,dd_LPPtr lp,dd_ErrorType err)
   if (lp->objective==LPmax||lp->objective==LPmin){
     fprintf(f,"* Objective function is\n");  
     for (j=0; j<lp->d; j++){
-      if (j>0 && lp->A[lp->objrow-1][j]>=0 ) fprintf(f," +");
+      if (j>0 && dd_Nonnegative(lp->A[lp->objrow-1][j]) ) fprintf(f," +");
       if (j>0 && (j % 5) == 0) fprintf(f,"\n");
       dd_WriteNumber(f,lp->A[lp->objrow-1][j]);
       if (j>0) fprintf(f," X[%3ld]",j);

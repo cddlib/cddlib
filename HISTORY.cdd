@@ -1,6 +1,14 @@
-libcdd, cdd & cdd+ HISTORY file    (as of February 16, 2001)
+libcdd, cdd & cdd+ HISTORY file    (as of February 25, 2001)
 
 *** libcdd version (date) / changes ***
+
+Version 091b (February 26, 2001) /
+ - Numerous memory leak bugs with GMP exact arithmetic, 
+   reported by Marc Pfetsch, are fixed.  Also, a minor
+   bug of cddlib to terminate with core dump, reported by
+   Hugh Anderson, is fixed.  The messages printed to
+   the standard output "stdout" are now sent to "stderr".
+   This was suggested by Ingo Schurr.   
 
 Version 091a (February 16, 2001) /
  - Memory leak problems when GMP is used are fixed for

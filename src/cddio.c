@@ -1,6 +1,6 @@
 /* cddio.c:  Basic Input and Output Procedures for cddlib
    written by Komei Fukuda, fukuda@ifor.math.ethz.ch
-   Version 0.91, Sept. 15, 2000
+   Version 0.91b, Feb. 26, 2001
 */
 
 /* cddlib : C-library of the double description method for
@@ -31,7 +31,7 @@ void dd_SetInputFile(FILE **f,dd_DataFileType inputfile,dd_ErrorType *Error)
   
   *Error=NoError;
   while (!opened && !quit) {
-    printf("\n>> Input file: ");
+    fprintf(stderr,"\n>> Input file: ");
     scanf("%s",inputfile);
     ch=getchar();
     stop=FALSE;
@@ -50,12 +50,12 @@ void dd_SetInputFile(FILE **f,dd_DataFileType inputfile,dd_ErrorType *Error)
       }
     }
     if ( ( *f = fopen(inputfile,"r") )!= NULL) {
-      printf("input file %s is open\n",inputfile);
+      fprintf(stderr,"input file %s is open\n",inputfile);
       opened=1;
       *Error=NoError;
     }
     else{
-      printf("The file %s not found\n",inputfile);
+      fprintf(stderr,"The file %s not found\n",inputfile);
       trial++;
       if (trial>5) {
         *Error=IFileNotFound;
@@ -133,7 +133,7 @@ void dd_SetWriteFileName(dd_DataFileType inputfile, dd_DataFileType outfile, cha
     strcpy(outfile,inputfile); 
     strcat(outfile,extension); 
   }
-/*  fprintf(stdout,"outfile name = %s\n",outfile);  */
+/*  fprintf(stderr,"outfile name = %s\n",outfile);  */
 }
 
 
@@ -190,7 +190,7 @@ void ProcessCommandLine(FILE *f, dd_MatrixPtr M, char *line)
         fread_rational_value (f, value);
       }
       dd_set(M->rowvec[j - 1],value);
-      if (debug) {printf("cost(%5ld) =",j); dd_WriteNumber(stdout,value);}
+      if (debug) {fprintf(stderr,"cost(%5ld) =",j); dd_WriteNumber(stderr,value);}
     }  /*of j*/
   }
   dd_clear(value);
@@ -420,7 +420,7 @@ void SetLinearity(dd_MatrixPtr M, char *line)
      set_addelem(M->linset,var); i++;
   }
   if (i!=eqsize) {
-    printf("* Warning: there are inconsistencies in linearity setting.\n");
+    fprintf(stderr,"* Warning: there are inconsistencies in linearity setting.\n");
   }
   return;
 }
@@ -464,7 +464,7 @@ dd_MatrixPtr dd_PolyFile2Matrix (FILE *f, dd_ErrorType *Error)
     }
   }
   fscanf(f, "%ld %ld %s", &m_input, &d_input, numbtype);
-  printf("size = %ld x %ld\nNumber Type = %s\n", m_input, d_input, numbtype);
+  fprintf(stderr,"size = %ld x %ld\nNumber Type = %s\n", m_input, d_input, numbtype);
   NT=GetNumberType(numbtype);
   if (NT==Unknown) {
       (*Error)=ImproperInputFormat;
@@ -488,7 +488,7 @@ dd_MatrixPtr dd_PolyFile2Matrix (FILE *f, dd_ErrorType *Error)
         fread_rational_value (f, value);
       }
       dd_set(M->matrix[i-1][j - 1],value);
-      if (debug) {printf("a(%3ld,%5ld) = ",i,j); dd_WriteNumber(stdout,value);}
+      if (debug) {fprintf(stderr,"a(%3ld,%5ld) = ",i,j); dd_WriteNumber(stderr,value);}
     }  /*of j*/
   }  /*of i*/
   if (fscanf(f,"%s",command)==EOF) {
@@ -496,7 +496,7 @@ dd_MatrixPtr dd_PolyFile2Matrix (FILE *f, dd_ErrorType *Error)
   	 goto _L99;
   }
   else if (strncmp(command, "end", 3)!=0) {
-     if (debug) printf("'end' missing or illegal extra data: %s\n",command);
+     if (debug) fprintf(stderr,"'end' missing or illegal extra data: %s\n",command);
      (*Error)=ImproperInputFormat;
      goto _L99;
   }
@@ -1375,9 +1375,9 @@ void sread_rational_value (char *s, mytype value)
    else denominator = 1;
 
 /* 
-   printf("\nrational_read: numerator %f\n",numerator);
-   printf("rational_read: denominator %f\n",denominator);
-   printf("rational_read: sign %d\n",sign); 
+   fprintf(stderr,"\nrational_read: numerator %f\n",numerator);
+   fprintf(stderr,"rational_read: denominator %f\n",denominator);
+   fprintf(stderr,"rational_read: sign %d\n",sign); 
 */
 
 #if defined GMPRATIONAL
@@ -1399,7 +1399,8 @@ void sread_rational_value (char *s, mytype value)
    ddd_set_d(value, rvalue);
 #endif
    if (debug) {
-     printf("rational_read: "); dd_WriteNumber(stdout,value); printf("\n");
+     fprintf(stderr,"rational_read: "); 
+     dd_WriteNumber(stderr,value); fprintf(stderr,"\n");
    }
 }
    
@@ -1412,7 +1413,7 @@ void fread_rational_value (FILE *f, mytype value)
    mytype rational_value;
    
    dd_init(rational_value);
-   fscanf (f, "%s ", number_s);
+   fscanf(f, "%s ", number_s);
    sread_rational_value (number_s, rational_value);
    dd_set(value,rational_value);
    dd_clear(rational_value);
