@@ -1,6 +1,6 @@
 /* cddlib.c: cdd library  (library version of cdd)
    written by Komei Fukuda, fukuda@ifor.math.ethz.ch
-   Version 0.92, December 12, 2001
+   Version 0.92b, October 19, 2002
    Standard ftp site: ftp.ifor.math.ethz.ch, Directory: pub/fukuda/cdd
 */
 
@@ -234,7 +234,6 @@ dd_boolean dd_DDFile2File(char *ifile, char *ofile, dd_ErrorType *err)
   /* The representation conversion from an input file to an outfile.  */
   /* modified by D. Avis to allow stdin/stdout */
   dd_boolean found=dd_TRUE;
-  dd_ErrorType error;
   FILE *reading=NULL,*writing=NULL;
   dd_PolyhedraPtr poly;
   dd_MatrixPtr M, A, G;
@@ -247,7 +246,7 @@ dd_boolean dd_DDFile2File(char *ifile, char *ofile, dd_ErrorType *err)
   else{
     fprintf(stderr,"The input file %s not found\n",ifile);
     found=dd_FALSE;
-    error=dd_IFileNotFound;
+    *err=dd_IFileNotFound;
     goto _L99;
   }
 
@@ -260,16 +259,17 @@ dd_boolean dd_DDFile2File(char *ifile, char *ofile, dd_ErrorType *err)
     } else {
       fprintf(stderr,"The output file %s cannot be opened\n",ofile);
       found=dd_FALSE;
-      error=dd_OFileNotOpen;
+      *err=dd_OFileNotOpen;
       goto _L99;
     }
   }
 
-  M=dd_PolyFile2Matrix(reading, &error);
-  poly=dd_DDMatrix2Poly(M, &error);  /* compute the second representation */
-  dd_FreeMatrix(M);
+  M=dd_PolyFile2Matrix(reading, err);
+  if (*err!=dd_NoError){
+    goto _L99;
+  } poly=dd_DDMatrix2Poly(M, err);  /* compute the second representation */ dd_FreeMatrix(M);
 
-  if (error==dd_NoError) {
+  if (*err==dd_NoError) {
     dd_WriteRunningMode(writing, poly);
     A=dd_CopyInequalities(poly);
     G=dd_CopyGenerators(poly);
@@ -285,7 +285,8 @@ dd_boolean dd_DDFile2File(char *ifile, char *ofile, dd_ErrorType *err)
     dd_FreeMatrix(G);
   } 
 
-_L99:  *err=error;
+_L99: ;
+  if (*err!=dd_NoError) dd_WriteErrorMessages(stderr,*err);
   if (reading!=NULL) fclose(reading);
   if (writing!=NULL) fclose(writing);
   return found;

@@ -1,6 +1,6 @@
 /* cddio.c:  Basic Input and Output Procedures for cddlib
    written by Komei Fukuda, fukuda@ifor.math.ethz.ch
-   Version 0.92, December 12, 2001
+   Version 0.92b, October 19, 2002
 */
 
 /* cddlib : C-library of the double description method for
@@ -390,9 +390,11 @@ dd_PolyhedraPtr CreatePolyhedraData(dd_rowrange m, dd_colrange d)
   poly->representation       =dd_Inequality;
   poly->homogeneous =dd_FALSE;
 
-  poly->EqualityIndex=(int *)calloc(m+1, sizeof(int));  
+  poly->EqualityIndex=(int *)calloc(m+2, sizeof(int));  
+    /* size increased to m+2 in 092b because it is used by the child cone, 
+       This is a bug fix suggested by Thao Dang. */
     /* ith component is 1 if it is equality, -1 if it is strict inequality, 0 otherwise. */
-  for (i = 0; i <= m; i++) poly->EqualityIndex[i]=0;
+  for (i = 0; i <= m+1; i++) poly->EqualityIndex[i]=0; /* 092b */
 
   poly->NondegAssumed           = dd_FALSE;
   poly->InitBasisAtBottom       = dd_FALSE;
@@ -1253,7 +1255,7 @@ void dd_WriteErrorMessages(FILE *f, dd_ErrorType Error)
     break;
 
   case dd_NoRealNumberSupport:
-    fprintf(f, "*LP Error: The binary (with GMP Rational) does not support Real number input.\n");
+    fprintf(f, "*Error: The binary (with GMP Rational) does not support Real number input.\n");
     fprintf(f, "         : Use a binary compiled without -DGMPRATIONAL option.\n");
     break;
 

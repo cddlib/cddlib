@@ -1,6 +1,6 @@
 /* cddtypes.h: Header file for cddlib.c 
    written by Komei Fukuda, fukuda@ifor.math.ethz.ch
-   Version 0.92, December 12, 2001
+   Version 0.92b, October 19, 2002
 */
 
 /* cddlib.c : C-Implementation of the double description method for
@@ -15,7 +15,7 @@
 #endif  /* __CDDTYPES_H */
 
 #define COPYRIGHT   "Copyright (C) 1996, Komei Fukuda, fukuda@ifor.math.ethz.ch"
-#define DDVERSION   "Version 0.92 (December 12, 2001)"
+#define DDVERSION   "Version 0.92b (October 19, 2002)"
 #include <time.h>
 
 #define dd_wordlenmax     127

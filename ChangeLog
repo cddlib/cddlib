@@ -1,6 +1,13 @@
-libcdd, cdd & cdd+ HISTORY file    (as of December 19, 2001)
+libcdd, cdd & cdd+ HISTORY file    (as of October 19, 2002)
 
 *** libcdd version (date) / changes ***
+
+Version 092b (October 19, 2002) /
+ - An illegal memory access for EqualityIndex reported by 
+   Thao Dang is fixed.  Another bug of lcdd_gmp which takes 
+   "real" data and return a false result is fixed.  It now warns 
+   that input is not correct for the exact arithmetic lcdd_gmp. 
+   This error was reported by Andras Salamon.
 
 Version 092a (December 19, 2001) /
  - Joerg Rambau kindly created an autoconf distribution of
