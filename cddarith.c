@@ -1,6 +1,6 @@
 /* cddarith.c:  Floating Point Arithmetic Procedures for cddlib.c
    written by Komei Fukuda, fukuda@ifor.math.ethz.ch
-   Version 0.80, March 2, 1999
+   Version 0.85, October 3, 1999
 */
 
 /* cdd.c : C-Implementation of the double description method for
@@ -11,7 +11,7 @@
 */
 
 #include "setoper.h"  /* set operation library header (Ver. March 16,1995 or later) */
-#include "cddlib.h"
+#include "cdd.h"
 #include <stdio.h>
 #include <stdlib.h>
 #include <time.h>
@@ -924,8 +924,11 @@ void FindInitialRays(dd_ConePtr cone, boolean *found)
      FindBasis(cone, &rank);
   }
   if (!set_subset(cone->EqualitySet,cone->InitialHalfspaces)) {
-    cone->Error = DependentMarkedSet;
-    return;
+    if (debug) {
+      printf("Equality set is dependent. Equality Set and an initial basis:\n");
+      set_write(cone->EqualitySet);
+      set_write(cone->InitialHalfspaces);
+    };
   }
   *found = TRUE;
   set_free(CandidateRows);

@@ -1,6 +1,6 @@
 /* cddlib.c: cdd library  (library version of cdd)
    written by Komei Fukuda, fukuda@ifor.math.ethz.ch
-   Version 0.80, March 2, 1999
+   Version 0.85, October 3, 1999
    Standard ftp site: ftp.ifor.math.ethz.ch, Directory: pub/fukuda/cdd
 */
 
@@ -33,7 +33,7 @@
 
 #include "setoper.h" 
   /* set operation library header (March 16, 1995 version or later) */
-#include "cddlib.h"
+#include "cdd.h"
 #include <stdio.h>
 #include <stdlib.h>
 #include <time.h>
@@ -165,32 +165,41 @@ void dd_InitialDataSetup(dd_ConePtr cone)
   set_free(ZSet);
 }
 
-boolean dd_DoubleDescription(dd_PolyhedraPtr poly)
+boolean dd_DoubleDescription(dd_PolyhedraPtr poly, dd_ErrorType *err)
 {
   dd_ConePtr cone=NULL;
+  dd_ErrorType error=None;
   boolean found=FALSE;
 
   if (poly->child==NULL || poly->child->CompStatus!=AllFound){
     cone=ConeDataLoad(poly);  
     /* create a cone associated with poly by homogenization */
     DDInit(cone);
-    FindInitialRays(cone, &found);
-    if (found) {
-      dd_InitialDataSetup(cone);
-      DDMain(cone);
+    if (poly->Representation==Generator && poly->m<=0){
+       *err=EmptyVrepresentation;
+       cone->Error=*err;
+    } else {
+      FindInitialRays(cone, &found);
+      if (found) {
+        dd_InitialDataSetup(cone);
+        DDMain(cone);
+      }
     }
   }
   return found;
 }
 
-boolean dd_DDAddInequalities(dd_PolyhedraPtr poly, dd_MatrixPtr M)
+boolean dd_DDAddInequalities(dd_PolyhedraPtr poly, dd_MatrixPtr M,
+  dd_ErrorType *err)
 {
   /* This is imcomplete.  It simply solves the problem from scratch.  */
-  boolean found=FALSE;
+  boolean found;
+  dd_ErrorType error;
 
   if (poly->child!=NULL) dd_FreeDDMemory(poly);
   AddInequalities(poly, M);
-  found=dd_DoubleDescription(poly);
+  found=dd_DoubleDescription(poly, &error);
+  *err=error;
   return found;
 }
 

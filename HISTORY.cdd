@@ -1,4 +1,4 @@
-libcdd, cdd & cdd+ HISTORY file    (as of March 2, 1999)
+libcdd, cdd & cdd+ HISTORY file    (as of October 4, 1999)
 
 *** libcdd version (date) / changes ***
 
@@ -10,6 +10,12 @@ Version 080 (March 24, 1999) /
    vertex-free extreme point (i.e. generator) listing problems.  Also
    it comes with MathLink program cddmathlink that can be called from
    Mathematica to perform cdd operations.
+
+Version 085 (October 4, 1999) /
+ - It can read rational data.  Several minor bugs have been fixed.
+   The new makefile creates cdd and dplex library archives
+   libcdd.a and libdplex.a for unix systems.
+
 
 *** cdd version (date) / changes ***
 

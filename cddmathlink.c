@@ -1,7 +1,7 @@
 /* cddmathlink.c: Main test program to call the cdd library cddlib
    from Mathematica using MathLink.
    written by Komei Fukuda, fukuda@ifor.math.ethz.ch
-   March 13, 1999
+   Oct. 3, 1999
    Standard ftp site: ftp.ifor.math.ethz.ch, Directory: pub/fukuda/cdd
 */
 
@@ -21,7 +21,7 @@
 */
 
 #include "setoper.h"
-#include "cddlib.h"
+#include "cdd.h"
 #include "cddmlio.h"
 #include "mathlink.h"
 #include <stdio.h>
@@ -39,6 +39,7 @@ void allvertices(int m_input, int d_input, double *a_input)
   dd_rowrange i,m; 
   dd_colrange j,d;
   boolean found;
+  dd_ErrorType err;
 
   m=(dd_rowrange)m_input; d=(dd_colrange)d_input;
   A=dd_CreateMatrix(m,d);
@@ -46,7 +47,7 @@ void allvertices(int m_input, int d_input, double *a_input)
     for (j=0; j<d; j++) A->matrix[i][j]=a_input[i*d+j];
   }
   dd_PolyhedraLoadMatrix(&poly, Inequality, A);
-  found=dd_DoubleDescription(poly);
+  found=dd_DoubleDescription(poly,&err);
     /* compute the second (generator) representation */
   if (found) {
     G=dd_CopyGenerators(poly);
@@ -73,6 +74,7 @@ void allvertices2(int m_input, int d_input, double *a_input)
   dd_rowrange i,m; 
   dd_colrange j,d;
   boolean found;
+  dd_ErrorType err;
 
   m=(dd_rowrange)m_input; d=(dd_colrange)d_input;
   printf("m=%d   d=%d\n",m, d);
@@ -81,7 +83,7 @@ void allvertices2(int m_input, int d_input, double *a_input)
     for (j=0; j<d; j++) A->matrix[i][j]=a_input[i*d+j];
   }
   dd_PolyhedraLoadMatrix(&poly, Inequality, A);
-  found=dd_DoubleDescription(poly);
+  found=dd_DoubleDescription(poly,&err);
     /* compute the second (generator) representation */
   if (found){
     G=dd_CopyGenerators(poly);
@@ -110,6 +112,7 @@ void allfacets(int n_input, int d_input, double *g_input)
   dd_rowrange i,n; 
   dd_colrange j,d;
   boolean found;
+  dd_ErrorType err;
 
   n=(dd_rowrange)n_input; d=(dd_colrange)d_input;
   G=dd_CreateMatrix(n,d);
@@ -117,7 +120,7 @@ void allfacets(int n_input, int d_input, double *g_input)
     for (j=0; j<d; j++) G->matrix[i][j]=g_input[i*d+j];
   }
   dd_PolyhedraLoadMatrix(&poly, Generator, G);
-  found=dd_DoubleDescription(poly);
+  found=dd_DoubleDescription(poly,&err);
     /* compute the second (inequality) representation */
   if (found){
     A=dd_CopyInequalities(poly);
@@ -145,6 +148,7 @@ void allfacets2(int n_input, int d_input, double *g_input)
   dd_rowrange i,n; 
   dd_colrange j,d;
   boolean found;
+  dd_ErrorType err;
 
   n=(dd_rowrange)n_input; d=(dd_colrange)d_input;
   G=dd_CreateMatrix(n,d);
@@ -152,7 +156,7 @@ void allfacets2(int n_input, int d_input, double *g_input)
     for (j=0; j<d; j++) G->matrix[i][j]=g_input[i*d+j];
   }
   dd_PolyhedraLoadMatrix(&poly, Generator, G);
-  found=dd_DoubleDescription(poly);  
+  found=dd_DoubleDescription(poly,&err);  
     /* compute the second (inequality) representation */
   if (found){
     A=dd_CopyInequalities(poly);
@@ -173,11 +177,39 @@ void allfacets2(int n_input, int d_input, double *g_input)
   dd_FreeSetFamily(&AA);
 }
 
+#if MACINTOSH_MATHLINK
+
+int main( int argc, char* argv[])
+{
+	/* Due to a bug in some standard C libraries that have shipped with
+	 * MPW, zero is passed to MLMain below.  (If you build this program
+	 * as an MPW tool, you can change the zero to argc.)
+	 */
+	argc = argc; /* suppress warning */
+	return MLMain( 0, argv);
+}
+
+#elif WINDOWS_MATHLINK
+
+int PASCAL WinMain( HANDLE hinstCurrent, HANDLE hinstPrevious, LPSTR lpszCmdLine, int nCmdShow)
+{
+	char  buff[512];
+	char FAR * argv[32];
+	char FAR * FAR * argv_end = argv + 32;
+
+	if( !MLInitializeIcon( hinstCurrent, nCmdShow)) return 1;
+	MLScanString( argv, &argv_end, &commandline, &buf);
+	return MLMain( argv_end - argv, argv);
+}
+
+#else
 
 int main(argc, argv)
-        int argc; char* argv[];
+	int argc; char* argv[];
 {
-        return MLMain(argc, argv);
+	return MLMain(argc, argv);
 }
+
+#endif
 
 /* end of cddmathlink.c */

@@ -1,6 +1,6 @@
 /* cdd_test1.c: Main test program to call the cdd library cddlib
    written by Komei Fukuda, fukuda@ifor.math.ethz.ch
-   Version 0.80, March 2, 1999
+   Version 0.85, October 3, 1999
    Standard ftp site: ftp.ifor.math.ethz.ch, Directory: pub/fukuda/cdd
 */
 
@@ -20,7 +20,7 @@
 */
 
 #include "setoper.h"
-#include "cddlib.h"
+#include "cdd.h"
 #include <stdio.h>
 #include <stdlib.h>
 #include <time.h>
@@ -39,17 +39,19 @@ int main(int argc, char *argv[])
 {
   dd_PolyhedraPtr poly, poly1;
   dd_ErrorType err;
-  FILE *writing;
+  FILE *writing=NULL;
   dd_MatrixPtr A, G, A1, G1;
   dd_SetFamilyPtr GI,GA;
   boolean found;
 
-  dd_PolyhedraInput(&err, &poly);
+  dd_PolyhedraInput(&poly, &err);
 
-  if (err!=None) {
+  if (err==None) {
     SetWriteFile(&writing);
-    found=dd_DoubleDescription(poly);  /* compute the second representation */
-    if (!found) goto _L99;
+    found=dd_DoubleDescription(poly,&err);  /* compute the second representation */
+    if (!found) {
+      dd_WriteErrorMessages(stdout,err);  goto _L99;
+    }
     A=dd_CopyInequalities(poly);
     G=dd_CopyGenerators(poly);
     GI=dd_CopyIncidence(poly);
@@ -63,6 +65,8 @@ int main(int argc, char *argv[])
     printf("\nH-representation\n");  dd_WriteMatrix(stdout,A);
     printf("\nV-representation\n");  dd_WriteMatrix(stdout,G);
 
+    fprintf(writing, "\nH-representation\n");  dd_WriteMatrix(writing,A);
+    fprintf(writing, "\nV-representation\n");  dd_WriteMatrix(writing,G);
 
     printf("\nHere is the incidence list:\n");
     dd_WriteSetFamily(stdout,GI);
@@ -78,8 +82,10 @@ int main(int argc, char *argv[])
       dd_PolyhedraLoadMatrix(&poly1, Inequality, A);
       printf("Now, input is an H-representation (computed previously)\n");
     }
-    found=dd_DoubleDescription(poly1);  /* compute the second representation */
-    if (!found) goto _L99;
+    found=dd_DoubleDescription(poly1,&err);  /* compute the second representation */
+    if (!found) {
+      dd_WriteErrorMessages(stdout,err);  goto _L99;
+    }
     A1=dd_CopyInequalities(poly1);
     G1=dd_CopyGenerators(poly1);
     printf("\nH-representation\n");  dd_WriteMatrix(stdout,A1);
@@ -92,11 +98,10 @@ int main(int argc, char *argv[])
     dd_FreeMatrix(&G);
     dd_FreeMatrix(&A1);
     dd_FreeMatrix(&G1);
+    if (writing!=NULL) fclose(writing);
   } else {
     dd_WriteErrorMessages(stdout,err);
-    if (writing!=NULL) dd_WriteErrorMessages(writing,err);
   }
-  if (writing!=NULL) fclose(writing);
 _L99:
   return 0;
 }

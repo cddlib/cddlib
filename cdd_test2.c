@@ -1,6 +1,6 @@
 /* cdd_test2.c: Main test program to call the cdd library cddlib
    written by Komei Fukuda, fukuda@ifor.math.ethz.ch
-   Version 0.80, March 2, 1999
+   Version 0.85, October 3, 1999
    Standard ftp site: ftp.ifor.math.ethz.ch, Directory: pub/fukuda/cdd
 */
 
@@ -20,7 +20,7 @@
 */
 
 #include "setoper.h"
-#include "cddlib.h"
+#include "cdd.h"
 #include <stdio.h>
 #include <stdlib.h>
 #include <time.h>
@@ -33,6 +33,7 @@ int main(int argc, char *argv[])
   dd_MatrixPtr A, A1, Acopy, A1copy, G, G1;
   dd_rowrange m,m1; 
   dd_colrange d;
+  dd_ErrorType err;
 
   m=5; d=4;
   A=dd_CreateMatrix(m,d);
@@ -48,7 +49,7 @@ int main(int argc, char *argv[])
      1          +x3  >= 0
   */
   dd_PolyhedraLoadMatrix(&poly, Inequality, A);
-  dd_DoubleDescription(poly);  /* compute the second (generator) representation */
+  dd_DoubleDescription(poly, &err);  /* compute the second (generator) representation */
   printf("\nInput is an H-representation:\n");
   Acopy=dd_CopyInequalities(poly);
   G=dd_CopyGenerators(poly);
@@ -66,7 +67,7 @@ int main(int argc, char *argv[])
     -2  +x1 +x2 +x3  >= 0
   */
 
-  dd_DDAddInequalities(poly, A1);
+  dd_DDAddInequalities(poly, A1, &err);
   A1copy=dd_CopyInequalities(poly);
   G1=dd_CopyGenerators(poly);
   printf("\n\nH-representation\n");  dd_WriteMatrix(stdout,A1copy);

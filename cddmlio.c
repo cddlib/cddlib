@@ -1,6 +1,6 @@
 /* cddmlio.c: MathLink Basic Input and Output Procedures for cddlib.c
    written by Komei Fukuda, fukuda@ifor.math.ethz.ch
-   Version 0.8, March 13, 1999
+   Version 0.85, Oct. 3, 1999
 */
 
 /* cdd.c : C-Implementation of the double description method for

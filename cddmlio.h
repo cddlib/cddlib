@@ -1,6 +1,6 @@
 /* cddmlio.h: Header file for MathLink/IO cddmlio.c 
    written by Komei Fukuda, fukuda@ifor.math.ethz.ch
-   Version 0.8alpha, February 28, 1999
+   Version 0.85, Oct. 3, 1999
 */
 
 /* cddlib.c : C-Implementation of the double description method for

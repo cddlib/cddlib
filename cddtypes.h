@@ -108,7 +108,7 @@ typedef enum {
    /* Auto if a input filename is specified by command arguments */
 
 typedef enum {
-  DimensionTooLarge, LowColumnRank, ImproperInputFormat, DependentMarkedSet, 
+  DimensionTooLarge, LowColumnRank, ImproperInputFormat, EmptyVrepresentation,
   FileNotFound, None
 } dd_ErrorType;
 

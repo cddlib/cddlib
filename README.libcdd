@@ -1,6 +1,6 @@
-1999-03-15 (March 15, 1999)
+1999-10-4 (October 4, 1999)
 -----------------------------------------
-C-Library cddlib (version 0.80) README FILE
+C-Library cddlib (version 0.85) README FILE
 -----------------------------------------
 1. The C-library  cddlib is a C implementation of the Double Description 
 Method of Motzkin et al. for generating all vertices (i.e. extreme points)
@@ -18,14 +18,28 @@ representation of a polyhedron with cdd.  Also, cdd can solve a linear
 programming problem, i.e. a problem of maximizing and minimizing 
 a linear function over P.
 
-The version 0.80 is the first release of libcdd.  There is no
-documentation for the moment.   Just look at the examples,
-cdd_test*.c and dplex_test*.c   The library functions
-are listed in cddlib.h.  Please note that this Version is
-quite primitive.  There must be some surprises.  Yet,
+The version 0.85 is the second release of libcdd.  The
+documentation is not ready.   Just look at the examples,
+cdd_test*.c and dplex_test*.c.  The library functions
+are listed in cdd.h.  Please note that this Version is
+primitive.  There must be some surprises.  Yet,
 its kernel has been tested for a long time and thus
 I suppose it "should" behave quite reasonably for many cases.
 Hopefully future versions will be robust and complete.
+
+A newly added function in V.085 is ability to read "rational" data.
+cddlib convers rationals to double float numbers, and computes
+with floating-point arithmetic.  A few bugs have been fixed as
+well.  The most important one allows linearity rows to be
+linearly dependent.  (V.080 crashes when linearity rows are not
+independent.)  Also, a new makefile generates ordinaly library
+archive files, libcdd.a and libdplex.a.  You might want to put them
+in a usual library directory (e.g. /usr/local/lib) and
+the corresponding include files, cdd.h and dplex.h, in
+the associated include directory (/usr/local/include).  Do not
+forget to run "ranlib" for *.a files when they are copied
+to a new directory.  (No effort has been made to create
+windows/mac libraries.)
 
 2. One new feature added for the library version is the ability
 to handle essentially any data.  More precisely, it can
@@ -107,9 +121,10 @@ Some Mathematica notebooks are included to explain how one can
 use this program "cddmathlink" from Mathematica
 to manipulate polytopes.  Please check the files, 
 cddml-notbook.ma, cddml-PolytopeSkeleton.ma, cddml-DietProblem.ma,
-and cddml-Zonotope.ma, in the mma subdirectory.  I have no chances
-to compile cddmathlink.c in Machintosh or PC's.  But in principle,
-it should not be too hard.
+and cddml-Zonotope.ma, in the mma subdirectory.  I could 
+compile cddmathlink.c for Machintosh and Windows.  I have put
+binaries for different platforms in 
+ftp://ftp.ifor.math.ethz.ch/pub/fukuda/cdd/cddlibml_binary/  .
 
 
 4. The cdd package is in "tar"ed and "gzip"ed format with name

@@ -1,6 +1,6 @@
 /* cddlib.h: Header file for cddlib.c 
    written by Komei Fukuda, fukuda@ifor.math.ethz.ch
-   Version 0.8alpha, June 1998
+   Version 0.85, October 3, 1999
 */
 
 /* cddlib.c : C-Implementation of the double description method for
@@ -46,9 +46,9 @@ dd_MatrixPtr dd_CopyInequalities(dd_PolyhedraPtr);
 dd_MatrixPtr dd_CopyGenerators(dd_PolyhedraPtr);
 dd_SetFamilyPtr dd_CopyIncidence(dd_PolyhedraPtr);
 dd_SetFamilyPtr dd_CopyAdjacency(dd_PolyhedraPtr);
-boolean dd_DoubleDescription(dd_PolyhedraPtr);
-boolean dd_DDAddInequalities(dd_PolyhedraPtr, dd_MatrixPtr);
-boolean dd_PolyhedraInput(dd_ErrorType*, dd_PolyhedraPtr *);
+boolean dd_DoubleDescription(dd_PolyhedraPtr, dd_ErrorType*);
+boolean dd_DDAddInequalities(dd_PolyhedraPtr, dd_MatrixPtr, dd_ErrorType*);
+boolean dd_PolyhedraInput(dd_PolyhedraPtr *, dd_ErrorType*);
 void dd_PolyhedraLoadMatrix(dd_PolyhedraPtr *, 
   dd_RepresentationType, dd_MatrixPtr );
 

@@ -1,6 +1,6 @@
 /* cddio.c:  Basic Input and Output Procedures for cddlib.c
    written by Komei Fukuda, fukuda@ifor.math.ethz.ch
-   Version 0.80, March 14, 1999
+   Version 0.85, October 3, 1999
 */
 
 /* cdd.c : C-Implementation of the double description method for
@@ -11,12 +11,15 @@
 */
 
 #include "setoper.h"  /* set operation library header (Ver. March 16,1995 or later) */
-#include "cddlib.h"
+#include "cdd.h"
 #include <stdio.h>
 #include <stdlib.h>
 #include <time.h>
 #include <math.h>
 #include <string.h>
+
+static void fread_rational_value (FILE *, double *);
+void SetLinearity(dd_PolyhedraPtr, char *);
 
 dd_NumberType GetNumberType(char *line)
 {
@@ -29,7 +32,7 @@ dd_NumberType GetNumberType(char *line)
     nt = Rational;
   }
   else if (strncmp(line, "real", 4)==0) {
-    nt = Integer;
+    nt = Real;
   }
   else { 
     nt=Unknown;
@@ -41,6 +44,7 @@ void ProcessCommandLine(dd_PolyhedraPtr poly, char *line)
 {
   dd_colrange j;
   dd_rowrange eqsize,var;
+  char *newline;
 
 
   if (strncmp(line, "hull", 4)==0) {
@@ -55,13 +59,8 @@ void ProcessCommandLine(dd_PolyhedraPtr poly, char *line)
        strncmp(line, "equality", 8)==0  ||
        strncmp(line, "linearity", 9)==0 )
     && poly->RestrictedEnumeration==FALSE) {
-    fscanf(stdin,"%ld", &eqsize);
-    for (j=1;j<=eqsize;j++) {
-      fscanf(stdin,"%ld",&var);
-      poly->EqualityIndex[var]=1;
-    }
-    printf("\n");
-    poly->RestrictedEnumeration=TRUE;
+    fgets(newline,dd_linelenmax,stdin);
+    SetLinearity(poly,newline);
     return;
   }
 
@@ -225,16 +224,48 @@ dd_ConePtr ConeDataLoad(dd_PolyhedraPtr poly)
   return cone;
 }
 
-boolean dd_PolyhedraInput(dd_ErrorType *Error, dd_PolyhedraPtr *poly)
+void SetLinearity(dd_PolyhedraPtr poly, char *line)
+{
+  int i,j;
+  dd_rowrange eqsize,var;
+  char *rest;
+
+  j=0; rest=line;
+  while (line[j]==' '){
+    j++;
+    rest=&line[j];
+  }
+  eqsize=atol(rest); 
+  if (debug) printf("CARDINALITY:%ld\n",eqsize);
+  i=0;
+  while (i < eqsize && strchr(rest,' ')!=NULL) {
+     i++;
+     rest=strchr(rest,' ')+1;
+     var=atol(rest);
+     if (debug) printf(" LINEARITY:%ld\n",var);
+     poly->EqualityIndex[var]=1;
+  }
+  if (i==eqsize) {
+    poly->RestrictedEnumeration=TRUE;
+  } else {
+    printf("* Warning: Linearity setting failed.\n");
+  }
+  return;
+}
+
+boolean dd_PolyhedraInput(dd_PolyhedraPtr *poly, dd_ErrorType *Error)
 {
   dd_rowrange m_input,i;
   dd_colrange d_input,j;
   dd_RepresentationType rep=Inequality;
   double value;
-  boolean found=FALSE, newformat=FALSE;
-  char command[dd_wordlenmax], numbtype[dd_wordlenmax], line[dd_linelenmax];
-  boolean successful = FALSE;
+  boolean found=FALSE, newformat=FALSE, successful=FALSE, linearity=FALSE;
+  char command[dd_linelenmax], comsave[dd_linelenmax], numbtype[dd_wordlenmax], line[dd_linelenmax];
+  dd_NumberType NT;
+  dd_rowrange eqsize,var;
 
+
+  (*Error)=None;
   while (!found)
   {
     if (fscanf(stdin,"%s",command)==EOF) {
@@ -244,14 +275,24 @@ boolean dd_PolyhedraInput(dd_ErrorType *Error, dd_PolyhedraPtr *poly)
     else {
       if (strncmp(command, "V-representation", 16)==0) {
         rep=Generator; newformat=TRUE;
-      } else if (strncmp(command, "H-representation", 16)==0){
+      }
+      if (strncmp(command, "H-representation", 16)==0){
         rep=Inequality; newformat=TRUE;
-        } else if (strncmp(command, "begin", 5)==0) found=TRUE;
+      }
+      if (strncmp(command, "partial_enum", 12)==0 || 
+          strncmp(command, "equality", 8)==0  ||
+          strncmp(command, "linearity", 9)==0 ) {
+        linearity=TRUE;
+        fgets(comsave,dd_linelenmax,stdin);
+      }
+      if (strncmp(command, "begin", 5)==0) found=TRUE;
     }
   }
   fscanf(stdin, "%ld %ld %s", &m_input, &d_input, numbtype);
   printf("size = %ld x %ld\nNumber Type = %s\n", m_input, d_input, numbtype);
-  if (GetNumberType(numbtype)==Unknown || GetNumberType(numbtype) == Rational) {
+  NT=GetNumberType(numbtype);
+  if (NT==Unknown) {
+      (*Error)=ImproperInputFormat;
       goto _L99;
     } 
   (*poly)=CreatePolyhedraData(m_input, d_input);
@@ -260,14 +301,15 @@ boolean dd_PolyhedraInput(dd_ErrorType *Error, dd_PolyhedraPtr *poly)
 
   for (i = 1; i <= m_input; i++) {
     for (j = 1; j <= d_input; j++) {
-      fscanf(stdin, "%lf", &value);
+      if (NT==Real) {
+        fscanf(stdin, "%lf", &value);
+      } else {
+        fread_rational_value (stdin, &value);
+      }
       (*poly)->A[i-1][j - 1] = value;
       if (j==1 && dd_Nonzero(value)) (*poly)->Homogeneous = FALSE;
       if (debug) printf("a(%3ld,%5ld) = %10.4f\n",i,j,value);
     }  /*of j*/
-    fgets(line,dd_linelenmax,stdin);
-    if (debug) printf("comments to be skipped: %s\n",line);
-    if (debug) putchar('\n');
   }  /*of i*/
   if (fscanf(stdin,"%s",command)==EOF) {
    	 (*Error)=ImproperInputFormat;
@@ -275,16 +317,19 @@ boolean dd_PolyhedraInput(dd_ErrorType *Error, dd_PolyhedraPtr *poly)
   }
   else if (strncmp(command, "end", 3)!=0) {
      if (debug) printf("'end' missing or illegal extra data: %s\n",command);
-   	 (*Error)=ImproperInputFormat;
-  	 goto _L99;
+     (*Error)=ImproperInputFormat;
+     goto _L99;
   }
   
+  successful=TRUE;
+  if (linearity) {
+    SetLinearity(*poly,comsave);
+  }
   while (!feof(stdin)) {
     fscanf(stdin,"%s", command);
     ProcessCommandLine(*poly, command);
   } 
 
-  successful = TRUE;
 _L99: ;
   if (stdin!=NULL) fclose(stdin);
   return successful;
@@ -449,7 +494,6 @@ void dd_WriteMatrix(FILE *f, dd_MatrixPtr M)
     fprintf(f, "WriteMmatrix: The requested matrix is empty\n");
     goto _L99;
   }
-  dd_WriteAmatrix(f, M->matrix, M->rowsize, M->colsize);
   linsize=set_card(M->linset);
   if (linsize>0) {
     fprintf(f, "linearity %ld ", linsize);
@@ -457,6 +501,7 @@ void dd_WriteMatrix(FILE *f, dd_MatrixPtr M)
       if (set_member(i, M->linset)) fprintf(f, " %ld", i);
     fprintf(f, "\n");
   }
+  dd_WriteAmatrix(f, M->matrix, M->rowsize, M->colsize);
 _L99:;
 }
 
@@ -601,11 +646,6 @@ void dd_WriteErrorMessages(FILE *f, dd_ErrorType Error)
     fprintf(f, "*Please increase MMAX and/or NMAX in the source code and recompile.\n");
     break;
 
-  case DependentMarkedSet:
-    fprintf(f, "*Input Error: Active (equality) rows are linearly dependent.\n");
-    fprintf(f, "*Please select independent rows for equality restriction.\n");
-    break;
-
   case FileNotFound:
     fprintf(f, "*Input Error: Specified input file does not exist.\n");
     break;
@@ -617,6 +657,11 @@ void dd_WriteErrorMessages(FILE *f, dd_ErrorType Error)
     fprintf(f,"   m   n  NumberType(real, rational or integer)\n");
     fprintf(f,"   b  -A\n");
     fprintf(f," end\n");
+    break;
+
+  case EmptyVrepresentation:
+    fprintf(f, "*Input Error: V-representation is empty:\n");
+    fprintf(f, "*cddlib does not accept this trivial case for which output can be any inconsistent system.\n");
     break;
 
   case None:
@@ -755,6 +800,72 @@ dd_MatrixPtr dd_CopyInequalities(dd_PolyhedraPtr poly)
 _L99:;
   return M;
 }
+
+/****************************************************************************************/
+/*  rational number (a/b) read is taken from Vinci by Benno Bueeler and Andreas Enge    */
+/****************************************************************************************/
+typedef double rational;
+
+void sread_rational_value (char *s, rational *value)
+   /* reads a rational value from the specified string "s" and assigns it to "value"    */
+   
+{
+   char     *numerator_s, *denominator_s, *position, token;
+   int      sign = 1, i;
+   rational numerator, denominator;
+   
+   /* determine the sign of the number */
+   numerator_s = s;
+   if (s [0] == '-')
+   {  sign = -1;
+      numerator_s++;
+   }
+   else if (s [0] == '+')
+      numerator_s++;
+      
+   /* look for a sign '/' and eventually split the number in numerator and denominator */
+   position = strchr (numerator_s, '/');
+   if (position != NULL)
+   {  *position = '\0'; /* terminates the numerator */
+      denominator_s = position + 1;
+   };
+
+   /* determine the floating point values of numerator and denominator */
+   numerator = 0;
+   for (i = 0; i < strlen (numerator_s); i++)
+   {  token = numerator_s [i];
+      if (strchr ("0123456789", token)) /* token is a cypher */
+         numerator = 10 * numerator + atoi (&token);
+   }
+   
+   if (position != NULL)
+   {  denominator = 0;
+      for (i = 0; i < strlen (denominator_s); i++)
+      {  token = denominator_s [i];
+         if (strchr ("0123456789", token)) /* token is a cypher */
+            denominator = 10 * denominator + atoi (&token);
+      }    
+   }
+   else denominator = 1;
+   
+   *value = sign * numerator / denominator;
+}
+   
+
+static void fread_rational_value (FILE *f, double *value)
+   /* reads a rational value from the specified file "f" and assigns it to "value"      */
+   
+{
+   char     number_s [255];
+   rational rational_value;
+   
+   fscanf (f, "%s ", number_s);
+   sread_rational_value (number_s, &rational_value);
+   *value = rational_value;
+   
+}
+   
+/****************************************************************************************/
 
 
 /* end of cddio.c */
