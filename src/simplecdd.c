@@ -1,6 +1,6 @@
 /* simplecdd.c: Main test program to call the cdd library cddlib
    written by Komei Fukuda, fukuda@ifor.math.ethz.ch
-   Version 0.90, June 2, 2000
+   Version 0.90c, June 12, 2000
    Standard ftp site: ftp.ifor.math.ethz.ch, Directory: pub/fukuda/cdd
 */
 
@@ -62,7 +62,6 @@ int main(int argc, char *argv[])
   dd_PolyhedraPtr poly;
   dd_LPPtr lp;
   dd_MatrixPtr M,A;
-  boolean found=FALSE;
   dd_ErrorType err=NoError;
   dd_DataFileType inputfile,outputfile;
   FILE *reading=NULL, *writing;
@@ -85,11 +84,9 @@ int main(int argc, char *argv[])
   if (err!=NoError) goto _L99;
 
   if (M->objective==LPnone){ /* do representation conversion */
-    poly=dd_Matrix2Poly(M, &err);
-    found=dd_DoubleDescription(poly,&err);
-    if (!found) {
-      dd_WriteErrorMessages(stdout,err);  goto _L99;
-    }
+    poly=dd_DDMatrix2Poly(M, &err);
+    if (err!=NoError) goto _L99;
+
     dd_SetWriteFileName(inputfile, outputfile, 'o', poly->representation);
     SetWriteFile(&writing, outputfile);
     dd_WriteProgramDescription(writing);
@@ -133,16 +130,19 @@ int main(int argc, char *argv[])
     SetWriteFile(&writing, outputfile);
     dd_WriteInputIncidence(writing,poly);
     fclose(writing);
+
     dd_FreeMatrix(M);
     dd_FreePolyhedra(poly);
 
   } else { /* solve the LP */
     lp=dd_Matrix2LP(M, &err);  if (err!=NoError) goto _L99;
     dd_LPSolve(lp,DualSimplex,&err);  if (err!=NoError) goto _L99;
+
     dd_SetWriteFileName(inputfile, outputfile, 's', M->representation);
     SetWriteFile(&writing, outputfile);
     dd_WriteLPResult(writing, lp, err);
     fclose(writing);
+
     dd_FreeMatrix(M);
     dd_FreeLPData(lp);
   }

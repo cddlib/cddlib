@@ -1,6 +1,22 @@
-libcdd, cdd & cdd+ HISTORY file    (as of June 2, 2000)
+libcdd, cdd & cdd+ HISTORY file    (as of June 12, 2000)
 
 *** libcdd version (date) / changes ***
+
+Version 090c (June 12, 2000) /
+ - set_intialize is modified so that it allocates a smallest space even when
+   a nonpositive length is requested.
+   The bug of not outputting the origin is fixed 
+   when input is homogeneous inequality system and the cone contains 
+   no extreme rays.  Note that cddlib does not output this vertex 
+   when the homogeneous cone has extreme rays, since cddlib outputs
+   a minimal representation.
+
+ - A new function dd_DDInputAppend is added.
+
+ - dd_DDMatrix2Poly replaces (and combines) the two old functions
+   dd_Matrix2Poly and dd_DoubleDescription.
+
+ - dd_LPSolutionLoad is renamed as dd_CopyLPSolution.
 
 Version 090b (June 2, 2000) /
  - Thanks to Shawn Rusaw's great help, I could detect and fix many 

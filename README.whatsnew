@@ -1,7 +1,10 @@
-2000-05-29 (May 29, 2000)
+2000-06-12 (June 12, 2000)
 ---------------------------------------------
-C-Library cddlib (version 0.90) What's new? 
+C-Library cddlib (version 0.90c) What's new? 
 ---------------------------------------------
+
+0. To learn what's new in this version,
+please check the history file HISTORY.cdd as well.
 
 1. cddlib-090 is a major revision of the previous
 version 085.  The most important change is the capability
@@ -10,9 +13,11 @@ type mpq_t as well as the C double type.
 
 Also there are numerous bug fixes over the last release 085.  
 Many of these bugs were found by Mr. Masanori Sato of Tokyo 
-Institute of Technology. 
+Institute of Technology.  After the version 090 had been released,
+Mr. Shawn Rusaw helped me in detecting various memory leaks
+and bugs.
 
-It comes with a simple standalone code simplecdd.c.
+cddlib comes with a simple standalone code simplecdd.c.
 Once you "make all" at the subdirectory "makedir", 
 you will have "scdd" (simple cdd).  Just run it at the command line.
 For example, sample.ine contains a representation of a 3D cube.
@@ -32,7 +37,7 @@ sample.icd  (incidence of inequalities and  extreme points).
 
 The program simplecdd.c should explain how some of the
 basic cddlib functions can be called.  Run the same thing
-with the exact solver
+with the exact solver scdd_gmp (created by "make gmp")
 
 % scdd_gmp sample.ine
 
@@ -65,8 +70,7 @@ the subdirectory makedir.   The essential part is
   dd_WriteLPResult(stdout, lp, error);
 
   /* generate all generators of the feasible region and write the result */
-  poly=dd_Matrix2Poly(M, &error);
-  dd_DoubleDescription(poly,&error);
+  poly=dd_DDMatrix2Poly(M, &error);  /* new in 090c */
   G=dd_CopyGenerators(poly);
   dd_WriteMatrix(stdout,G);
 ------------------------------------------------------------------------------

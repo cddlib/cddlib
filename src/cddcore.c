@@ -1,6 +1,6 @@
 /* cddcore.c:  Core Procedures for cddlib
    written by Komei Fukuda, fukuda@ifor.math.ethz.ch
-   Version 0.90b, June 2, 2000
+   Version 0.90c, June 12, 2000
 */
 
 /* cddlib : C-library of the double description method for
@@ -538,12 +538,12 @@ void FreeDDMemory0(dd_ConePtr cone)
   cone->A = NULL;
 
   free(cone);
-  cone = NULL;
 }
 
 void dd_FreeDDMemory(dd_PolyhedraPtr poly)
 {
   FreeDDMemory0(poly->child);
+  poly->child=NULL;
 }
 
 void dd_FreePolyhedra(dd_PolyhedraPtr poly)
@@ -565,9 +565,7 @@ void dd_FreePolyhedra(dd_PolyhedraPtr poly)
   }
 
   free(poly);
-  poly=NULL;
 }
-
 
 void Normalize(dd_colrange d_size, mytype *V)
 {

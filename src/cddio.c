@@ -1,6 +1,6 @@
 /* cddio.c:  Basic Input and Output Procedures for cddlib
    written by Komei Fukuda, fukuda@ifor.math.ethz.ch
-   Version 0.90b, June 2, 2000
+   Version 0.90c, June 12, 2000
 */
 
 /* cddlib : C-library of the double description method for
@@ -196,28 +196,75 @@ void ProcessCommandLine(FILE *f, dd_MatrixPtr M, char *line)
   dd_clear(value);
 }
 
-void AddInequalities(dd_PolyhedraPtr poly, dd_MatrixPtr M)
+boolean AppendMatrix2Poly(dd_PolyhedraPtr *poly, dd_MatrixPtr M)
 {
-  dd_Amatrix Anew;
-  dd_rowrange i, m_new;
-  dd_colrange j, d_new;
+  boolean success=FALSE;
+  dd_MatrixPtr Mpoly,Mnew=NULL;
+  dd_ErrorType err;
 
-  /* poly->child->CompStatus=InProgress;  086 */
+  if ((*poly)!=NULL && (*poly)->m >=0 && (*poly)->d>=0 &&
+      (*poly)->d==M->colsize && M->rowsize>0){
+    Mpoly=dd_CopyInput(*poly);
+    Mnew=dd_AppendMatrix(Mpoly, M);
+    dd_FreePolyhedra(*poly);
+    *poly=dd_DDMatrix2Poly(Mnew,&err);
+    dd_FreeMatrix(Mpoly);
+    dd_FreeMatrix(Mnew);
+    if (err==NoError) success=TRUE;
+  }
+  return success;
+}
+
+dd_MatrixPtr dd_CopyMatrix(dd_MatrixPtr M)
+{
+  dd_MatrixPtr Mcopy=NULL;
+  dd_rowrange m;
+  dd_colrange d;
+
+  m= M->rowsize;
+  d= M->colsize;
+  if (m >=0 && d >=0){
+    Mcopy=dd_CreateMatrix(m, d);
+    CopyAmatrix(Mcopy->matrix, M->matrix, m, d);
+    CopyArow(Mcopy->rowvec, M->rowvec, d);
+    set_copy(Mcopy->linset,M->linset);
+    Mcopy->numbtype=M->numbtype;
+    Mcopy->representation=M->representation;
+    Mcopy->objective=M->objective;
+  }
+  return Mcopy;
+}
+
+dd_MatrixPtr dd_AppendMatrix(dd_MatrixPtr M1, dd_MatrixPtr M2)
+{
+  dd_MatrixPtr M=NULL;
+  dd_rowrange i, m,m1,m2;
+  dd_colrange j, d,d1,d2;
   
-  m_new=poly->m + M->rowsize;
-  d_new=poly->d_alloc;
+  m1=M1->rowsize;
+  d1=M1->colsize;
+  m2=M2->rowsize;
+  d2=M2->colsize;
 
-  if (poly->m_alloc < m_new){
-    dd_InitializeAmatrix(m_new,d_new,&(Anew));
-    CopyAmatrix(Anew, poly->A, poly->m, poly->d);
-    dd_FreeAmatrix(poly->m_alloc,poly->d_alloc,poly->A);
-    poly->A=Anew;
-    poly->m_alloc=m_new;
+  m=m1+m2;
+  d=d1;
+
+  if (d1>=0 && d1==d2 && m1>=0 && m2>=0){
+    M=dd_CreateMatrix(m, d);
+    CopyAmatrix(M->matrix, M1->matrix, m1, d);
+    CopyArow(M->rowvec, M1->rowvec, d);
+    for (i=0; i<m1; i++){
+      if (set_member(i+1,M1->linset)) set_addelem(M->linset,i+1);
+    }
+    for (i=0; i<m2; i++){
+       for (j=0; j<d; j++)
+         dd_set(M->matrix[m1+i][j],M2->matrix[i][j]);
+         /* append the second matrix */
+       if (set_member(i+1,M2->linset)) set_addelem(M->linset,m1+i+1);
+    }
+    M->numbtype=M1->numbtype;
   }
-  for (i=0; i<M->rowsize; i++){
-    for (j=0; j<poly->d; j++) dd_set(poly->A[(poly->m)+i][j],M->matrix[i][j]);
-  }
-  poly->m=m_new;  
+  return M;
 }
 
 
@@ -472,13 +519,17 @@ _L99: ;
 }
 
 
-dd_PolyhedraPtr dd_Matrix2Poly(dd_MatrixPtr M, dd_ErrorType *err)
+dd_PolyhedraPtr dd_DDMatrix2Poly(dd_MatrixPtr M, dd_ErrorType *err)
 {
   dd_rowrange i;
   dd_colrange j;
-  dd_PolyhedraPtr poly;
+  dd_PolyhedraPtr poly=NULL;
 
   *err=NoError;
+  if (M->rowsize<0 || M->colsize<0){
+    *err=NegativeMatrixSize;
+    goto _L99;
+  }
   poly=CreatePolyhedraData(M->rowsize, M->colsize);
   poly->representation=M->representation;
   poly->homogeneous=TRUE;
@@ -492,6 +543,8 @@ dd_PolyhedraPtr dd_Matrix2Poly(dd_MatrixPtr M, dd_ErrorType *err)
       if (j==1 && dd_Nonzero(M->matrix[i-1][j-1])) poly->homogeneous = FALSE;
     }  /*of j*/
   }  /*of i*/
+  DoubleDescription(poly,err);
+_L99:
   return poly; 
 }
 
@@ -1046,6 +1099,11 @@ void dd_WriteErrorMessages(FILE *f, dd_ErrorType Error)
     fprintf(f, "*Output Error: Specified output file cannot be opened.\n");
     break;
 
+  case NegativeMatrixSize:
+    fprintf(f, "*Input Error: Input matrix has a negative size:\n");
+    fprintf(f, "*Please check rowsize or colsize.\n");
+    break;
+
   case ImproperInputFormat:
     fprintf(f,"*Input Error: Input format is not correct.\n");
     fprintf(f,"*Format:\n");
@@ -1066,7 +1124,7 @@ void dd_WriteErrorMessages(FILE *f, dd_ErrorType Error)
 
   case NoRealNumberSupport:
     fprintf(f, "*LP Error: The binary (with GMP Rational) does not support Real number input.\n");
-    fprintf(f, "         : Use a binary compiled with -DCDOUBLE option.\n");
+    fprintf(f, "         : Use a binary compiled without -DGMPRATIONAL option.\n");
     break;
 
   case NoError:
@@ -1112,14 +1170,17 @@ dd_SetFamilyPtr dd_CopyAdjacency(dd_PolyhedraPtr poly)
   dd_RayPtr RayPtr1,RayPtr2;
   dd_SetFamilyPtr F=NULL;
   long pos1, pos2;
-  dd_bigrange lstart,k;
+  dd_bigrange lstart,k,n;
   set_type linset,allset;
   boolean adj;
 
-  set_initialize(&linset, poly->n);
-  set_initialize(&allset, poly->n);
+  if (poly->n==0 && poly->homogeneous && poly->representation==Inequality){
+    n=1; /* the origin (the unique vertex) should be output. */
+  } else n=poly->n;
+  set_initialize(&linset, n);
+  set_initialize(&allset, n);
   if (poly->child==NULL || poly->child->CompStatus!=AllFound) goto _L99;
-  F=dd_CreateSetFamily(poly->n, poly->n);
+  F=dd_CreateSetFamily(n, n);
   poly->child->LastRay->Next=NULL;
   for (RayPtr1=poly->child->FirstRay, pos1=1;RayPtr1 != NULL; 
 				RayPtr1 = RayPtr1->Next, pos1++){
@@ -1174,10 +1235,16 @@ dd_MatrixPtr dd_CopyOutput(dd_PolyhedraPtr poly)
   dd_rowrange i=0,total;
   dd_colrange j,j1;
   mytype b;
+  boolean outputorigin=FALSE;
 
   dd_init(b);
   total=poly->child->LinearityDim + poly->child->FeasibleRayCount;
   if (poly->child->d<=0 || poly->child->newcol[1]==0) total=total-1;
+  if (total==0 && poly->homogeneous && poly->representation==Inequality){
+    total=1;
+    outputorigin=TRUE;
+    /* the origin (the unique vertex) should be output. */
+  }
   if (poly->child==NULL || poly->child->CompStatus!=AllFound) goto _L99;
 
   M=dd_CreateMatrix(total, poly->d);
@@ -1204,6 +1271,13 @@ dd_MatrixPtr dd_CopyOutput(dd_PolyhedraPtr poly)
       set_addelem(M->linset, i+1);
       i++;
     }     
+  }
+  if (outputorigin){ 
+    /* output the origin for homogeneous H-polyhedron with no rays. */
+    dd_set(M->matrix[0][0],dd_one);
+    for (j=1; j<poly->d; j++){
+      dd_set(M->matrix[0][j],dd_purezero);
+    }
   }
   MatrixIntegerFilter(M);
   if (poly->representation==Inequality)

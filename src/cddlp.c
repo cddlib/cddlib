@@ -1,6 +1,6 @@
 /* cddlp.c:  dual simplex method c-code
    written by Komei Fukuda, fukuda@ifor.math.ethz.ch
-   Version 0.90b, June 2, 2000
+   Version 0.90c, June 12, 2000
 */
 
 /* cddlp.c : C-Implementation of the dual simplex method for
@@ -61,7 +61,7 @@ void SetSolutions(dd_rowrange,dd_colrange,
    mytype *,dd_Arow,dd_Arow,dd_colindex,dd_rowrange,dd_colrange);
 
 
-dd_LPSolutionPtr dd_LPSolutionLoad(dd_LPPtr lp)
+dd_LPSolutionPtr dd_CopyLPSolution(dd_LPPtr lp)
 {
   dd_LPSolutionPtr lps;
   dd_colrange j;
@@ -482,7 +482,7 @@ void GaussianColumnPivot(dd_rowrange m_size, dd_colrange d_size,
       for (j=1; j<=last_d; j++) dd_clear(Rtemp[j-1]);
       free(Rtemp);
     }
-    Rtemp=(mytype*) calloc(d_size,sizeof(mytype));
+    Rtemp=(mytype*)calloc(d_size,sizeof(mytype));
     for (j=1; j<=d_size; j++) dd_init(Rtemp[j-1]);
     last_d=d_size;
   }
@@ -686,7 +686,7 @@ When LP is dual-inconsistent then *se returns the evidence column.
        free(OrderVector);
      }
      bflag=(long *) calloc(m_size+1,sizeof(long*));
-     OrderVector=(long *) calloc(m_size+1,sizeof(long*)); 
+     OrderVector=(long *)calloc(m_size+1,sizeof(long*)); 
      /* initialize only for the first time or when a larger space is needed */
      mlast=m_size;
   }
@@ -1004,7 +1004,7 @@ When LP is dual-inconsistent then *se returns the evidence column.
        free(OrderVector);
        free(bflag);
      }
-     OrderVector=(long *) calloc(m_size+1,sizeof(*OrderVector));
+     OrderVector=(long *)calloc(m_size+1,sizeof(*OrderVector));
      bflag=(long *) calloc(m_size+2,sizeof(*bflag));  /* one more element for an auxiliary variable  */
      mlast=m_size;nlast=d_size;
   }

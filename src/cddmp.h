@@ -1,6 +1,7 @@
-/* cddmp.c       (cddlib arithmetic operations using gmp)  */
-/* Copyright: Komei Fukuda 2000, fukuda@ifor.math.ethz.ch  */
-/* Version 0.90b, June 2, 2000                             */
+/* cddmp.c       (cddlib arithmetic operations using gmp)
+   Copyright: Komei Fukuda 2000, fukuda@ifor.math.ethz.ch
+   Version 0.90c, June 12, 2000
+*/
 
 /* This program is free software; you can redistribute it and/or modify
    it under the terms of the GNU General Public License as published by
@@ -65,8 +66,8 @@
  #define dd_init(a)              ddd_init(a)     
  #define dd_clear(a)             ddd_clear(a)     
  #define dd_set(a, b)            ddd_set(a,b)     
- #define dd_set_si(a, b)         ddd_set_d(a,b)     
- #define dd_set_d(a, b)          ddd_set_si(a,b)     
+ #define dd_set_si(a, b)         ddd_set_si(a,b)     
+ #define dd_set_d(a, b)          ddd_set_d(a,b)     
  #define dd_add(a, b, c)         ddd_add(a,b,c)
  #define dd_sub(a, b, c)         ddd_sub(a,b,c)
  #define dd_mul(a, b, c)         ddd_mul(a,b,c)

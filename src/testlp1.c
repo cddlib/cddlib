@@ -1,6 +1,6 @@
 /* testlp1.c: Main test program to call the cdd lp library
    written by Komei Fukuda, fukuda@ifor.math.ethz.ch
-   Version 0.90, May 28, 2000
+   Version 0.90c, June 12, 2000
    Standard ftp site: ftp.ifor.math.ethz.ch, Directory: pub/fukuda/cdd
 */
 
@@ -70,8 +70,7 @@ int main(int argc, char *argv[])
     dd_WriteLPResult(stdout, lp, error);
 
 /* Generate all vertices of the feasible reagion */
-    poly=dd_Matrix2Poly(M, &error);
-    dd_DoubleDescription(poly,&error);
+    poly=dd_DDMatrix2Poly(M, &error);
     G=dd_CopyGenerators(poly);
     printf("\nAll the vertices of the feasible region.\n");
     dd_WriteMatrix(stdout,G);

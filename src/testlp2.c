@@ -1,6 +1,6 @@
 /* testlp2.c: Main test program to call the cdd lp library
    written by Komei Fukuda, fukuda@ifor.math.ethz.ch
-   Version 0.90, May 28, 2000
+   Version 0.90c, June 12, 2000
    Standard ftp site: ftp.ifor.math.ethz.ch, Directory: pub/fukuda/cdd
 */
 
@@ -113,7 +113,7 @@ _L99:;
   min  0 + 4 y1 + 2 y2
   s.t.
       -3 + 2 y1        >= 0
-      -4     y1 +  y2  >= 0
+      -4     y1 +   y2 >= 0
              y1        >= 0
                     y2 >= 0
 */

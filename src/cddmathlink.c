@@ -1,7 +1,7 @@
 /* cddmathlink.c: Main test program to call the cdd library cddlib
    from Mathematica using MathLink.
    written by Komei Fukuda, fukuda@ifor.math.ethz.ch
-   Version 0.90, May 28, 2000
+   Version 0.90c, June 12, 2000
    Standard ftp site: ftp.ifor.math.ethz.ch, Directory: pub/fukuda/cdd
 */
 
@@ -37,7 +37,6 @@ void allvertices(int m_input, int d_input, double *a_input)
   dd_SetFamilyPtr GI;
   dd_rowrange i,m; 
   dd_colrange j,d;
-  boolean found;
   dd_ErrorType err;
 
   m=(dd_rowrange)m_input; d=(dd_colrange)d_input;
@@ -46,10 +45,9 @@ void allvertices(int m_input, int d_input, double *a_input)
     for (j=0; j<d; j++) dd_set_d(A->matrix[i][j],a_input[i*d+j]);
   }
   A->representation=Inequality;
-  poly=dd_Matrix2Poly(A, &err);
-  found=dd_DoubleDescription(poly,&err);
+  poly=dd_DDMatrix2Poly(A, &err);
     /* compute the second (generator) representation */
-  if (found) {
+  if (err==NoError) {
     G=dd_CopyGenerators(poly);
     GI=dd_CopyIncidence(poly);
 
@@ -73,7 +71,6 @@ void allvertices2(int m_input, int d_input, double *a_input)
   dd_SetFamilyPtr GI,GA;
   dd_rowrange i,m; 
   dd_colrange j,d;
-  boolean found;
   dd_ErrorType err;
 
   m=(dd_rowrange)m_input; d=(dd_colrange)d_input;
@@ -83,10 +80,9 @@ void allvertices2(int m_input, int d_input, double *a_input)
     for (j=0; j<d; j++) dd_set_d(A->matrix[i][j],a_input[i*d+j]);
   }
   A->representation=Inequality;
-  poly=dd_Matrix2Poly(A, &err);
-  found=dd_DoubleDescription(poly,&err);
+  poly=dd_DDMatrix2Poly(A, &err);
     /* compute the second (generator) representation */
-  if (found){
+  if (err==NoError){
     G=dd_CopyGenerators(poly);
     GI=dd_CopyIncidence(poly);
     GA=dd_CopyAdjacency(poly);
@@ -112,7 +108,6 @@ void allfacets(int n_input, int d_input, double *g_input)
   dd_SetFamilyPtr AI;
   dd_rowrange i,n; 
   dd_colrange j,d;
-  boolean found;
   dd_ErrorType err;
 
   n=(dd_rowrange)n_input; d=(dd_colrange)d_input;
@@ -121,10 +116,9 @@ void allfacets(int n_input, int d_input, double *g_input)
     for (j=0; j<d; j++) dd_set_d(G->matrix[i][j],g_input[i*d+j]);
   }
   G->representation=Generator;
-  poly=dd_Matrix2Poly(G, &err);
-  found=dd_DoubleDescription(poly,&err);
+  poly=dd_DDMatrix2Poly(G, &err);
     /* compute the second (inequality) representation */
-  if (found){
+  if (err==NoError){
     A=dd_CopyInequalities(poly);
     AI=dd_CopyIncidence(poly);
 
@@ -149,7 +143,6 @@ void allfacets2(int n_input, int d_input, double *g_input)
   dd_SetFamilyPtr AI, AA;
   dd_rowrange i,n; 
   dd_colrange j,d;
-  boolean found;
   dd_ErrorType err;
 
   n=(dd_rowrange)n_input; d=(dd_colrange)d_input;
@@ -158,10 +151,9 @@ void allfacets2(int n_input, int d_input, double *g_input)
     for (j=0; j<d; j++) dd_set_d(G->matrix[i][j],g_input[i*d+j]);
   }
   G->representation=Generator;
-  poly=dd_Matrix2Poly(G, &err);
-  found=dd_DoubleDescription(poly,&err);  
+  poly=dd_DDMatrix2Poly(G, &err);
     /* compute the second (inequality) representation */
-  if (found){
+  if (err==NoError){
     A=dd_CopyInequalities(poly);
     AI=dd_CopyIncidence(poly);
     AA=dd_CopyAdjacency(poly);

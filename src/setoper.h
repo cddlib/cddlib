@@ -38,5 +38,7 @@ void set_fwrite_compl(FILE *f,set_type set); /* write the complement */
 void set_binwrite(set_type set);
 void set_fbinwrite(FILE *f,set_type set);
 
+
+
 /* End of File: setoper.h */
 

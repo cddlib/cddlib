@@ -1,4 +1,4 @@
-1999-03-15 (March 15, 1999)
+2000-06-03
 -----------------------------------------
 C-Library cddlib TO DO LIST
 -----------------------------------------
@@ -12,8 +12,10 @@ C-Library cddlib TO DO LIST
 3. Make it faster.
    (Usually it is done automatically as time goes by...)
 
-4. Make C++ version supporting different arithmetics.
-   (should be quite easy...  I did for cdd to make cdd+.)
+4. cddlib does not output the unique vertex (=origin) of
+   a homogeneous cone.  In particular, if a homogeneous
+   cone is bounded, cdd output nothing.  Maybe this behavior
+   must change.
 
 
    Komei Fukuda

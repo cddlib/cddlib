@@ -1,7 +1,7 @@
-/* cddmp.c       (cddlib arithmetic operations using gmp)  */
-/* Copyright: Komei Fukuda 2000, fukuda@ifor.math.ethz.ch  */
-/* Version 0.90b, June 2, 2000                             */
-
+/* cddmp.c       (cddlib arithmetic operations using gmp)
+   Copyright: Komei Fukuda 2000, fukuda@ifor.math.ethz.ch
+   Version 0.90c, June 12, 2000
+*/
 /* This program is free software; you can redistribute it and/or modify
    it under the terms of the GNU General Public License as published by
    the Free Software Foundation; either version 2 of the License, or

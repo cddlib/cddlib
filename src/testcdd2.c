@@ -1,6 +1,6 @@
 /* testcdd2.c: Main test program to call the cdd library cddlib
    written by Komei Fukuda, fukuda@ifor.math.ethz.ch
-   Version 0.90, May 28, 2000
+   Version 0.90c, June 12, 2000
    Standard ftp site: ftp.ifor.math.ethz.ch, Directory: pub/fukuda/cdd
 */
 
@@ -30,7 +30,7 @@
 int main(int argc, char *argv[])
 {
   dd_PolyhedraPtr poly;
-  dd_MatrixPtr A, G;
+  dd_MatrixPtr A, B, G;
   dd_rowrange m; 
   dd_colrange d;
   dd_ErrorType err;
@@ -49,15 +49,40 @@ int main(int argc, char *argv[])
      1         +  x2   >= 0
   */
   A->representation=Inequality;
-  poly=dd_Matrix2Poly(A, &err);
-  dd_DoubleDescription(poly, &err);  /* compute the second (generator) representation */
-  printf("\nInput is an H-representation:\n\n");
+  poly=dd_DDMatrix2Poly(A, &err);  /* compute the second (generator) representation */
+  if (err!=NoError) goto _L99;
+  printf("\nInput is H-representation:\n");
   G=dd_CopyGenerators(poly);
+  dd_WriteMatrix(stdout,A);  printf("\n");
+  dd_WriteMatrix(stdout,G);
+  dd_FreeMatrix(A);
+  dd_FreeMatrix(G);
+
+  /* Add inequalities:
+     7 +  x1   -3x2   = 0
+     7 - 3x1   + x2   >= 0
+  */
+  m=2;
+  B=dd_CreateMatrix(m,d);
+  dd_set_si(B->matrix[0][0],7); dd_set_si(B->matrix[0][1], 1); dd_set_si(B->matrix[0][2],-3);
+  dd_set_si(B->matrix[1][0],7); dd_set_si(B->matrix[1][1],-3); dd_set_si(B->matrix[1][2], 1);
+  set_addelem(B->linset,1); /* setting the first to be equality */
+
+  dd_DDInputAppend(&poly,B, &err); /* append the two inequalities and compute the generators */
+  if (err!=NoError) goto _L99;
+  A=dd_CopyInequalities(poly);  /* get the inequalities (=input). */
+  G=dd_CopyGenerators(poly);  /* get the generators (=output). */
+  printf("\nNew H-representation with added inequalities:\n");
   dd_WriteMatrix(stdout,A);  printf("\n");
   dd_WriteMatrix(stdout,G);
 
   dd_FreeMatrix(A);
+  dd_FreeMatrix(B);
   dd_FreeMatrix(G);
+  dd_FreePolyhedra(poly);
+
+_L99:
+  if (err!=NoError) dd_WriteErrorMessages(stdout,err);
 
   return 0;
 }

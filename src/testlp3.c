@@ -1,6 +1,6 @@
 /* testlp3.c: Main test program to call the cdd lp library
    written by Komei Fukuda, fukuda@ifor.math.ethz.ch
-   Version 0.90, May 28, 2000
+   Version 0.90c, June 12, 2000
    Standard ftp site: ftp.ifor.math.ethz.ch, Directory: pub/fukuda/cdd
 */
 
@@ -113,7 +113,7 @@ int main(int argc, char *argv[])
 
 /* One can access the solutions by loading them.  See dd_WriteLPResult
    for outputing the results correctly. */
-  lps=dd_LPSolutionLoad(lp);
+  lps=dd_CopyLPSolution(lp);
   if (lps->LPS==Optimal){
     printf("Optimal solution found:\n");
     printf("  primal_solution\n");
@@ -140,7 +140,7 @@ int main(int argc, char *argv[])
     if (err!=NoError) goto _L99;
 
     /* Write an interior point. */
-    lps1=dd_LPSolutionLoad(lp1);
+    lps1=dd_CopyLPSolution(lp1);
     if (dd_Positive(lps1->optvalue)){
       printf("An interior point found: (");
       for (j=1; j <(lps1->d)-1; j++) {

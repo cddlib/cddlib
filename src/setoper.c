@@ -42,11 +42,14 @@ unsigned long set_blocks(long len)
 	return blocks;
 }
 
-void set_initialize(set_type *setp, long len)
+void set_initialize(set_type *setp, long length)
 /* Make a set with a given bit lengths  */
 {
-	long i,forlim1;
+	long i,forlim1,len;
 	
+    if (length<=0) len=1;else len=length; 
+     /* if negative length is requested, it generates the shortest length */
+
 	forlim1=set_blocks(len);
 	*setp=(unsigned long *) calloc(forlim1, sizeof i);
 	(*setp)[0]=(unsigned long) len;  /* size of the ground set */

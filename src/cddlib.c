@@ -1,6 +1,6 @@
 /* cddlib.c: cdd library  (library version of cdd)
    written by Komei Fukuda, fukuda@ifor.math.ethz.ch
-   Version 0.90b, June 2, 2000
+   Version 0.90c, June 12, 2000
    Standard ftp site: ftp.ifor.math.ethz.ch, Directory: pub/fukuda/cdd
 */
 
@@ -77,6 +77,10 @@ void DDMain(dd_ConePtr cone)
     cone->CompStatus=AllFound;
     goto _L99;
   }
+  if (localdebug) {
+     fprintf(stdout,"(Initially added rows ) = ");
+     set_fwrite(stdout,cone->InitialHalfspaces);
+  }
   while (cone->Iteration <= cone->m) {
     SelectNextHalfspace(cone, cone->WeaklyAddedHalfspaces, &hh);
     if (set_member(hh,cone->NonequalitySet)){  /* Skip the row hh */
@@ -102,7 +106,7 @@ void DDMain(dd_ConePtr cone)
         /* store the dynamic ordering in ordervec */
     }
     if (localdebug){
-      printf("(Iter, Row, #Total, #Curr, #Feas)= %5ld %5ld %10ld %7ld %7ld\n",
+      printf("(Iter, Row, #Total, #Curr, #Feas)= %5ld %5ld %9ld %6ld %6ld\n",
         cone->Iteration, hh, cone->TotalRayCount, cone->RayCount,
         cone->FeasibleRayCount);
     }
@@ -184,12 +188,13 @@ void dd_InitialDataSetup(dd_ConePtr cone)
   set_free(ZSet);
 }
 
-boolean dd_DoubleDescription(dd_PolyhedraPtr poly, dd_ErrorType *err)
+boolean DoubleDescription(dd_PolyhedraPtr poly, dd_ErrorType *err)
 {
   dd_ConePtr cone=NULL;
   boolean found=FALSE;
 
-  if (poly->child==NULL || poly->child->CompStatus!=AllFound){
+  *err=NoError;
+  if (poly!=NULL && (poly->child==NULL || poly->child->CompStatus!=AllFound)){
     cone=ConeDataLoad(poly);
     /* create a cone associated with poly by homogenization */
     time(&cone->starttime);
@@ -209,16 +214,17 @@ boolean dd_DoubleDescription(dd_PolyhedraPtr poly, dd_ErrorType *err)
   return found;
 }
 
-boolean dd_DDAddInequalities(dd_PolyhedraPtr poly, dd_MatrixPtr M,
+boolean dd_DDInputAppend(dd_PolyhedraPtr *poly, dd_MatrixPtr M,
   dd_ErrorType *err)
 {
   /* This is imcomplete.  It simply solves the problem from scratch.  */
   boolean found;
   dd_ErrorType error;
 
-  if (poly->child!=NULL) dd_FreeDDMemory(poly);
-  AddInequalities(poly, M);
-  found=dd_DoubleDescription(poly, &error);
+  if ((*poly)->child!=NULL) dd_FreeDDMemory(*poly);
+  AppendMatrix2Poly(poly, M);
+  (*poly)->representation=Inequality;
+  found=DoubleDescription(*poly, &error);
   *err=error;
   return found;
 }
@@ -255,11 +261,10 @@ boolean dd_DDFile2File(char *ifile, char *ofile, dd_ErrorType *err)
   }
 
   M=dd_PolyFile2Matrix(reading, &error);
-  poly=dd_Matrix2Poly(M, &error);
+  poly=dd_DDMatrix2Poly(M, &error);  /* compute the second representation */
   dd_FreeMatrix(M);
 
   if (error==NoError) {
-    found=dd_DoubleDescription(poly,&error);  /* compute the second representation */
     A=dd_CopyInequalities(poly);
     G=dd_CopyGenerators(poly);
 
@@ -269,7 +274,7 @@ boolean dd_DDFile2File(char *ifile, char *ofile, dd_ErrorType *err)
       dd_WriteMatrix(writing,A);
     }
 
-    dd_FreeDDMemory(poly);
+    dd_FreePolyhedra(poly);
     dd_FreeMatrix(A);
     dd_FreeMatrix(G);
   } 

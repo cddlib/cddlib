@@ -1,6 +1,6 @@
 /* cddtypes.h: Header file for cddlib.c 
    written by Komei Fukuda, fukuda@ifor.math.ethz.ch
-   Version 0.90b, June 2, 2000
+   Version 0.90c, June 12, 2000
 */
 
 /* cddlib.c : C-Implementation of the double description method for
@@ -15,7 +15,7 @@
 #endif  /* __CDDTYPES_H */
 
 #define COPYRIGHT   "Copyright (C) 1996, Komei Fukuda, fukuda@ifor.math.ethz.ch"
-#define DDVERSION   "Version 0.90b (June 2, 2000)"
+#define DDVERSION   "Version 0.90c (June 12, 2000)"
 #include <time.h>
 
 #define dd_wordlenmax     127
@@ -100,7 +100,8 @@ typedef enum {
    /* Auto if a input filename is specified by command arguments */
 
 typedef enum {
-  DimensionTooLarge, ImproperInputFormat, EmptyVrepresentation,
+  DimensionTooLarge, ImproperInputFormat, 
+  NegativeMatrixSize, EmptyVrepresentation,
   IFileNotFound, OFileNotOpen, NoLPObjective, NoRealNumberSupport, NoError
 } dd_ErrorType;
 

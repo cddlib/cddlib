@@ -1,6 +1,6 @@
 /* cddlib.h: Header file for cddlib.c 
    written by Komei Fukuda, fukuda@ifor.math.ethz.ch
-   Version 0.90b, June 2, 2000
+   Version 0.90c, June 12, 2000
 */
 
 /* cddlib.c : C-Implementation of the double description method for
@@ -71,11 +71,12 @@ dd_SetFamilyPtr dd_CopyIncidence(dd_PolyhedraPtr);
 dd_SetFamilyPtr dd_CopyAdjacency(dd_PolyhedraPtr);
 dd_SetFamilyPtr dd_CopyInputIncidence(dd_PolyhedraPtr);
 dd_SetFamilyPtr dd_CopyInputAdjacency(dd_PolyhedraPtr);
-boolean dd_DoubleDescription(dd_PolyhedraPtr, dd_ErrorType*);
+dd_MatrixPtr dd_CopyMatrix(dd_MatrixPtr); /* 090c */
+dd_MatrixPtr dd_AppendMatrix(dd_MatrixPtr, dd_MatrixPtr);  /* 090c */
 boolean dd_DDFile2File(char *ifile, char *ofile, dd_ErrorType *err);
-boolean dd_DDAddInequalities(dd_PolyhedraPtr, dd_MatrixPtr, dd_ErrorType*);
+boolean dd_DDInputAppend(dd_PolyhedraPtr*, dd_MatrixPtr, dd_ErrorType*);
 dd_MatrixPtr dd_PolyFile2Matrix (FILE *f, dd_ErrorType *);
-dd_PolyhedraPtr dd_Matrix2Poly(dd_MatrixPtr, dd_ErrorType *);
+dd_PolyhedraPtr dd_DDMatrix2Poly(dd_MatrixPtr, dd_ErrorType *);
 
 /* input/output */
 void dd_SetInputFile(FILE **f,dd_DataFileType inputfile, dd_ErrorType *);
@@ -99,7 +100,8 @@ void dd_WriteTimes(FILE *, time_t, time_t);
 
 
 /* ---------- FUNCTIONS MEANT TO BE NON-PUBLIC ---------- */
-
+boolean DoubleDescription(dd_PolyhedraPtr, dd_ErrorType*);
+void FreeDDMemory0(dd_ConePtr);
 void fread_rational_value (FILE *f, mytype value);
 void AddNewHalfspace1(dd_ConePtr, dd_rowrange);
 void AddNewHalfspace2(dd_ConePtr, dd_rowrange);
@@ -157,7 +159,7 @@ dd_NumberType GetNumberType(char *);
 dd_ConePtr ConeDataLoad(dd_PolyhedraPtr);
 dd_PolyhedraPtr CreatePolyhedraData(dd_rowrange, dd_colrange);
 boolean InitializeConeData(dd_rowrange, dd_colrange, dd_ConePtr*);
-void AddInequalities(dd_PolyhedraPtr, dd_MatrixPtr);
+boolean AppendMatrix2Poly(dd_PolyhedraPtr*, dd_MatrixPtr);
 
 
 /* functions and types for LP solving */
@@ -167,7 +169,7 @@ dd_LPPtr dd_Matrix2LP(dd_MatrixPtr, dd_ErrorType *);
 
 boolean dd_LPSolve(dd_LPPtr,dd_LPSolverType,dd_ErrorType *);
 dd_LPPtr dd_MakeLPforInteriorFinding(dd_LPPtr);  
-dd_LPSolutionPtr dd_LPSolutionLoad(dd_LPPtr lp);
+dd_LPSolutionPtr dd_CopyLPSolution(dd_LPPtr lp);  /* 0.90c */
 
 int dd_LPReverseRow(dd_LPPtr, dd_rowrange);
     /* reverse the i-th row (1 <= i <= no. of rows) */
@@ -182,5 +184,7 @@ void dd_FreeLPSolution(dd_LPSolutionPtr);
 void dd_WriteLPResult(FILE *, dd_LPPtr, dd_ErrorType);
 void dd_WriteLPErrorMessages(FILE *, dd_ErrorType);
 void dd_WriteLPTimes(FILE *, dd_LPPtr);
+
+
 
 /* end of cddlib.h */

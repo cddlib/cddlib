@@ -1,6 +1,6 @@
 /* testcdd1.c: Main test program to call the cdd library cddlib
    written by Komei Fukuda, fukuda@ifor.math.ethz.ch
-   Version 0.90, May 28, 2000
+   Version 0.90c, June 12, 2000
    Standard ftp site: ftp.ifor.math.ethz.ch, Directory: pub/fukuda/cdd
 */
 
@@ -46,7 +46,6 @@ int main(int argc, char *argv[])
 {
   dd_PolyhedraPtr poly;
   dd_MatrixPtr M;
-  boolean found=FALSE;
   dd_ErrorType err;
   dd_DataFileType inputfile;
   FILE *reading=NULL;
@@ -65,9 +64,8 @@ int main(int argc, char *argv[])
   }
 
   if (err==NoError) {
-    poly=dd_Matrix2Poly(M, &err);
-    found=dd_DoubleDescription(poly,&err);  /* compute the second representation */
-    if (!found) {
+    poly=dd_DDMatrix2Poly(M, &err); /* compute the second representation */
+    if (err!=NoError) {
       dd_WriteErrorMessages(stdout,err);  goto _L99;
     }
     A=dd_CopyInequalities(poly);
@@ -90,8 +88,7 @@ int main(int argc, char *argv[])
     dd_WriteSetFamily(stdout,GA);
 
     dd_FreePolyhedra(poly);
-    /* This is to remove the workspace created by dd_DoubleDescription;
-       PolyhedraData poly won't be erased. */
+    /* This is to remove all the space allocated for poly. */
     dd_FreeMatrix(A);
     dd_FreeMatrix(G);
     dd_FreeSetFamily(GI);
