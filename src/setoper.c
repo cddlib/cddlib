@@ -3,7 +3,8 @@
  * created by Komei Fukuda, Nov.14, 1993
  * modified on December 5, 1994 
    (set_card function replaced with a better code by David Bremner) 
- * last modified on May 18, 2000 (set_fwrite_compl() added)
+ * last modified on June 1, 2000 
+   (set_fwrite_compl(), set_groundsize added.  set_compl fixed.)
  */
  
 #include "setoper.h"
@@ -68,7 +69,6 @@ void set_emptyset(set_type set)
 	for (i=1; i<=forlim; i++)
 		set[i]=0U;
 }
-
 
 void set_copy(set_type setcopy,set_type set)
 /* Copy the set set[] to setcopy[] with setcopy[] length */
@@ -145,11 +145,22 @@ void set_diff(set_type set,set_type set1,set_type set2)
 void set_compl(set_type set,set_type set1)
 /* set[] will be set to the complement of set1[] */
 {
-	long  i,forlim;
+	long  i,j,l,forlim;
+	unsigned long change;
+	unsigned long one=1U;	 
 
 	forlim=set_blocks(set[0])-1;	
 	for (i=1;i<=forlim;i++)
 		set[i]= ~set1[i];
+
+/* the following is necessary to remove 1's in the unused bits.
+   Bremner's trick counts these bits as well.  (000601KF)
+*/
+	l=(set[0]-1)%SETBITS; /* the position of the last elem in the last block */
+    	for (j=l+1; j<=SETBITS-1; j++){
+		change=one << j;
+		set[forlim]=(set[forlim] | change) ^ change;
+    	}
 }
 
 int set_subset(set_type set1,set_type set2)
@@ -184,9 +195,9 @@ int set_member(long elem, set_type set)
 	return yes;
 }
 
+/*set cardinality, modified by David Bremner bremner@cs.mcgill.ca
+   to optimize for speed.*/
 long set_card(set_type set)
-/* set cardinality, modified by David Bremner bremner@cs.mcgill.ca
-   to optimize for speed. */
 {
   unsigned long block;
   long car=0;
@@ -199,7 +210,7 @@ long set_card(set_type set)
   return car;
 }
 
-/* old cardinality code 
+/* old safe cardinality code
 long set_card(set_type set)
 {
 	long elem,car=0;
@@ -209,7 +220,12 @@ long set_card(set_type set)
     }
 	return car;
 }
-*/ 
+*/
+
+long set_groundsize(set_type set)
+{
+	return set[0];
+}
 
 void set_write(set_type set)
 {

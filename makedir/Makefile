@@ -76,8 +76,8 @@ LIFLAGS = $(LFLAGS) $(IFLAGS) $(CFLAGS)
 GMPLIFLAGS = $(GMPLFLAGS) $(GMPIFLAGS) $(CFLAGS)
 
 HFILES = cdd.h cddtypes.h cddmp.h setoper.h
-OFILES = cddio.o cddmp.o cddlib.o cddarith.o setoper.o cddlp.o
-OFILESGMP = cddio_gmp.o cddmp_gmp.o cdd_gmp.o cddarith_gmp.o setoper.o cddlp_gmp.o
+OFILES = cddio.o cddmp.o cddlib.o cddcore.o setoper.o cddlp.o
+OFILESGMP = cddio_gmp.o cddmp_gmp.o cdd_gmp.o cddcore_gmp.o setoper.o cddlp_gmp.o
 
 CDDTARGETS=libcdd.a scdd testcdd0 testcdd1 testcdd2 testlp1 testlp2 testlp3
 GMPTARGETS=libcddgmp.a scdd_gmp testcdd0_gmp testcdd1_gmp testcdd2_gmp testlp1_gmp testlp2_gmp testlp3_gmp
@@ -97,11 +97,11 @@ cddmp_gmp.o: cddmp.c $(HFILES)
 cddmlio.o: cddmlio.c $(HFILES) 
 	$(CC) $(LIFLAGS) -c cddmlio.c
 
-cddarith.o: cddarith.c $(HFILES)
-	$(CC) $(LIFLAGS) -c cddarith.c
+cddcore.o: cddcore.c $(HFILES)
+	$(CC) $(LIFLAGS) -c cddcore.c
 
-cddarith_gmp.o: cddarith.c $(HFILES)
-	$(CC) $(GMPLIFLAGS) $(GMPFLAGS) -c cddarith.c -o cddarith_gmp.o
+cddcore_gmp.o: cddcore.c $(HFILES)
+	$(CC) $(GMPLIFLAGS) $(GMPFLAGS) -c cddcore.c -o cddcore_gmp.o
 
 cddlib.o: cddlib.c $(HFILES)
 	$(CC) $(LIFLAGS) -c cddlib.c

@@ -44,9 +44,9 @@ int main(int argc, char *argv[])
   dd_set_si(A->matrix[2][0],1); dd_set_si(A->matrix[2][1], 1); dd_set_si(A->matrix[2][2], 0);
   dd_set_si(A->matrix[3][0],1); dd_set_si(A->matrix[3][1], 0); dd_set_si(A->matrix[3][2], 1);
   /* 7 - 3 x1          >= 0
-     7      - 3x2      >= 0
+     7         - 3x2   >= 0
      1 +   x1          >= 0
-     1        +x2      >= 0
+     1         +  x2   >= 0
   */
   A->representation=Inequality;
   poly=dd_Matrix2Poly(A, &err);

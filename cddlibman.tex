@@ -1,7 +1,7 @@
 % The name of this file: cddlibman.tex
 % written by by Komei Fukuda
 % created March 15, 1999
-% modified May 21, 2000
+% modified June 2, 2000
 %
 \documentclass[11pt]{article}
 \usepackage{html}
@@ -392,7 +392,7 @@ returns {\tt dd\_NoError} if the computation terminates normally.  Otherwise,
 it returns a value according to the error occured.
 
 \item[{\tt \bf dd\_MatrixPtr dd\_PolyFile2Matrix (f, err)}]:\\
-Read the Polyhedra data from {\tt f} and store it in {\tt matrixdata}
+Read a Polyhedra data from {\tt f} and store it in {\tt matrixdata}
 and return a pointer to the data.
 
 \item[{\tt \bf dd\_PolyhedraPtr dd\_Matrix2Poly(matrix, err)}]:\\
@@ -442,7 +442,9 @@ Load {\tt matrix} to {\tt lpdata} and return a pointer to the data.
 
 \item[{\tt \bf boolean dd\_LPSolve(lp, solver, err)}]:\\
 Solve {\tt lp} by the algorithm {\tt solver} and save
-the solututions in {\tt lp}.
+the solututions in {\tt lp}.  Unlike the earlier versions
+(dplex, cdd+), it can deal with equations and totally zero right
+hand sides.
 
 \item[{\tt \bf dd\_LPPtr dd\_MakeLPforInteriorFinding(dd\_LPPtr)}]:\\
 Set up an LP to find an interior point of the feasible region of {\tt lp}
@@ -516,7 +518,8 @@ for the academic year 1993-1994.  Without his
 support, the present form of this program would not have existed.
 There are many people who helped me to improve cdd,  in particular,
 I am indebted to David Avis, Alain Prodon,  Francois Margot, Henry Crapo,
-Alexander Bockmayr, David Bremner, Matthew Saltzman and Masanori Sato. 
+Alexander Bockmayr, David Bremner, Shawn Rusaw, Matthew Saltzman 
+and Masanori Sato. 
 
 Finally, I would like to thank both H.-J. L\"uthi (ETHZ)
  and Th. M. Liebling (EPFL) for their continuing support for 

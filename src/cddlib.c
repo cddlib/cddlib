@@ -1,6 +1,6 @@
 /* cddlib.c: cdd library  (library version of cdd)
    written by Komei Fukuda, fukuda@ifor.math.ethz.ch
-   Version 0.90, May 28, 2000
+   Version 0.90b, June 2, 2000
    Standard ftp site: ftp.ifor.math.ethz.ch, Directory: pub/fukuda/cdd
 */
 
@@ -8,7 +8,7 @@
    computing all vertices and extreme rays of the polyhedron 
    P= {x :  b - A x >= 0}.
    Please read COPYING (GNU General Public Licence) and
-   the manual cddman.tex for detail.
+   the manual cddlibman.tex for detail.
 */
 
 /*  This program is free software; you can redistribute it and/or modify
@@ -32,7 +32,7 @@
 */
 
 #include "setoper.h" 
-  /* set operation library header (March 16, 1995 version or later) */
+  /* set operation library header (Ver. June 1, 2000 or later) */
 #include "cdd.h"
 #include <stdio.h>
 #include <stdlib.h>
@@ -102,7 +102,7 @@ void DDMain(dd_ConePtr cone)
         /* store the dynamic ordering in ordervec */
     }
     if (localdebug){
-      printf("(Iter, #Row, #Total, #Curr, Feas)= %5ld %5ld %10ld %7ld %7ld\n",
+      printf("(Iter, Row, #Total, #Curr, #Feas)= %5ld %5ld %10ld %7ld %7ld\n",
         cone->Iteration, hh, cone->TotalRayCount, cone->RayCount,
         cone->FeasibleRayCount);
     }
@@ -113,6 +113,13 @@ void DDMain(dd_ConePtr cone)
     (cone->Iteration)++;
   }
   _L99:;
+  if (cone->d<=0 || cone->newcol[1]==0){ /* fixing the number of output */
+     cone->parent->n=cone->LinearityDim + cone->FeasibleRayCount -1;
+     cone->parent->ldim=cone->LinearityDim - 1;
+  } else {
+    cone->parent->n=cone->LinearityDim + cone->FeasibleRayCount;
+    cone->parent->ldim=cone->LinearityDim;
+  }
 }
 
 

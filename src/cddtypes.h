@@ -1,22 +1,21 @@
 /* cddtypes.h: Header file for cddlib.c 
    written by Komei Fukuda, fukuda@ifor.math.ethz.ch
-   Version 0.90, May 28, 2000
+   Version 0.90b, June 2, 2000
 */
 
 /* cddlib.c : C-Implementation of the double description method for
    computing all vertices and extreme rays of the polyhedron 
    P= {x :  b - A x >= 0}.  
    Please read COPYING (GNU General Public Licence) and
-   the manual cddman.tex for detail.
+   the manual cddlibman.tex for detail.
 */
 
 #ifndef  __CDDTYPES_H
 #define  __CDDTYPES_H
 #endif  /* __CDDTYPES_H */
 
-
 #define COPYRIGHT   "Copyright (C) 1996, Komei Fukuda, fukuda@ifor.math.ethz.ch"
-#define DDVERSION   "Version 0.90 (May 28, 2000)"
+#define DDVERSION   "Version 0.90b (June 2, 2000)"
 #include <time.h>
 
 #define dd_wordlenmax     127
@@ -244,6 +243,24 @@ typedef struct polyhedradata {
   boolean RestrictedEnumeration;
   boolean RelaxedEnumeration;
 
+  dd_rowrange m1; 
+    /* = m or m+1 (when representation=Inequality && !homogeneous)
+       This data is written after ConeDataLoad is called.  This
+       determines the size of Ainc. */
+  boolean AincGenerated;
+    /* Indicates whether Ainc, Ared, Adom are all computed.
+       All the variables below are valid only when this is TRUE */
+  dd_colrange ldim;   /* linearity dimension */
+  dd_bigrange n; 
+    /* the size of output = total number of rays 
+       in the computed cone + linearity dimension */
+  dd_Aincidence Ainc;
+    /* incidence of input and output */
+  dd_rowset Ared;  
+    /* redundant set of rows whose removal results in a minimal system */
+  dd_rowset Adom;  
+    /* dominant set of rows (those containing all rays). */
+
 } dd_PolyhedraType;
 
 
@@ -258,13 +275,6 @@ typedef struct conedata {
   dd_colrange d_alloc; /* allocated col size of matrix A */
 
 /* CONTROL: variables to control computation */
-  dd_Aincidence Aicd;
-  dd_rowset Ared;  
-    /* redundant set of rows whose removal results in a minimal system */
-  dd_rowset Adom;  
-    /* dominant set of rows (those containing all rays). */
-  boolean AicdGenerated;
-
   dd_rowrange Iteration;
   dd_RowOrderType HalfspaceOrder;
   dd_RayPtr FirstRay, LastRay, ArtificialRay; /* The second description: Generator */

@@ -1,16 +1,16 @@
-/* cddarith.c:  Main Procedures for cddlib
+/* cddcore.c:  Core Procedures for cddlib
    written by Komei Fukuda, fukuda@ifor.math.ethz.ch
-   Version 0.90a, May 30, 2000
+   Version 0.90b, June 2, 2000
 */
 
-/* cdd.c : C-Implementation of the double description method for
+/* cddlib : C-library of the double description method for
    computing all vertices and extreme rays of the polyhedron 
    P= {x :  b - A x >= 0}.  
    Please read COPYING (GNU General Public Licence) and
-   the manual cddman.tex for detail.
+   the manual cddlibman.tex for detail.
 */
 
-#include "setoper.h"  /* set operation library header (Ver. March 16,1995 or later) */
+#include "setoper.h"  /* set operation library header (Ver. June 1, 2000 or later) */
 #include "cdd.h"
 #include <stdio.h>
 #include <stdlib.h>
@@ -246,30 +246,31 @@ void AddRay(dd_ConePtr cone, mytype *p)
 void AddArtificialRay(dd_ConePtr cone)
 {  
   dd_Arow zerovector;
-  dd_colrange j;
+  dd_colrange j,d1;
   boolean feasible;
 
-  dd_InitializeArow(cone->d, &zerovector);
+  if (cone->d<=0) d1=1; else d1=cone->d;
+  dd_InitializeArow(d1, &zerovector);
   if (cone->ArtificialRay != NULL) {
     printf("Warning !!!  FirstRay in not nil.  Illegal Call\n");
     free(zerovector); /* 086 */
     return;
   }
   cone->ArtificialRay = (dd_RayPtr) malloc(sizeof(dd_RayType));
-  cone->ArtificialRay->Ray = (mytype *) calloc(cone->d, sizeof(mytype));
-  for (j=0; j<cone->d; j++) dd_init(cone->ArtificialRay->Ray[j]);
+  cone->ArtificialRay->Ray = (mytype *) calloc(d1, sizeof(mytype));
+  for (j=0; j<d1; j++) dd_init(cone->ArtificialRay->Ray[j]);
   dd_init(cone->ArtificialRay->ARay);
 
   if (debug)
     printf("Create the artificial ray pointer\n");
-  for (j = 0; j < cone->d; j++){
+  for (j = 0; j < d1; j++){
     dd_init(zerovector[j]);
   }
   cone->LastRay=cone->ArtificialRay;
   StoreRay1(cone, zerovector, &feasible);  
     /* This stores a vector to the record pointed by cone->LastRay */
   cone->ArtificialRay->Next = NULL;
-  for (j = 0; j < cone->d; j++){
+  for (j = 0; j < d1; j++){
     dd_clear(zerovector[j]);
   }
   free(zerovector); /* 086 */
@@ -533,13 +534,6 @@ void FreeDDMemory0(dd_ConePtr cone)
     cone->A[i] = NULL;
   }
 
-  if (cone->AicdGenerated){
-    for (i=0; i<cone->m_alloc; i++){
-      set_free(cone->Aicd[i]);
-    }
-    free(cone->Aicd);
-    cone->Aicd=NULL;
-  }
   free(cone->A);
   cone->A = NULL;
 
@@ -554,10 +548,22 @@ void dd_FreeDDMemory(dd_PolyhedraPtr poly)
 
 void dd_FreePolyhedra(dd_PolyhedraPtr poly)
 {
+  dd_bigrange i;
+
   if ((poly)->child != NULL) dd_FreeDDMemory(poly);
   dd_FreeAmatrix((poly)->m_alloc,poly->d_alloc, poly->A);
   dd_FreeArow((poly)->d_alloc,(poly)->c);
   free((poly)->EqualityIndex);
+  if (poly->AincGenerated){
+    for (i=1; i<=poly->m1; i++){
+      set_free(poly->Ainc[i-1]);
+    }
+    free(poly->Ainc);
+    set_free(poly->Ared);
+    set_free(poly->Adom);
+    poly->Ainc=NULL;
+  }
+
   free(poly);
   poly=NULL;
 }
@@ -649,7 +655,7 @@ void dd_InitializeAmatrix(dd_rowrange m,dd_colrange d,dd_Amatrix *A)
   dd_rowrange i;
   dd_colrange j;
 
-  (*A)=(mytype**) calloc(m,sizeof(mytype*));
+  if (m>0) (*A)=(mytype**) calloc(m,sizeof(mytype*));
   for (i = 0; i < m; i++) {
     dd_InitializeArow(d,&((*A)[i]));
   }
@@ -724,25 +730,40 @@ void dd_FreeBmatrix(dd_colrange d,dd_Bmatrix B)
 dd_SetFamilyPtr dd_CreateSetFamily(dd_bigrange fsize, dd_bigrange ssize)
 {
   dd_SetFamilyPtr F;
-  dd_bigrange i;
+  dd_bigrange i,f0,f1,s0,s1;
+
+  if (fsize<=0) {
+    f0=0; f1=1;  
+    /* if fsize<=0, the fsize is set to zero and the created size is one */
+  } else {
+    f0=fsize; f1=fsize;
+  }
+  if (ssize<=0) {
+    s0=0; s1=1;  
+    /* if ssize<=0, the ssize is set to zero and the created size is one */
+  } else {
+    s0=ssize; s1=ssize;
+  }
 
   F=(dd_SetFamilyPtr) malloc (sizeof(dd_SetFamilyType));
-  F->set=(set_type*) calloc(fsize,sizeof(set_type));
-  for (i=0; i<fsize; i++) {
-    set_initialize(&(F->set[i]), ssize);
+  F->set=(set_type*) calloc(f1,sizeof(set_type));
+  for (i=0; i<f1; i++) {
+    set_initialize(&(F->set[i]), s1);
   }
-  F->famsize=fsize;
-  F->setsize=ssize;
+  F->famsize=f0;
+  F->setsize=s0;
   return F;
 }
 
 
 void dd_FreeSetFamily(dd_SetFamilyPtr F)
 {
-  dd_bigrange i;
+  dd_bigrange i,f1;
 
+  if (F->famsize<=0) f1=1; else f1=F->famsize; 
+    /* the smallest created size is one */
   if (F!=NULL){
-    for (i=0; i<F->famsize; i++) {
+    for (i=0; i<f1; i++) {
       set_free(F->set[i]);
     }
     free(F->set);
@@ -753,22 +774,33 @@ void dd_FreeSetFamily(dd_SetFamilyPtr F)
 dd_MatrixPtr dd_CreateMatrix(dd_rowrange m_size,dd_colrange d_size)
 {
   dd_MatrixPtr M;
-  dd_rowrange i,m1;
-  dd_colrange j;
+  dd_rowrange i,m0,m1;
+  dd_colrange j,d0,d1;
 
-  if (m_size<=0) m1=1; else m1=m_size;
+  if (m_size<=0){ 
+    m0=0; m1=1;  
+    /* if m_size <=0, the number of rows is set to zero, the actual size is 1 */
+  } else {
+    m0=m_size; m1=m_size;
+  }
+  if (d_size<=0){ 
+    d0=0; d1=1;  
+    /* if d_size <=0, the number of cols is set to zero, the actual size is 1 */
+  } else {
+    d0=d_size; d1=d_size;
+  }
   M=(dd_MatrixPtr) malloc (sizeof(dd_MatrixType));
-  dd_InitializeAmatrix(m_size,d_size,&(M->matrix));
-  dd_InitializeArow(d_size,&(M->rowvec));
-  M->rowsize=m_size;
+  dd_InitializeAmatrix(m1,d1,&(M->matrix));
+  dd_InitializeArow(d1,&(M->rowvec));
+  M->rowsize=m0;
   set_initialize(&(M->linset), m1);
-  M->colsize=d_size;
-  for (i = 1; i <= m_size; i++) {
-    for (j = 1; j <= d_size; j++) {
+  M->colsize=d0;
+  for (i = 1; i <= m1; i++) {
+    for (j = 1; j <= d1; j++) {
       dd_init(M->matrix[i - 1][j - 1]);
     }
   }
-  for (j = 1; j <= d_size; j++) {
+  for (j = 1; j <= d1; j++) {
     dd_init(M->rowvec[j - 1]);
   }
   return M;
@@ -776,9 +808,14 @@ dd_MatrixPtr dd_CreateMatrix(dd_rowrange m_size,dd_colrange d_size)
 
 void dd_FreeMatrix(dd_MatrixPtr M)
 {
+  dd_rowrange m1;
+  dd_colrange d1;
+
+  if (M->rowsize<=0) m1=1; else m1=M->rowsize;
+  if (M->colsize<=0) d1=1; else d1=M->colsize;
   if (M!=NULL) {
-    dd_FreeAmatrix(M->rowsize,M->colsize,M->matrix);
-    dd_FreeArow(M->colsize,M->rowvec);
+    dd_FreeAmatrix(m1,d1,M->matrix);
+    dd_FreeArow(d1,M->rowvec);
     set_free(M->linset);
     free(M);
   }
@@ -1880,6 +1917,6 @@ void dd_lincomb(mytype lc, mytype v1, mytype c1, mytype v2, mytype c2)
   dd_clear(temp);
 }
 
-/* end of cddarith.c */
+/* end of cddcore.c */
 
 

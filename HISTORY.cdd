@@ -1,10 +1,16 @@
-libcdd, cdd & cdd+ HISTORY file    (as of May 21, 2000)
+libcdd, cdd & cdd+ HISTORY file    (as of June 2, 2000)
 
 *** libcdd version (date) / changes ***
 
+Version 090b (June 2, 2000) /
+ - Thanks to Shawn Rusaw's great help, I could detect and fix many 
+   memory related problems (memory leak, out-of-bounds, etc).  
+   Also, when input is not regular (nonfull or containing line), 
+   cddlib did not generate adjacency/incidence properly and 
+   this version should work more correctly.
 
 Version 090a (May 30, 2000) /
- - a small bug fix for cddarith.c.  The bug is reported by Shawn Rusaw.
+ - a small bug fix in cddarith.c.  The bug is reported by Shawn Rusaw.
 
 Version 090 (May 28, 2000) /
  - Major revision over the previous versions.  It can be now compiled

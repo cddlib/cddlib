@@ -1,13 +1,13 @@
 /* cddlib.h: Header file for cddlib.c 
    written by Komei Fukuda, fukuda@ifor.math.ethz.ch
-   Version 0.90, May 18, 2000
+   Version 0.90b, June 2, 2000
 */
 
 /* cddlib.c : C-Implementation of the double description method for
    computing all vertices and extreme rays of the polyhedron 
    P= {x :  b - A x >= 0}.  
    Please read COPYING (GNU General Public Licence) and
-   the manual cddman.tex for detail.
+   the manual cddlibman.tex for detail.
 */
 
 #ifndef  __CDDLIB_H
@@ -63,6 +63,8 @@ void dd_lincomb(mytype, mytype, mytype, mytype, mytype);
 
 
 /* major cddlib operations */
+dd_MatrixPtr dd_CopyInput(dd_PolyhedraPtr);
+dd_MatrixPtr dd_CopyOutput(dd_PolyhedraPtr);
 dd_MatrixPtr dd_CopyInequalities(dd_PolyhedraPtr);
 dd_MatrixPtr dd_CopyGenerators(dd_PolyhedraPtr);
 dd_SetFamilyPtr dd_CopyIncidence(dd_PolyhedraPtr);
@@ -180,6 +182,5 @@ void dd_FreeLPSolution(dd_LPSolutionPtr);
 void dd_WriteLPResult(FILE *, dd_LPPtr, dd_ErrorType);
 void dd_WriteLPErrorMessages(FILE *, dd_ErrorType);
 void dd_WriteLPTimes(FILE *, dd_LPPtr);
-
 
 /* end of cddlib.h */

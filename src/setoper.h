@@ -3,7 +3,7 @@
 /* setoper.c: 
  * A set operation library 
  * created by Komei Fukuda, Nov.14, 1993
- * last modified on May 18, 2000
+ * last modified on June 1, 2000
  */
 
 #ifndef  __SETOPER_H
@@ -31,6 +31,7 @@ void set_compl(set_type set,set_type set1);
 int set_subset(set_type set1,set_type set2);
 int set_member(long elem, set_type set);
 long set_card(set_type set);
+long set_groundsize(set_type set); /* output the size of the ground set */
 void set_write(set_type set);
 void set_fwrite(FILE *f,set_type set);
 void set_fwrite_compl(FILE *f,set_type set); /* write the complement */

@@ -1,6 +1,6 @@
-2000-05-29 (May 29, 2000)
+2000-06-02 (June 2, 2000)
 -----------------------------------------------
-C-Library cddlib (version 0.90) README FILE
+C-Library cddlib (version 0.90b) README FILE
 -----------------------------------------------
 1. The C-library  cddlib is a C implementation of the Double Description 
 Method of Motzkin et al. for generating all vertices (i.e. extreme points)
@@ -38,7 +38,7 @@ of an H-polyhedron which has no extreme points.
 
 3. cddlib comes with a MatheLink version of cddlib that can be
 called from Mathematica (tested only for Mathematica 2.2 and 3.0).
-Some Mathematica notebooks are included to explain how one can 
+A few Mathematica notebooks are included to explain how one can 
 use this program "cddmathlink" from Mathematica
 to manipulate polytopes.  Please check the files, 
 cddml-notbook.ma, cddml-PolytopeSkeleton.ma, cddml-DietProblem.ma,
@@ -78,13 +78,31 @@ In above, gnu C compiler gcc can be replaced by the native C-compiler
 cc of your system if cc supports the modern ANSI C.  Edit the environment
 variable CC in the file "Makefile".  For compilation of GMP versions,
 one must install GMP-2.0.2 (or highter) first.  It is important
-to apply patches as well since GMP-2.0.2 contains several bugs
+to apply patches as well since GMP-2.0.2 contains a few bugs
 that can crash cddlib.  For compilation of MathLink programs,
 you need a binary "mprep", MathLink library "libML.a" and include file
 "mathlink.h" which come with Mathematica.   I have tested for Mathematica 2.2
-and 3.0 on NEXTSTEP 3.3.   
+and 3.0 on NEXTSTEP 3.3.
 
-The library cddlib is free software, but if libcdd turns out to be useful, 
+To install the library in public directory of unix enviroment, 
+the following is suggested:
+  
+   % cp libcdd*.a /usr/local/lib
+   % ranlib /usr/local/lib/libcdd*.a
+   % cp cdd*.h /usr/local/include
+   % cp setoper.h /usr/local/include
+
+One might have to make the files publicly readable by chmod.
+Once the files are properly copied, any user can use compile
+one's own code (e.g. testcdd1.c) and link it with libcdd by
+  
+   % gcc -I/usr/local/include -L/usr/local/lib testcdd1.c -lcdd
+
+or (with GMP rational arithmetic)
+
+   % gcc -I/usr/local/include -L/usr/local/lib -DGMPRATIONAL testcdd1.c -lcddgmp -lgmp
+
+The library cddlib is free software, but if cddlib turns out to be useful, 
 please kindly send to me (at the address below) a note or a paper mentioning 
 for what purpose and how cdd has been used. The most powerful support 
 for free software development is user's appreciation.   

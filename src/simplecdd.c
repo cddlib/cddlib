@@ -1,6 +1,6 @@
 /* simplecdd.c: Main test program to call the cdd library cddlib
    written by Komei Fukuda, fukuda@ifor.math.ethz.ch
-   Version 0.90, May 28, 2000
+   Version 0.90, June 2, 2000
    Standard ftp site: ftp.ifor.math.ethz.ch, Directory: pub/fukuda/cdd
 */
 
@@ -143,6 +143,8 @@ int main(int argc, char *argv[])
     SetWriteFile(&writing, outputfile);
     dd_WriteLPResult(writing, lp, err);
     fclose(writing);
+    dd_FreeMatrix(M);
+    dd_FreeLPData(lp);
   }
 _L99:
   if (err!=NoError) dd_WriteErrorMessages(stdout,err);
