@@ -1,6 +1,6 @@
 /* cddcore.c:  Core Procedures for cddlib
    written by Komei Fukuda, fukuda@ifor.math.ethz.ch
-   Version 0.90c, June 12, 2000
+   Version 0.90d, June 25, 2000
 */
 
 /* cddlib : C-library of the double description method for

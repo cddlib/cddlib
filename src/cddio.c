@@ -1,6 +1,6 @@
 /* cddio.c:  Basic Input and Output Procedures for cddlib
    written by Komei Fukuda, fukuda@ifor.math.ethz.ch
-   Version 0.90c, June 12, 2000
+   Version 0.90d, June 25, 2000
 */
 
 /* cddlib : C-library of the double description method for
@@ -1235,11 +1235,13 @@ dd_MatrixPtr dd_CopyOutput(dd_PolyhedraPtr poly)
   dd_rowrange i=0,total;
   dd_colrange j,j1;
   mytype b;
+  dd_RepresentationType outputrep=Inequality;
   boolean outputorigin=FALSE;
 
   dd_init(b);
   total=poly->child->LinearityDim + poly->child->FeasibleRayCount;
   if (poly->child->d<=0 || poly->child->newcol[1]==0) total=total-1;
+  if (poly->representation==Inequality) outputrep=Generator;
   if (total==0 && poly->homogeneous && poly->representation==Inequality){
     total=1;
     outputorigin=TRUE;
@@ -1251,7 +1253,7 @@ dd_MatrixPtr dd_CopyOutput(dd_PolyhedraPtr poly)
   RayPtr = poly->child->FirstRay;
   while (RayPtr != NULL) {
     if (RayPtr->feasible) {
-      CopyRay(M->matrix[i], poly->d, RayPtr, Generator, poly->child->newcol);
+      CopyRay(M->matrix[i], poly->d, RayPtr, outputrep, poly->child->newcol);
       i++;  /* 086 */
     }
     RayPtr = RayPtr->Next;
@@ -1260,7 +1262,7 @@ dd_MatrixPtr dd_CopyOutput(dd_PolyhedraPtr poly)
     if (poly->child->newcol[j]==0){ 
        /* original column j is dependent on others and removed for the cone */
       dd_set(b,poly->child->Bsave[0][j-1]);
-      if (dd_Nonzero(b)){
+      if (outputrep==Generator && dd_Positive(b)){
         dd_set(M->matrix[i][0],dd_one);  /* Normalize */
         for (j1=1; j1<poly->d; j1++) 
           dd_div(M->matrix[i][j1],(poly->child->Bsave[j1][j-1]),b);

@@ -1,6 +1,6 @@
-2000-06-02 (June 2, 2000)
+2000-06-26 (June 26, 2000)
 -----------------------------------------------
-C-Library cddlib (version 0.90b) README FILE
+C-Library cddlib (version 0.90d) README FILE
 -----------------------------------------------
 1. The C-library  cddlib is a C implementation of the Double Description 
 Method of Motzkin et al. for generating all vertices (i.e. extreme points)
@@ -22,7 +22,11 @@ a linear function over P.
 The version 0.90 is the third release of libcdd.  It is a major
 upate in terms of functional interfaces and internal arithmetic
 handling.  It now runs in both floating-point and GMP rational
-arithmetic.  Please read README.whatsnew for the changes 
+arithmetic.   The user must be aware that the library is not
+yet stable and might contain elementary bugs.  The standalone
+codes cdd/cdd+ are more reliable for the moment.  Please use it
+with caution.  If you find some problems, please kindly report them to
+fukuda@ifor.math.ethz.ch.  Please read README.whatsnew for the changes 
 over the last release.
 
 The documentation (cddlibman.tex) is incomplete but contains 

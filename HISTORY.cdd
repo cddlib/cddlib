@@ -1,6 +1,13 @@
-libcdd, cdd & cdd+ HISTORY file    (as of June 12, 2000)
+libcdd, cdd & cdd+ HISTORY file    (as of June 25, 2000)
 
 *** libcdd version (date) / changes ***
+
+Version 090d (June 25, 2000) /
+ - Serious bugs of dd_CopyOutput, dd_CopyInequalities are fixed.
+   This bug is found by Istvan Csabai.  Earlier versions 090*
+   output wrong H-representations whenever the RHS constants
+   are not nonnegative, even though the computation runs
+   correctly internally.
 
 Version 090c (June 12, 2000) /
  - set_intialize is modified so that it allocates a smallest space even when

@@ -1,6 +1,6 @@
 /* cddlp.c:  dual simplex method c-code
    written by Komei Fukuda, fukuda@ifor.math.ethz.ch
-   Version 0.90c, June 12, 2000
+   Version 0.90d, June 25, 2000
 */
 
 /* cddlp.c : C-Implementation of the dual simplex method for

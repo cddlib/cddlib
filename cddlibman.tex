@@ -1,7 +1,7 @@
 % The name of this file: cddlibman.tex
 % written by by Komei Fukuda
 % created March 15, 1999
-% modified June 12, 2000
+% modified June 25, 2000
 %
 \documentclass[11pt]{article}
 \usepackage{html}
@@ -25,7 +25,7 @@ ETH-Zentrum, CH-8092 Zurich, Switzerland\\
 fukuda@ifor.math.ethz.ch \\and\\
 Department of Mathematics\\
 ETFL, CH-1015 Lausanne, Switzerland}
-\date{ (cddlib ver. 090c,  June 12, 2000)}
+\date{ (cddlib ver. 090d,  June 25, 2000)}
 
 \maketitle
 \begin{abstract}
@@ -79,10 +79,14 @@ S + T = \{ s + t \; |  s \in S \mbox{ and } t \in T \}.
 As we see in this manual, the computation can be done
 in straightforward manner.  Unlike the earlier versions of
 cdd/cdd+ that assume certain regularity conditions for input, 
-cddlib does a correction transformation for any general input.
+cddlib is designed to do a correction transformation for any general input.
 The user must be aware of the fact that in certain cases the
 transformation is not unique and there are polyhedra with
-infinitely many ways to be represented 
+infinitely many representations.  For example, a line
+segment (1-dimensional polytope) in $R^3$ has infinitely
+many minimal H-representations, and a halfspace in the same space
+has infinitely many minimal V-representations.  cddlib generates
+merely one minimal representation.
 
 cddlib comes with an LP code to solve the general
 linear programming (LP) problem to maximize (or minimize) a linear
@@ -576,8 +580,7 @@ file transfer.
 
 \section{Other Useful Codes}  \label{CODES}
 There are several other useful codes available for vertex enumeration and/or
-convex hull computation  such as lrs, qhull, porta and irisa-polylib 
-\cite{w-ldpo-93b}.
+convex hull computation  such as lrs, qhull, porta and irisa-polylib.
 The pointers to these codes are available at
 \begin{enumerate}
 \item lrs by D. Avis \cite{a-uglrs-97} (C implementation of the reverse search algorithm 
@@ -589,6 +592,10 @@ which is the dual of the dd method).
 
 \item porta by T. Christof and A. L{\"o}bel \cite{cl-porta-97} (C implementation
 of the Fourier-Motzkin elimination).
+
+\item IRISA polyhedral library by D.K. Wilde
+\cite{w-ldpo-93b} (C implementation
+of a variation of the dd algorithm).
 
 \item pd by A. Marzetta \cite{m-pdcip-97} (C implementation of the primal-dual algorithm 
 \cite{bfm-pdmvf-97}). 
@@ -612,9 +619,13 @@ I am  grateful to Th. M. Liebling who
 provided me with an ideal opportunity to visit EPFL
 for the academic year 1993-1994.  Without his 
 support, the present form of this program would not have existed.
-There are many people who helped me to improve cdd,  in particular,
-I am indebted to David Avis, Alain Prodon,  Francois Margot, Henry Crapo,
-Alexander Bockmayr, David Bremner, Shawn Rusaw, Matthew Saltzman 
+There are many people who helped me to improve cdd, in particular,
+I am indebted to David Avis, 
+Alexander Bockmayr, David Bremner, 
+Henry Crapo, Istvan Csabai, 
+Francois Margot,
+Alain Prodon, 
+Shawn Rusaw, Matthew Saltzman 
 and Masanori Sato. 
 
 Finally, I would like to thank both H.-J. L\"uthi (ETHZ)
