@@ -1,0 +1,12 @@
+* file name: libtestb.ext
+* a 1-D cone in 3D space without any vertices
+V-representation
+begin
+    3    4   integer
+  0  0  0  1
+  1  1  0  0
+  0  1 -1  0
+end
+linearity  1  3
+
+

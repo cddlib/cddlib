@@ -1,0 +1,12 @@
+* file name: libtesta.ext
+* a 1-D cone in 3D space
+V-representation
+begin
+    2    4   integer
+  1  1  0  1
+  0  0  1  0 
+end
+incidence
+adjacency
+
+

@@ -1,0 +1,21 @@
+* 6-dim hypercube
+H-representation
+begin
+    12    7    integer
+ 1  1  0  0  0  0  0
+ 1  0  1  0  0  0  0
+ 1  0  0  1  0  0  0
+ 1  0  0  0  1  0  0
+ 1  0  0  0  0  1  0
+ 1  0  0  0  0  0  1
+ 1 -1  0  0  0  0  0
+ 1  0 -1  0  0  0  0
+ 1  0  0 -1  0  0  0
+ 1  0  0  0 -1  0  0
+ 1  0  0  0  0 -1  0
+ 1  0  0  0  0  0 -1
+end
+incidence 
+adjacency
+stdout_off
+logfile_on

@@ -1,0 +1,36 @@
+filename: grcubocta.ine
+Great rhombicuboctahedron
+H-representation
+begin
+  26    4   integer 
+   1  1  0  0
+   1  0  1  0
+   1  0  0  1
+   1 -1  0  0
+   1  0 -1  0
+   1  0  0 -1
+   2  1  1  1
+   2 -1  1  1
+   2  1 -1  1
+   2  1  1 -1
+   2 -1 -1  1
+   2  1 -1 -1
+   2 -1  1 -1
+   2 -1 -1 -1
+   5  3  3  0
+   5  0  3  3
+   5  3  0  3 
+   5 -3  3  0
+   5  0 -3  3
+   5  3  0 -3 
+   5  3 -3  0
+   5  0  3 -3
+   5 -3  0  3 
+   5 -3 -3  0
+   5  0 -3 -3
+   5 -3  0 -3 
+end
+adjacency
+incidence
+input_adjacency
+input_incidence

@@ -1,0 +1,108 @@
+\begin{thebibliography}{MRTT53}
+
+\bibitem[ABS97]{abs-hgach-97}
+D.~Avis, D.~Bremner, and R.~Seidel.
+\newblock How good are convex hull algorithms.
+\newblock {\em Computational Geometry: Theory and Applications}, 7:265--302,
+  1997.
+
+\bibitem[AF92]{af-pachv-92}
+D.~Avis and K.~Fukuda.
+\newblock A pivoting algorithm for convex hulls and vertex enumeration of
+  arrangements and polyhedra.
+\newblock {\em Discrete Comput. Geom.}, 8:295--313, 1992.
+
+\bibitem[Ame]{a-dcg}
+N.~Amenta.
+\newblock Directory of computational geometry.
+\newblock
+  \htmladdnormallink{http://www.geom.umn.edu/software/cglist/}{http://www.geom%
+.umn.edu/software/cglist/}.
+
+\bibitem[Avi97]{a-uglrs-97}
+D.~Avis.
+\newblock {\em User's Guide for lrs - Version 3.2}, 1997.
+\newblock available from lrs homepage
+  \htmladdnormallink{ftp://mutt.cs.mcgill.ca/pub/C/lrs.html}{ftp://mutt.cs.mcg%
+ill.ca/pub/C/lrs.html}.
+
+\bibitem[BDH95]{bdh-qach-95}
+C.B. Barber, D.P. Dobkin, and H.~Huhdanpaa.
+\newblock {\em qhull, Version 2.1}.
+\newblock The Geometry Center, Minnesota, U.S.A., 1995.
+\newblock program and report available from
+  \htmladdnormallink{ftp://geom.umn.edu/pub/software/qhull.tar.Z}
+  {ftp://geom.umn.edu/pub/software/qhull.tar.Z}.
+
+\bibitem[BFM97]{bfm-pdmvf-97}
+D.~Bremner, K.~Fukuda, and A.~Marzetta.
+\newblock Primal-dual methods for vertex and facet enumeration.
+\newblock In {\em Proc. 13th Annu. ACM Sympos. Comput. Geom.}, pages 49--56,
+  1997.
+
+\bibitem[CL97]{cl-porta-97}
+T.~Christof and A.~L{\"o}bel.
+\newblock {PORTA}: Polyhedron representation transformation algorithm (ver.
+  1.3.1), 1997.
+\newblock
+  \htmladdnormallink{http://www.iwr.uni-heidelberg.de/iwr/comopt/soft/PORTA/re%
+adme.html}
+  {http://www.iwr.uni-heidelberg.de/iwr/comopt/soft/PORTA/readme.html}.
+
+\bibitem[Ede87]{e-acg-87}
+H.~Edelsbrunner.
+\newblock {\em Algorithms in {C}ombinatorial {G}eometry}.
+\newblock Springer-Verlag, 1987.
+
+\bibitem[Eri]{e-cgp}
+J.~Erickson.
+\newblock Computational geometry pages, list of software libraries and codes.
+\newblock
+  \htmladdnormallink{http://sal.cs.uiuc.edu/~jeffe/compgeom/}{http://sal.cs.ui%
+uc.edu/~jeffe/compgeom/}.
+
+\bibitem[FG97]{fg-lpfaq-97}
+R.~Fourer and J.W. Gregory.
+\newblock Linear programming frequently asked questions ({LP-FAQ}), 1997.
+\newblock
+  \htmladdnormallink{http://www.mcs.anl.gov/home/otc/Guide/faq/linear-programm%
+ing-faq.html}
+  {http://www.mcs.anl.gov/home/otc/Guide/faq/linear-programming-faq.html}.
+
+\bibitem[FP96]{fp-ddmr-96}
+K.~Fukuda and A.~Prodon.
+\newblock Double description method revisited.
+\newblock In M.~Deza, R.~Euler, and I.~Manoussakis, editors, {\em Combinatorics
+  and Computer Science}, volume 1120 of {\em Lecture Notes in Computer
+  Science}, pages 91--111. Springer-Verlag, 1996.
+\newblock ps file available from
+  \htmladdnormallink{ftp://ftp.ifor.math.ethz.ch/pub/fukuda/reports/ddrev96031%
+5.ps.gz}{ftp://ftp.ifor.math.ethz.ch/pub/fukuda/reports/ddrev960315.ps.gz}.
+
+\bibitem[Fuk98]{f-pcfaq-98}
+K.~Fukuda.
+\newblock Polyhedral computation {FAQ}, 1998.
+\newblock Both html and ps versions available from
+  \htmladdnormallink{http://www.ifor.math.ethz.ch/ifor/staff/fukuda/fukuda.htm%
+l} {http://www.ifor.math.ethz.ch/ifor/staff/fukuda/fukuda.html}.
+
+\bibitem[Mar97]{m-pdcip-97}
+A.~Marzetta.
+\newblock {\em pd -- {C}-implementation of the primal-dual algoirithm}, 1997.
+\newblock code available from
+  \htmladdnormallink{http://wwwjn.inf.ethz.ch/ambros/pd.html}
+  {http://wwwjn.inf.ethz.ch/ambros/pd.html}.
+
+\bibitem[MRTT53]{mrtt-ddm-53}
+T.S. Motzkin, H.~Raiffa, GL. Thompson, and R.M. Thrall.
+\newblock The double description method.
+\newblock In H.W. Kuhn and A.W.Tucker, editors, {\em Contributions to theory of
+  games, Vol. 2}. Princeton University Press, Princeton, RI, 1953.
+
+\bibitem[Mul94]{m-cg-94}
+K.~Mulmuley.
+\newblock {\em Computational {G}eometry, {A}n {I}ntroduction {T}hrough
+  {R}andamized {A}lgorithms}.
+\newblock Prentice-Hall, 1994.
+
+\end{thebibliography}

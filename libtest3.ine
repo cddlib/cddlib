@@ -1,0 +1,11 @@
+* file name: libtest3.ine
+* a 3-D homogeneous cone with no vertices
+H-representation
+begin
+    2    4   integer
+ 0  1  1  0 
+ 0  0  1  0 
+end
+incidence
+adjacency
+

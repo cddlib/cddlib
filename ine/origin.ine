@@ -1,0 +1,15 @@
+* filename: origin.ine
+* The polytope consists of a single point, the origin.
+* cddlib does not work properly for this input.
+H-representation
+begin
+    7   7     integer
+ 0  1  0  0  0  0  0
+ 0  0  1  0  0  0  0
+ 0  0  0  1  0  0  0
+ 0  0  0  0  1  0  0
+ 0  0  0  0  0  1  0
+ 0  0  0  0  0  0  1
+ 0 -1 -1 -1 -1 -1 -1
+end
+ 

@@ -1,0 +1,16 @@
+filename: cube3.ine
+Hypercube of dimension 3
+H-representation
+begin
+    6    4    integer
+ 1  1  0  0
+ 1  0  1  0
+ 1  0  0  1
+ 1 -1  0  0
+ 1  0 -1  0
+ 1  0  0 -1
+end
+adjacency
+incidence
+input_adjacency
+input_incidence

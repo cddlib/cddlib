@@ -1,0 +1,23 @@
+1999-03-15 (March 15, 1999)
+-----------------------------------------
+C-Library cddlib TO DO LIST
+-----------------------------------------
+
+1. Implement Union, Intersection, Minkowski Sum of two polyhedra.
+   (should be quite trivial...)
+
+2. cddlib should handle errors.  
+   (I need to learn good C-programming first...)
+
+3. Make it faster.
+   (Usually it is done automatically as time goes by...)
+
+4. Make C++ version supporting different arithmetics.
+   (should be quite easy...  I did for cdd to make cdd+.)
+
+
+   Komei Fukuda
+   fukuda@ifor.math.ethz.ch
+   Zurich  :IFOR, ETH Zentrum, CH-8092 Zurich, Switzerland  
+   Lausanne:DMA, EPFL, Ch-1015 Lausanne, Switzerland
+   homepage: http://www.ifor.math.ethz.ch/staff/fukuda/fukuda.html
