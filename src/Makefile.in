@@ -85,6 +85,7 @@ redcheck \
 fourier \
 projection \
 adjacency \
+allfaces \
 testcdd1 \
 testshoot \
 testcdd2 \
@@ -100,13 +101,14 @@ redcheck_SOURCES = redcheck.c
 fourier_SOURCES = fourier.c
 projection_SOURCES = projection.c
 adjacency_SOURCES = adjacency.c
+allfaces_SOURCES = allfaces.c
 testcdd1_SOURCES = testcdd1.c
 testshoot_SOURCES = testshoot.c
 testcdd2_SOURCES = testcdd2.c
 testlp1_SOURCES = testlp1.c
 testlp2_SOURCES = testlp2.c
 testlp3_SOURCES = testlp3.c
-LDADD = -L../lib-src -lcdd
+LDADD = ../lib-src/libcdd.a
 INCLUDES = -I../lib-src
 CPPFLAGS = -UGMPRATIONAL
 CXXFLAGS = -O2
@@ -115,69 +117,75 @@ mkinstalldirs = $(SHELL) $(top_srcdir)/mkinstalldirs
 CONFIG_CLEAN_FILES =
 bin_PROGRAMS = scdd$(EXEEXT) lcdd$(EXEEXT) redcheck$(EXEEXT) \
 	fourier$(EXEEXT) projection$(EXEEXT) adjacency$(EXEEXT) \
-	testcdd1$(EXEEXT) testshoot$(EXEEXT) testcdd2$(EXEEXT) \
-	testlp1$(EXEEXT) testlp2$(EXEEXT) testlp3$(EXEEXT)
+	allfaces$(EXEEXT) testcdd1$(EXEEXT) testshoot$(EXEEXT) \
+	testcdd2$(EXEEXT) testlp1$(EXEEXT) testlp2$(EXEEXT) \
+	testlp3$(EXEEXT)
 PROGRAMS = $(bin_PROGRAMS)
 
 am_adjacency_OBJECTS = adjacency.$(OBJEXT)
 adjacency_OBJECTS = $(am_adjacency_OBJECTS)
 adjacency_LDADD = $(LDADD)
-adjacency_DEPENDENCIES =
+adjacency_DEPENDENCIES = ../lib-src/libcdd.a
 adjacency_LDFLAGS =
+am_allfaces_OBJECTS = allfaces.$(OBJEXT)
+allfaces_OBJECTS = $(am_allfaces_OBJECTS)
+allfaces_LDADD = $(LDADD)
+allfaces_DEPENDENCIES = ../lib-src/libcdd.a
+allfaces_LDFLAGS =
 am_fourier_OBJECTS = fourier.$(OBJEXT)
 fourier_OBJECTS = $(am_fourier_OBJECTS)
 fourier_LDADD = $(LDADD)
-fourier_DEPENDENCIES =
+fourier_DEPENDENCIES = ../lib-src/libcdd.a
 fourier_LDFLAGS =
 am_lcdd_OBJECTS = lcdd.$(OBJEXT)
 lcdd_OBJECTS = $(am_lcdd_OBJECTS)
 lcdd_LDADD = $(LDADD)
-lcdd_DEPENDENCIES =
+lcdd_DEPENDENCIES = ../lib-src/libcdd.a
 lcdd_LDFLAGS =
 am_projection_OBJECTS = projection.$(OBJEXT)
 projection_OBJECTS = $(am_projection_OBJECTS)
 projection_LDADD = $(LDADD)
-projection_DEPENDENCIES =
+projection_DEPENDENCIES = ../lib-src/libcdd.a
 projection_LDFLAGS =
 am_redcheck_OBJECTS = redcheck.$(OBJEXT)
 redcheck_OBJECTS = $(am_redcheck_OBJECTS)
 redcheck_LDADD = $(LDADD)
-redcheck_DEPENDENCIES =
+redcheck_DEPENDENCIES = ../lib-src/libcdd.a
 redcheck_LDFLAGS =
 am_scdd_OBJECTS = simplecdd.$(OBJEXT)
 scdd_OBJECTS = $(am_scdd_OBJECTS)
 scdd_LDADD = $(LDADD)
-scdd_DEPENDENCIES =
+scdd_DEPENDENCIES = ../lib-src/libcdd.a
 scdd_LDFLAGS =
 am_testcdd1_OBJECTS = testcdd1.$(OBJEXT)
 testcdd1_OBJECTS = $(am_testcdd1_OBJECTS)
 testcdd1_LDADD = $(LDADD)
-testcdd1_DEPENDENCIES =
+testcdd1_DEPENDENCIES = ../lib-src/libcdd.a
 testcdd1_LDFLAGS =
 am_testcdd2_OBJECTS = testcdd2.$(OBJEXT)
 testcdd2_OBJECTS = $(am_testcdd2_OBJECTS)
 testcdd2_LDADD = $(LDADD)
-testcdd2_DEPENDENCIES =
+testcdd2_DEPENDENCIES = ../lib-src/libcdd.a
 testcdd2_LDFLAGS =
 am_testlp1_OBJECTS = testlp1.$(OBJEXT)
 testlp1_OBJECTS = $(am_testlp1_OBJECTS)
 testlp1_LDADD = $(LDADD)
-testlp1_DEPENDENCIES =
+testlp1_DEPENDENCIES = ../lib-src/libcdd.a
 testlp1_LDFLAGS =
 am_testlp2_OBJECTS = testlp2.$(OBJEXT)
 testlp2_OBJECTS = $(am_testlp2_OBJECTS)
 testlp2_LDADD = $(LDADD)
-testlp2_DEPENDENCIES =
+testlp2_DEPENDENCIES = ../lib-src/libcdd.a
 testlp2_LDFLAGS =
 am_testlp3_OBJECTS = testlp3.$(OBJEXT)
 testlp3_OBJECTS = $(am_testlp3_OBJECTS)
 testlp3_LDADD = $(LDADD)
-testlp3_DEPENDENCIES =
+testlp3_DEPENDENCIES = ../lib-src/libcdd.a
 testlp3_LDFLAGS =
 am_testshoot_OBJECTS = testshoot.$(OBJEXT)
 testshoot_OBJECTS = $(am_testshoot_OBJECTS)
 testshoot_LDADD = $(LDADD)
-testshoot_DEPENDENCIES =
+testshoot_DEPENDENCIES = ../lib-src/libcdd.a
 testshoot_LDFLAGS =
 
 DEFS = @DEFS@
@@ -186,23 +194,25 @@ LDFLAGS = @LDFLAGS@
 LIBS = @LIBS@
 depcomp = $(SHELL) $(top_srcdir)/depcomp
 am__depfiles_maybe = depfiles
-@AMDEP_TRUE@DEP_FILES = ./$(DEPDIR)/adjacency.Po ./$(DEPDIR)/fourier.Po \
-@AMDEP_TRUE@	./$(DEPDIR)/lcdd.Po ./$(DEPDIR)/projection.Po \
-@AMDEP_TRUE@	./$(DEPDIR)/redcheck.Po ./$(DEPDIR)/simplecdd.Po \
-@AMDEP_TRUE@	./$(DEPDIR)/testcdd1.Po ./$(DEPDIR)/testcdd2.Po \
-@AMDEP_TRUE@	./$(DEPDIR)/testlp1.Po ./$(DEPDIR)/testlp2.Po \
-@AMDEP_TRUE@	./$(DEPDIR)/testlp3.Po ./$(DEPDIR)/testshoot.Po
+@AMDEP_TRUE@DEP_FILES = ./$(DEPDIR)/adjacency.Po ./$(DEPDIR)/allfaces.Po \
+@AMDEP_TRUE@	./$(DEPDIR)/fourier.Po ./$(DEPDIR)/lcdd.Po \
+@AMDEP_TRUE@	./$(DEPDIR)/projection.Po ./$(DEPDIR)/redcheck.Po \
+@AMDEP_TRUE@	./$(DEPDIR)/simplecdd.Po ./$(DEPDIR)/testcdd1.Po \
+@AMDEP_TRUE@	./$(DEPDIR)/testcdd2.Po ./$(DEPDIR)/testlp1.Po \
+@AMDEP_TRUE@	./$(DEPDIR)/testlp2.Po ./$(DEPDIR)/testlp3.Po \
+@AMDEP_TRUE@	./$(DEPDIR)/testshoot.Po
 COMPILE = $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) \
 	$(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS)
 CCLD = $(CC)
 LINK = $(CCLD) $(AM_CFLAGS) $(CFLAGS) $(AM_LDFLAGS) $(LDFLAGS) -o $@
 CFLAGS = @CFLAGS@
-DIST_SOURCES = $(adjacency_SOURCES) $(fourier_SOURCES) $(lcdd_SOURCES) \
-	$(projection_SOURCES) $(redcheck_SOURCES) $(scdd_SOURCES) \
-	$(testcdd1_SOURCES) $(testcdd2_SOURCES) $(testlp1_SOURCES) \
-	$(testlp2_SOURCES) $(testlp3_SOURCES) $(testshoot_SOURCES)
+DIST_SOURCES = $(adjacency_SOURCES) $(allfaces_SOURCES) \
+	$(fourier_SOURCES) $(lcdd_SOURCES) $(projection_SOURCES) \
+	$(redcheck_SOURCES) $(scdd_SOURCES) $(testcdd1_SOURCES) \
+	$(testcdd2_SOURCES) $(testlp1_SOURCES) $(testlp2_SOURCES) \
+	$(testlp3_SOURCES) $(testshoot_SOURCES)
 DIST_COMMON = Makefile.am Makefile.in
-SOURCES = $(adjacency_SOURCES) $(fourier_SOURCES) $(lcdd_SOURCES) $(projection_SOURCES) $(redcheck_SOURCES) $(scdd_SOURCES) $(testcdd1_SOURCES) $(testcdd2_SOURCES) $(testlp1_SOURCES) $(testlp2_SOURCES) $(testlp3_SOURCES) $(testshoot_SOURCES)
+SOURCES = $(adjacency_SOURCES) $(allfaces_SOURCES) $(fourier_SOURCES) $(lcdd_SOURCES) $(projection_SOURCES) $(redcheck_SOURCES) $(scdd_SOURCES) $(testcdd1_SOURCES) $(testcdd2_SOURCES) $(testlp1_SOURCES) $(testlp2_SOURCES) $(testlp3_SOURCES) $(testshoot_SOURCES)
 
 all: all-am
 
@@ -240,6 +250,9 @@ clean-binPROGRAMS:
 adjacency$(EXEEXT): $(adjacency_OBJECTS) $(adjacency_DEPENDENCIES) 
 	@rm -f adjacency$(EXEEXT)
 	$(LINK) $(adjacency_LDFLAGS) $(adjacency_OBJECTS) $(adjacency_LDADD) $(LIBS)
+allfaces$(EXEEXT): $(allfaces_OBJECTS) $(allfaces_DEPENDENCIES) 
+	@rm -f allfaces$(EXEEXT)
+	$(LINK) $(allfaces_LDFLAGS) $(allfaces_OBJECTS) $(allfaces_LDADD) $(LIBS)
 fourier$(EXEEXT): $(fourier_OBJECTS) $(fourier_DEPENDENCIES) 
 	@rm -f fourier$(EXEEXT)
 	$(LINK) $(fourier_LDFLAGS) $(fourier_OBJECTS) $(fourier_LDADD) $(LIBS)
@@ -281,6 +294,7 @@ distclean-compile:
 	-rm -f *.tab.c
 
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/adjacency.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/allfaces.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/fourier.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/lcdd.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/projection.Po@am__quote@

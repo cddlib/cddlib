@@ -1,46 +1,49 @@
-This is BibTeX, Version 0.99c (Web2C 7.3.7)
+This is BibTeX, Version 0.99c (Web2C 7.4.5)
 The top-level auxiliary file: cddlibman.aux
 The style file: plain.bst
 Database file #1: fukuda1.bib
 Database file #2: fukuda2.bib
-You've used 16 entries,
+Warning--empty institution in fjt-cgf-05
+Warning--empty year in fjt-cgf-05
+You've used 23 entries,
             2118 wiz_defined-function locations,
-            594 strings with 7150 characters,
-and the built_in function-call counts, 4474 in all, are:
-= -- 428
-> -- 204
+            629 strings with 8653 characters,
+and the built_in function-call counts, 6251 in all, are:
+= -- 603
+> -- 290
 < -- 3
-+ -- 82
-- -- 63
-* -- 243
-:= -- 760
-add.period$ -- 53
-call.type$ -- 16
-change.case$ -- 72
++ -- 117
+- -- 91
+* -- 344
+:= -- 1076
+add.period$ -- 79
+call.type$ -- 23
+change.case$ -- 104
 chr.to.int$ -- 0
-cite$ -- 16
-duplicate$ -- 174
-empty$ -- 383
-format.name$ -- 63
-if$ -- 945
+cite$ -- 25
+duplicate$ -- 236
+empty$ -- 521
+format.name$ -- 91
+if$ -- 1302
 int.to.chr$ -- 0
-int.to.str$ -- 16
-missing$ -- 9
-newline$ -- 86
-num.names$ -- 36
-pop$ -- 114
+int.to.str$ -- 23
+missing$ -- 10
+newline$ -- 126
+num.names$ -- 50
+pop$ -- 155
 preamble$ -- 1
-purify$ -- 61
+purify$ -- 89
 quote$ -- 0
-skip$ -- 125
+skip$ -- 164
 stack$ -- 0
-substring$ -- 184
-swap$ -- 36
+substring$ -- 250
+swap$ -- 46
 text.length$ -- 3
 text.prefix$ -- 0
 top$ -- 0
-type$ -- 60
-warning$ -- 0
-while$ -- 44
-width$ -- 18
-write$ -- 176
+type$ -- 88
+warning$ -- 2
+while$ -- 60
+width$ -- 25
+write$ -- 254
+(There were 2 warnings)

@@ -1,4 +1,4 @@
-* file name: lpmaxtest.ine
+* file name: lpmintest.ine
 H-representation
 begin
       120      5    real
@@ -123,5 +123,6 @@ begin
   8.472136051E+00 -2.618034034E+00 -1.618033992E+00 -1  0
   2.618033989E+00 -1  0  0  0
 end
-maximize
+minimize
   0 1 1 1 1
+

@@ -1,6 +1,6 @@
-2003-07-18 (July 18, 2003)
+2005-08-04 (August 4, 2005)
 -----------------------------------------------
-C-Library cddlib (version 0.93) README FILE
+C-Library cddlib (version 0.94) README FILE
 -----------------------------------------------
 1. The C-library  cddlib is a C implementation of the Double Description 
 Method of Motzkin et al. for generating all vertices (i.e. extreme points)
@@ -19,30 +19,17 @@ representation of a polyhedron with cdd.  Also, cdd can solve a linear
 programming problem, i.e. a problem of maximizing and minimizing 
 a linear function over P.
 
-The version 0.93 is the sixth release of libcdd. New functions
-added in this release include  dd_Matrix2Adjacency, 
-dd_FourierElimination, and dd_BlockElimination.
-One major change is how the linear programming solver
-dd_LPSolve works in the GMP exact arithmetics mode.
-It solves an LP with floating-point arithmetics first
-and it checks with GMP whether the output is
-correct.  If so, it outputs a correct exact solution.
-Otherwise, it solves the problem from scrach with GMP. 
-It runs much faster for most of the cases. 
+The version 0.94 is the seventh release of libcdd. New functions
+added in this release include dd_MatrixCanonicalize,
+dd_FindRelativeInterior and dd_ExistsRestrictedFace.  These
+functions are LP-based and should be reasonably efficient.
+The sample programs such as redcheck.c, testlp1.c and allfaces.c
+show how these functions can be used to remove redundancies,
+to compute the dimension and all faces of an H-polyhedron.
 
-Both cdd libraries libcdd.a and libcddgmp.a are compatible with
-the previous version 092.   One significant change is an extension
-of libcddgmp.a.  The GMP based library libcddgmp.a now contains 
-both the GMP arithmetics and the C double floating-point arithmetics functions
-in one.  The functions using GMP are accessible as before, and
-the same functions using the floating-point arithmetics are
-also included in the same library libcddgmp.a.  To call 
-the floating-point versions, you need to use ddf_ prefix
-instead of the usual dd_ prefix.  In addition, there are
-two types of numbers, the default mytype and an additional
-myfloat type that is to be used with the ddf_* functions.
-This "duplex" functionality is in fact exploited in the new 
-LP solver dd_LPSolve.
+In addition to the new functionalities, many small bugs have
+been fixed.  For example, the mishandling of empty H-polyhedra
+has been fixed for the representation conversion.
 
 If you find some problems or bugs, please kindly report them to
 fukuda@ifor.math.ethz.ch.  Please read README.whatsnew for the changes 
@@ -85,28 +72,16 @@ Another thing one can do is scaling.  If the values in one column of
 an input is of smaller magnitude than those in another column, 
 scale one so that they become comparable.
 
-4. cddlib comes with a MatheLink version of cddlib that can be
-called from Mathematica (tested only for Mathematica 2.2 and 3.0).
-A few Mathematica notebooks are included to explain how one can 
-use this program "cddmathlink" from Mathematica
-to manipulate polytopes.  Please check the files, 
-cddml-notbook.ma, cddml-PolytopeSkeleton.ma, cddml-DietProblem.ma,
-and cddml-Zonotope.ma, in the mma subdirectory.  I could 
-compile cddmathlink.c for Macintosh and Windows.  I have put
-binaries for different platforms in 
-http://www.cs.mcgill.ca/~fukuda/download/cdd/cddlibml_binary/  .
-
-5. The cddlib package is in "tar"ed and "gzip"ed format with name
+4. The cddlib package is in "tar"ed and "gzip"ed format with name
 cddlib-***.tar.gz, where *** is the version number.  The standard
 download site for the package is
 
-     web site : http://www.cs.mcgill.ca/~fukuda/cdd 
+     web site : http://www.ifor.math.ethz.ch/~fukuda/cdd_home/index.html
      file name: cddlib-***.tar.gz
 
 In order to unpack the package in a standard unix environment, type 
    
-     % gunzip cddlib-***.tar.gz
-     % tar xvf cddlib-***.tar
+     % tar xvfz cddlib-***.tar.gz
 
 where *** must be replaced by the appropriate version number, and
 % is a unix prompt. 
@@ -114,11 +89,14 @@ where *** must be replaced by the appropriate version number, and
 For compilation of libcdd, go to the cddlib top directorycddlib
 and follow the general instruction of autoconf.  In generic
 unix/linux environment, use "./configure" and "make".
-To enforce a certain compiler to be use, specify it as
+To enforce a certain compiler (say, C-compiler instead of C++) 
+to be used, specify it as
 
    CXX=gcc ./configure
 
-One must install GMP-4.1 (or GMP-3.*) first.  For compilation of MathLink programs,
+The DEFAULT is g++ which might cause problems when you want to link with
+objects created by gcc.  Note that one must install GMP-4.1 (or GMP-3.*) first.  
+For compilation of MathLink programs, use gcc rather than g++, and
 you need a binary "mprep", MathLink library "libML.a" and include file
 "mathlink.h" which come with Mathematica.   I have tested for Mathematica 4.1
 and 3.* on MacOSX and Linux.  This part is not "autoconf"igured
@@ -140,19 +118,37 @@ or (with GMP rational arithmetic)
 
    % gcc -I/usr/local/include -L/usr/local/lib -DGMPRATIONAL testcdd1.c -lcddgmp -lgmp
 
-The library cddlib is free software, but if cddlib turns out to be useful, 
-please kindly send to me (at the address below) a note or a paper mentioning 
-for what purpose and how cdd has been used. The most powerful support 
+
+5. cddlib comes with a MatheLink version of cddlib that can be
+called from Mathematica (tested for Mathematica 2.2, 3.0, 4.1, 5.1).
+A few Mathematica notebooks are included to explain how one can 
+use this program "cddmathlink" from Mathematica
+to manipulate polytopes.  Please check the files, 
+cddml-notbook.ma, cddml-PolytopeSkeleton.ma, cddml-DietProblem.ma,
+and cddml-Zonotope.ma, in the mma subdirectory.  I could 
+compile cddmathlink.c for Macintosh and Windows.  Please use
+gcc instead of g++ to compile cddlib.  I have put 
+binaries for different platforms in 
+http://www.cs.mcgill.ca/~fukuda/download/cdd/cddlibml_binary/  .
+
+
+6. The library cddlib is free software, but if cddlib turns out to be useful, 
+please kindly send me (at the address below) a note or a paper mentioning 
+what purpose and how cdd has been used for. The most powerful support 
 for free software development is user's appreciation.   
 
 For more information, contact
-   Komei Fukuda
-   School of Computer Science
-   McGill University
-   McConnel Engineering Building
-   3480 University Street
-   Montreal, Quebec
-   Canada H3A 2A7
+
+Komei Fukuda <fukuda@ifor.math.ethz.ch>
+Institute for Operations Research
+and Institute of Theoretical Computer Science
+ETH Zentrum, CH-8092 Zurich, Switzerland
+Tel +41-1-632-4023, Fax +41-1-632-1025
+http://www.ifor.math.ethz.ch/staff/fukuda/
+and
+Mathematics Institute / ROSO
+EPFL, CH-1015 Lausanne, Switzerland
+Tel +41-21-693-2536, Fax +41-21-693-5570
 
 // END of README 
 

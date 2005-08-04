@@ -44,10 +44,10 @@ MLFLAGS = -lML -lm  # Generic
 
 ########## You shouldn't have to change anything after this point ##########
 # Location of include files for cddlib compilation
-IFLAGS = -I. -I../lib-src
+IFLAGS =  -I../lib-src
 
 # C-Library location  for cddlib compilation
-LFLAGS = -L. -L../lib-src
+LFLAGS =  -L../lib-src
 
 # Library and Include FLAGS together
 LIFLAGS = $(LFLAGS) $(IFLAGS) $(CFLAGS)
@@ -55,7 +55,7 @@ LIFLAGS = $(LFLAGS) $(IFLAGS) $(CFLAGS)
 ml : cddmathlink
 
 cddmathlink : cddmathlinktm.o cddmathlink.o cddmlio.o
-	${CC} -O3 -I${MLINCDIR} cddmlio.o cddmathlinktm.o cddmathlink.o -L${MLLIBDIR} ${MLFLAGS} $(LFLAGS) -lcdd -o cddmathlink
+	${CC} -O3 -I${MLINCDIR} cddmlio.o cddmathlinktm.o cddmathlink.o -L${MLLIBDIR} ${MLFLAGS} $(LFLAGS) ../lib-src/libcdd.a -o cddmathlink
 
 cddmathlinktm.o: cddmathlinktm.c $(HFILES)
 	$(CC) $(LIFLAGS) -c cddmathlinktm.c

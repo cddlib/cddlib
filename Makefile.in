@@ -403,7 +403,7 @@ uninstall-info: uninstall-info-recursive
 #---------------------------------------------
 # where is gmp?
 #---------------------------------------------
-# export gmpdir := $(PWD)/../gmp-3.1
+# export gmpdir := $(PWD)/../gmp-4.1
 export gmpdir := /usr/local
 #---------------------------------------------
 # where is gmp lib?

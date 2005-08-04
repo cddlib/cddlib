@@ -1,6 +1,6 @@
 /* projection.c: Test program to call the cdd library cddlib
    written by Komei Fukuda, fukuda@ifor.math.ethz.ch
-   Version 0.93, July 18,  2003
+   Version 0.94, July 27,  2005
    Standard ftp site: ftp.ifor.math.ethz.ch, Directory: pub/fukuda/cdd
 */
 
@@ -59,11 +59,12 @@ dd_boolean SetWriteFile(FILE **f, dd_DataFileType fname)
 
 int main(int argc, char *argv[])
 {
-  dd_MatrixPtr M=NULL,M1=NULL,M2=NULL;
+  dd_MatrixPtr M=NULL,M1=NULL;
   dd_colrange j,s,t,d;
   dd_ErrorType err=dd_NoError;
-  dd_rowset redrows,linrows;
+  dd_rowset redset,impl_linset;
   dd_colset delset;
+  dd_rowindex newpos;
   mytype val;
   dd_DataFileType inputfile;
   FILE *reading=NULL;
@@ -103,31 +104,22 @@ int main(int argc, char *argv[])
 
   dd_WriteMatrix(stdout, M1);
 
-  fprintf(stdout, "redundant rows: ");
-  redrows=dd_RedundantRowsViaShooting(M1, &err);
-  set_fwrite(stdout, redrows);
+  dd_MatrixCanonicalize(&M1,&impl_linset,&redset,&newpos,&err);
 
-  M2=dd_MatrixSubmatrix(M1, redrows);
+  if (err!=dd_NoError) goto _L99;
 
-  fprintf(stdout, "Implicit linearity (after removal of redundant rows): ");
-  linrows=dd_ImplicitLinearityRows(M2, &err);
+  fprintf(stdout, "\nRedundant rows: ");
+  set_fwrite(stdout, redset);
+  fprintf(stdout, "\n");
 
-  if (M->representation==dd_Generator)
-    fprintf(stdout," %ld  ", set_card(linrows));
-  else 
-    fprintf(stdout," %ld  ", set_card(linrows));
-  set_fwrite(stdout,linrows);
-  set_uni(M2->linset, M2->linset, linrows); 
-
-  printf("\nNonredundant representation (except for the linearity part):\n");
-  dd_WriteMatrix(stdout, M2);
+  dd_WriteMatrix(stdout, M1);
 
   dd_FreeMatrix(M);
   dd_FreeMatrix(M1);
-  dd_FreeMatrix(M2);
   set_free(delset);
-  set_free(redrows);
-  set_free(linrows);
+  set_free(redset);
+  set_free(impl_linset);
+  free(newpos);
 
 _L99:;
   /* if (err!=dd_NoError) dd_WriteErrorMessages(stderr,err); */

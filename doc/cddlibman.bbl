@@ -4,15 +4,15 @@
 N.~Amenta.
 \newblock Directory of computational geometry.
 \newblock
-  \htmladdnormallink{http://www.geom.umn.edu/software/cglist/}{http://www.geom%
-.umn.edu/software/cglist/}.
+  \htmladdnormallink{http://www.geom.uiuc.edu/software/cglist/}{http://www.geo%
+m.uiuc.edu/software/cglist/}.
 
-\bibitem{a-uglrs-97}
+\bibitem{a-lrshome-01}
 D.~Avis.
-\newblock {\em User's Guide for lrs - Version 3.2}, 1997.
-\newblock available from lrs homepage
-  \htmladdnormallink{ftp://mutt.cs.mcgill.ca/pub/C/lrs.html}{ftp://mutt.cs.mcg%
-ill.ca/pub/C/lrs.html}.
+\newblock {\em lrs Homepage}.
+\newblock
+  \htmladdnormallink{http://cgm.cs.mcgill.ca/\~{}avis/C/lrs.html}{http://cgm.c%
+s.mcgill.ca/\~{}avis/C/lrs.html}.
 
 \bibitem{abs-hgach-97}
 D.~Avis, D.~Bremner, and R.~Seidel.
@@ -26,13 +26,17 @@ D.~Avis and K.~Fukuda.
   arrangements and polyhedra.
 \newblock {\em Discrete Comput. Geom.}, 8:295--313, 1992.
 
-\bibitem{bdh-qach-95}
+\bibitem{b-pplhome}
+R.~Bagnara.
+\newblock Parma polyhedra library homepage, 2004.
+\newblock \htmladdnormallink{http://www.cs.unipr.it/ppl/}
+  {http://www.cs.unipr.it/ppl/}.
+
+\bibitem{bdh-qach-03}
 C.B. Barber, D.P. Dobkin, and H.~Huhdanpaa.
-\newblock {\em qhull, Version 2.1}.
-\newblock The Geometry Center, Minnesota, U.S.A., 1995.
+\newblock {\em qhull, Version 2003.1}, 2003.
 \newblock program and report available from
-  \htmladdnormallink{ftp://geom.umn.edu/pub/software/qhull.tar.Z}
-  {ftp://geom.umn.edu/pub/software/qhull.tar.Z}.
+  \htmladdnormallink{http://www.qhull.org/} {http://www.qhull.org/}.
 
 \bibitem{bfm-pdmvf-97}
 D.~Bremner, K.~Fukuda, and A.~Marzetta.
@@ -46,6 +50,14 @@ T.~Christof and A.~L{\"o}bel.
   1.3.1), 1997.
 \newblock \htmladdnormallink{http://www.zib.de/Optimization/Software/Porta/}
   {http://www.zib.de/Optimization/Software/Porta/}.
+
+\bibitem{dhhhty-latte-05}
+J.~de~Loera, D.~Haws, R.~Hemmecke, Peter Huggins, J.~Tauzer, and R.~Yoshida.
+\newblock {\em Latt{E}}.
+\newblock University of California, Davis, 2005.
+\newblock available from
+  \htmladdnormallink{http://www.math.ucdavis.edu/~latte/}{http://www.math.ucda%
+vis.edu/~latte/}.
 
 \bibitem{e-acg-87}
 H.~Edelsbrunner.
@@ -74,6 +86,22 @@ K.~Fukuda.
   \htmladdnormallink{http://www.ifor.math.ethz.ch/\~{}fukuda/fukuda.html}
   {http://www.ifor.math.ethz.ch/\~{}fukuda/fukuda.html}.
 
+\bibitem{f-fzctmacp-04}
+K.~Fukuda.
+\newblock From the zonotope construction to the {M}inkowski addition of convex
+  polytopes.
+\newblock {\em Journal of Symbolic Computation}, 38(4):1261--1272, 2004.
+\newblock pdf file available from
+  \htmladdnormallink{http://www.cs.mcgill.ca/\~{}fukuda/download/paper/minksum%
+031007jsc.pdf}{http://www.cs.mcgill.ca/\~{}fukuda/download/paper/minksum031007%
+jsc.pdf}.
+
+\bibitem{fjt-cgf-05}
+K.~Fukuda, A.~Jensen, and R.~Thomas.
+\newblock Computing {G}r{\"o}bner fans.
+\newblock Technical report.
+\newblock In preparation.
+
 \bibitem{fp-ddmr-96}
 K.~Fukuda and A.~Prodon.
 \newblock Double description method revisited.
@@ -84,12 +112,21 @@ K.~Fukuda and A.~Prodon.
   \htmladdnormallink{ftp://ftp.ifor.math.ethz.ch/pub/fukuda/reports/ddrev96031%
 5.ps.gz}{ftp://ftp.ifor.math.ethz.ch/pub/fukuda/reports/ddrev960315.ps.gz}.
 
+\bibitem{j-gvum-05}
+A.N. Jensen.
+\newblock {\em Gfan version 0.1: A User's Manual}.
+\newblock Department of Mathematical Sciences, University of Aarhus and
+  Institute for Operations Research, ETH Zurich, 2005.
+\newblock available from
+  \htmladdnormallink{http://home.imf.au.dk/ajensen/software/gfan/gfan.html}{ht%
+tp://home.imf.au.dk/ajensen/software/gfan/gfan.html}.
+
 \bibitem{m-pdcip-97}
 A.~Marzetta.
 \newblock {\em pd -- {C}-implementation of the primal-dual algoirithm}, 1997.
 \newblock code available from
-  \htmladdnormallink{http://wwwjn.inf.ethz.ch/ambros/pd.html}
-  {http://wwwjn.inf.ethz.ch/ambros/pd.html}.
+  \htmladdnormallink{http://www.cs.unb.ca/profs/bremner/pd/}
+  {http://www.cs.unb.ca/profs/bremner/pd/}.
 
 \bibitem{mrtt-ddm-53}
 T.S. Motzkin, H.~Raiffa, GL. Thompson, and R.M. Thrall.
@@ -102,6 +139,24 @@ K.~Mulmuley.
 \newblock {\em Computational {G}eometry, {A}n {I}ntroduction {T}hrough
   {R}andamized {A}lgorithms}.
 \newblock Prentice-Hall, 1994.
+
+\bibitem{r-topcom-05}
+J.~Rambau.
+\newblock {\em TOPCOM, a package for computing Triangulations Of Point
+  Configurations and Oriented Matroids}.
+\newblock University of Bayreuth, 2005.
+\newblock available from
+  \htmladdnormallink{http://www.uni-bayreuth.de/departments/wirtschaftsmathema%
+tik/rambau/TOPCOM/}{http://www.uni-bayreuth.de/departments/wirtschaftsmathemat%
+ik/rambau/TOPCOMl}.
+
+\bibitem{w-msv-05}
+C.~Weibel.
+\newblock {\em Minksum version 1.1}.
+\newblock Mathematics Institute, EPF Lausanne, 2005.
+\newblock available from
+  \htmladdnormallink{http://roso.epfl.ch/cw/poly/public.php}{http://roso.epfl.%
+ch/cw/poly/public.php}.
 
 \bibitem{w-ldpo-93b}
 D.K. Wilde.

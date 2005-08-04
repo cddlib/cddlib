@@ -1,6 +1,53 @@
-libcdd, cdd & cdd+ HISTORY file    (as of August 11, 2003)
+libcdd, cdd & cdd+ HISTORY file    (as of August 4, 2005)
 
 *** libcdd version (date) / changes ***
+
+Version 094 (August 4, 2005) /
+ - dd_MatrixCanonicalize has been added.  This reduces
+   matrix M to a minimal representation by computing
+   all implicit linearity rows and all redundant rows.
+   It applies lexicographic sorting of rows to remove
+   duplicates before applying redundancy removal.
+   This function combines the two computations together
+   in more efficient manner than before.
+   See the new redcheck.c for its use.  Several basic
+   operations for matrices have been added, such as
+   dd_MatrixRowsRemove and dd_MatrixRowsRemove2.
+
+   The representation conversion dd_DDMatrix2Poly now
+   handles the empty H-polyhedra properly, by calling
+   an LP-based emptiness checker before running the double 
+   description algorithm.
+
+   New functions finding specific points in H-polyhedra
+   are added.  dd_ExistsRestrictedFace is a general inequality
+   system solver with specified equations, inequalities and
+   strict inequalities.   dd_FindRelativeInterior finds 
+   a point in the relative interior of a polyhedron.
+
+
+Version 093d (February 27, 2005) /
+ - The problem of outputting the running log has been corrected.
+   This problem and a solution was communicated by Charles Geyer.
+   Now, a new global dd_boolean variable dd_log (= dd_FALSE by default)
+   controls log output.  An scdd/lcdd bug of terminating with segmentation 
+   fault when an input polyhedron is numerically delicate has been
+   corrected.  This bug was reported by Stefan Volkwein.
+
+Version 093c (December 26, 2003) /
+ - A bug of Phase I of the dual simplex method in floating-point
+   arithmetics is fixed.  The problem (bus error) occurred when input data
+   is not appropriate for floating-point arithmetics.  The problem
+   occurrs even for the GMP executables as the exact LP solver first
+   tries to detect the terminal basis with float-point arithmetics.
+
+Version 093b (November 10, 2003) /
+ - The nonterminating problem of the LP solver has been fixed.
+   This was due to a cycling of the criss-cross method in
+   floating-point arithmetics, that is extremely rare.
+   Also, the phase I of the dual simplex method has been
+   modified.  The auxiliary LP is perhaps less likely to
+   be degenerate.
 
 Version 093a (Augst 11, 2003) /
  - The LP basis finding procedure dd_FindLPBasis2 has been

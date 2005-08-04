@@ -1,6 +1,6 @@
 /* testlp3.c: Main test program to call the cdd lp library
    written by Komei Fukuda, fukuda@ifor.math.ethz.ch
-   Version 0.93, July 9, 2003
+   Version 0.93b, October 30, 2003
    Standard ftp site: ftp.ifor.math.ethz.ch, Directory: pub/fukuda/cdd
 */
 
@@ -59,47 +59,22 @@ int main(int argc, char *argv[])
   dd_LPSolutionPtr lps,lps1; 
     /* pointer to LP solution data that is visible by user. */
 
-  dd_rowrange m;
-  dd_colrange n;
-  dd_NumberType numb;
-  dd_MatrixPtr A;
+  dd_MatrixPtr M;
   dd_colrange j;
-
-/* Define an LP  */
-/*
-  max  0 + 3 x1 + 4 x2 
-  s.t.
-       4 - 2 x1 -   x2  >= 0
-       2        -   x2  >= 0
-             x1         >= 0
-                    x2  >= 0
-
-  For this LP, we set up a matrix A as 4 x 3 matrix and a row vector:
-
-      4  -2  -1   <- 1st constraint
-      2   0  -1
-      0   1   0
-      0   0   1   <- last constraint
-
-      0   3   4   <- objective row
-*/
+  dd_DataFileType inputfile;
 
   dd_set_global_constants();
-    
-  numb=dd_Real;   /* set a number type */
-  m=4;    /* number of rows  */
-  n=3;    /* number of columns */
-  A=dd_CreateMatrix(m,n);
-  dd_set_si(A->matrix[0][0],4); dd_set_si(A->matrix[0][1],-2); dd_set_si(A->matrix[0][2],-1);
-  dd_set_si(A->matrix[1][0],2); dd_set_si(A->matrix[1][1], 0); dd_set_si(A->matrix[1][2],-1);
-  dd_set_si(A->matrix[2][0],0); dd_set_si(A->matrix[2][1], 1); dd_set_si(A->matrix[2][2], 0);
-  dd_set_si(A->matrix[3][0],0); dd_set_si(A->matrix[3][1], 0); dd_set_si(A->matrix[3][2], 1);
 
-  dd_set_si(A->rowvec[0],0);    dd_set_si(A->rowvec[1], 3); dd_set_si(A->rowvec[2], 4);
+  printf("\n--- Solving an LP with dd_LPSolve, and Finding an Interior Point  ---\n");
 
-  A->objective=dd_LPmax;
-  lp=dd_Matrix2LP(A, &err); /* load an LP */
-  if (lp==NULL) goto _L99;
+/* Input an LP using the cdd library  */
+  dd_SetInputFile(&reading,inputfile,&err);
+  if (err!=dd_NoError) goto _L99;
+  M=dd_PolyFile2Matrix(reading, &err);
+  if (err!=dd_NoError) goto _L99;
+  /* dd_WriteMatrix(stdout, M);  */
+  lp=dd_Matrix2LP(M, &err);
+  if (err!=dd_NoError) goto _L99;
 
 /* Solve the LP by cdd LP solver. */
   printf("\n--- Running dd_LPSolve ---\n");
@@ -134,31 +109,33 @@ int main(int argc, char *argv[])
   }
 
 /* Find an interior point with cdd LP library. */
-    printf("\n--- Running dd_FindInteriorPoint ---\n");
-    lp1=dd_MakeLPforInteriorFinding(lp);
-    dd_LPSolve(lp1,solver,&err);
-    if (err!=dd_NoError) goto _L99;
+  printf("\n--- Running dd_FindInteriorPoint ---\n");
+  lp1=dd_MakeLPforInteriorFinding(lp);
+  printf("The LP to be solved for finding an interior point:\n");  
+  dd_WriteLP(stdout,lp1);
+  dd_LPSolve(lp1,solver,&err);
+  if (err!=dd_NoError) goto _L99;
 
-    /* Write an interior point. */
-    lps1=dd_CopyLPSolution(lp1);
-    if (dd_Positive(lps1->optvalue)){
-      printf("An interior point found: (");
-      for (j=1; j <(lps1->d)-1; j++) {
-        dd_WriteNumber(stdout,lps1->sol[j]);
-      }
-      printf(")\n");
+  /* Write an interior point. */
+  lps1=dd_CopyLPSolution(lp1);
+  if (dd_Positive(lps1->optvalue)){
+    printf("\nAn interior point found: (");
+    for (j=1; j <(lps1->d)-1; j++) {
+      dd_WriteNumber(stdout,lps1->sol[j]);
     }
-    if (dd_Negative(lps1->optvalue)) 
-      printf("The feasible region is empty.\n");
-    if (dd_EqualToZero(lps1->optvalue)) 
-      printf("The feasible region is nonempty but has no interior point.\n");
+    printf(")\n");
+  }
+  if (dd_Negative(lps1->optvalue)) 
+    printf("\nThe feasible region is empty.\n");
+  if (dd_EqualToZero(lps1->optvalue)) 
+    printf("\nThe feasible region is nonempty but has no interior point.\n");
 
 /* Free allocated spaces. */
   dd_FreeLPSolution(lps);
   dd_FreeLPData(lp);
   dd_FreeLPSolution(lps1);
   dd_FreeLPData(lp1);
-  dd_FreeMatrix(A);
+  dd_FreeMatrix(M);
 
 _L99:;
   if (err!=dd_NoError) dd_WriteErrorMessages(stdout, err);

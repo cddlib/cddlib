@@ -1,6 +1,6 @@
 /* testlp1.c: Main test program to call the cdd lp library
    written by Komei Fukuda, fukuda@ifor.math.ethz.ch
-   Version 0.90c, June 12, 2000
+   Version 0.94, August 4, 2005
    Standard ftp site: ftp.ifor.math.ethz.ch, Directory: pub/fukuda/cdd
 */
 
@@ -45,11 +45,17 @@ int main(int argc, char *argv[])
   dd_MatrixPtr M,G;
   dd_LPSolverType solver=dd_DualSimplex;  /* either DualSimplex or CrissCross */
   dd_LPPtr lp;   /* pointer to LP data structure that is not visible by user. */
+  dd_LPSolutionPtr  lps1;
+  dd_colrange j;
+  dd_rowset ImL, Lbasis;
+
   dd_PolyhedraPtr poly;
   dd_DataFileType inputfile;
   int ans;
 
   dd_set_global_constants(); /* First, this must be called once to use cddlib. */
+
+  printf("Welcome to cddlib %s\n",dd_DDVERSION);
 
   while (error==dd_NoError) {
 
@@ -61,6 +67,7 @@ int main(int argc, char *argv[])
     /* dd_WriteMatrix(stdout, M);  */
     lp=dd_Matrix2LP(M, &error);
     if (error!=dd_NoError) goto _L99;
+	
 
 /* Solve the LP by cdd LP solver. */
     printf("\n--- Running dd_LPSolve ---\n");
@@ -71,17 +78,44 @@ int main(int argc, char *argv[])
     dd_WriteLPResult(stdout, lp, error);
 
 /* Generate all vertices of the feasible reagion */
-    printf("\nShould I generate all extreme points (y/n)? ");
+    printf("\nDo you want to compute the generator representation (y/n)? ");
     ans=getchar();
     if (ans=='y' || ans=='Y'){
       poly=dd_DDMatrix2Poly(M, &error);
       G=dd_CopyGenerators(poly);
-      printf("\nAll the vertices of the feasible region.\n");
+      printf("\nGenerators (All the vertices of the feasible region if bounded.)\n");
       dd_WriteMatrix(stdout,G);
 
       /* Free allocated spaces. */
       dd_FreeMatrix(G);
       dd_FreePolyhedra(poly);
+    }
+
+/* Find an interior point with cdd LP library. */
+    printf("\nDo you want to find a relative interior point (y/n)? ");
+    ans=getchar(); ans=getchar();
+    if (ans=='y' || ans=='Y'){
+      printf("\n--- Running dd_FindRelativeInteriorPoint ---\n");
+	  dd_FindRelativeInterior(M, &ImL, &Lbasis, &lps1, &error);
+      if (error!=dd_NoError) goto _L99;
+
+      /* Write an interior point. */
+      if (dd_Positive(lps1->optvalue)){
+        printf("A relative interior point found: (");
+        for (j=1; j <(lps1->d)-1; j++) {
+          dd_WriteNumber(stdout,lps1->sol[j]);
+        }
+        printf(")\nThe dimension of the region = ");
+		printf("%ld\n",M->colsize-set_card(Lbasis)-1);
+		if (set_card(ImL)>0) {
+		  printf("Implicit equations: "); set_write(ImL); printf("\n");
+		}
+      } else {
+        printf("The feasible region is empty.\n");
+	  }
+	  dd_FreeLPSolution(lps1);
+	  set_free(ImL);
+	  set_free(Lbasis);
     }
 
 /* Free allocated spaces. */

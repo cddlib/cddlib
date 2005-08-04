@@ -45,10 +45,10 @@ MLFLAGS = -lML # Generic
 
 ########## You shouldn't have to change anything after this point ##########
 # Location of include files for cddlib compilation
-IFLAGS = -I. -I../lib-src -I../lib-src-gmp
+IFLAGS = -I../lib-src -I../lib-src-gmp
 
 # C-Library location  for cddlib compilation
-LFLAGS = -L. -L../lib-src -L../lib-src-gmp
+LFLAGS = -L../lib-src -L../lib-src-gmp
 
 # Library and Include FLAGS together
 LIFLAGS = $(LFLAGS) $(IFLAGS) $(CFLAGS)
@@ -56,10 +56,10 @@ LIFLAGS = $(LFLAGS) $(IFLAGS) $(CFLAGS)
 ml : cddmathlink2 cddmathlink2gmp
 
 cddmathlink2 : cddmathlinktm.o cddmathlink.o cddmlio.o
-	${CC} $(LIFLAGS) -I${MLINCDIR} cddmlio.o cddmathlinktm.o cddmathlink.o -L${MLLIBDIR} ${MLFLAGS} -lcdd -o cddmathlink2
+	${CC} $(LIFLAGS) -I${MLINCDIR} cddmlio.o cddmathlinktm.o cddmathlink.o -L${MLLIBDIR} ${MLFLAGS} ../lib-src/libcdd.a -o cddmathlink2
 
 cddmathlink2gmp : cddmathlinktm.o cddmathlink_gmp.o cddmlio_gmp.o
-	${CC} $(LIFLAGS) -I${MLINCDIR} cddmlio_gmp.o cddmathlinktm.o cddmathlink_gmp.o -L${MLLIBDIR} ${MLFLAGS} -lgmp -lcddgmp -o cddmathlink2gmp
+	${CC} $(LIFLAGS) -I${MLINCDIR} cddmlio_gmp.o cddmathlinktm.o cddmathlink_gmp.o -L${MLLIBDIR} ${MLFLAGS} -lgmp ../lib-src-gmp/libcddgmp.a -o cddmathlink2gmp
 
 cddmathlinktm.o: cddmathlinktm.c $(HFILES)
 	$(CC) $(LIFLAGS) -c cddmathlinktm.c

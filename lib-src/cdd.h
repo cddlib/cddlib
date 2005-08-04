@@ -1,6 +1,6 @@
 /* cdd.h: Header file for cddlib.c 
    written by Komei Fukuda, fukuda@ifor.math.ethz.ch
-   Version 0.93a, August 11, 2003
+   Version 0.94, Aug. 4, 2005
 */
 
 /* cddlib.c : C-Implementation of the double description method for
@@ -28,11 +28,26 @@
 #endif
 #endif
 
-/* GLOBAL CONSTANTS (to be set by dd_set_global_constants() */
+/* GLOBAL CONSTANTS and STATISTICS VARIABLES (to be set by dd_set_global_constants() */
 extern mytype dd_zero;
 extern mytype dd_one;
 extern mytype dd_purezero;
 extern mytype dd_minuszero;
+extern mytype dd_minusone;
+
+extern time_t dd_statStartTime; /* cddlib starting time */
+extern long dd_statBApivots;  /* basis finding pivots */
+extern long dd_statCCpivots;  /* criss-cross pivots */
+extern long dd_statDS1pivots; /* phase 1 pivots */
+extern long dd_statDS2pivots; /* phase 2 pivots */
+extern long dd_statACpivots;  /* anticycling (cc) pivots */
+#ifdef GMPRATIONAL
+extern long dd_statBSpivots;  /* basis status checking pivots */
+#endif
+extern dd_LPSolverType dd_choiceLPSolverDefault;  /* Default LP solver Algorithm */
+extern dd_LPSolverType dd_choiceRedcheckAlgorithm;  /* Redundancy Checking Algorithm */
+extern dd_boolean dd_choiceLexicoPivotQ;    /* whether to use the lexicographic pivot */
+
    /* to be used to avoid creating temporary spaces for mytype */
 #define dd_almostzero  1.0E-7
 
@@ -91,6 +106,14 @@ dd_rowrange dd_RayShooting(dd_MatrixPtr, dd_Arow intpt, dd_Arow direction);  /* 
  /* 092, find the first inequality "hit" by a ray from an intpt.  */
 dd_boolean dd_ImplicitLinearity(dd_MatrixPtr, dd_rowrange, dd_Arow, dd_ErrorType *);  /* 092 */
 dd_rowset dd_ImplicitLinearityRows(dd_MatrixPtr, dd_ErrorType *);  /* 092  */
+int dd_FreeOfImplicitLinearity(dd_MatrixPtr, dd_Arow, dd_rowset *, dd_ErrorType *) ; /* 094 */
+dd_boolean dd_MatrixCanonicalizeLinearity(dd_MatrixPtr *, dd_rowset *,dd_rowindex *, dd_ErrorType *); /* 094 */
+dd_boolean dd_MatrixCanonicalize(dd_MatrixPtr *, dd_rowset *, dd_rowset *, dd_rowindex *, dd_ErrorType *); /* 094 */
+dd_boolean dd_MatrixRedundancyRemove(dd_MatrixPtr *M, dd_rowset *redset,dd_rowindex *newpos, dd_ErrorType *); /* 094 */
+dd_boolean dd_FindRelativeInterior(dd_MatrixPtr, dd_rowset *, dd_rowset *, dd_LPSolutionPtr *, dd_ErrorType *);  /* 094 */
+dd_boolean dd_ExistsRestrictedFace(dd_MatrixPtr, dd_rowset, dd_rowset, dd_ErrorType *);  /* 0.94 */
+dd_boolean dd_ExistsRestrictedFace2(dd_MatrixPtr, dd_rowset, dd_rowset, dd_LPSolutionPtr *, dd_ErrorType *); /* 0.94 */
+
 dd_SetFamilyPtr dd_Matrix2Adjacency(dd_MatrixPtr, dd_ErrorType *);  /* 093 */
 dd_SetFamilyPtr dd_Matrix2WeakAdjacency(dd_MatrixPtr, dd_ErrorType *);  /* 093a */
 long dd_MatrixRank(dd_MatrixPtr, dd_rowset, dd_colset, dd_rowset *, dd_colset *);
@@ -98,13 +121,25 @@ long dd_MatrixRank(dd_MatrixPtr, dd_rowset, dd_colset, dd_rowset *, dd_colset *)
 /* Matrix Basic Operations */
 dd_MatrixPtr dd_MatrixCopy(dd_MatrixPtr); /* a new name for dd_CopyMatrix */
 dd_MatrixPtr dd_CopyMatrix(dd_MatrixPtr); /* 090c, kept for compatibility */
+dd_MatrixPtr dd_MatrixNormalizedCopy(dd_MatrixPtr); /* 094 */
+dd_MatrixPtr dd_MatrixNormalizedSortedCopy(dd_MatrixPtr,dd_rowindex*); /* 094 */
+dd_MatrixPtr dd_MatrixUniqueCopy(dd_MatrixPtr,dd_rowindex*); /* 094 */
+dd_MatrixPtr dd_MatrixNormalizedSortedUniqueCopy(dd_MatrixPtr,dd_rowindex*); /* 094 */
+dd_MatrixPtr dd_MatrixSortedUniqueCopy(dd_MatrixPtr,dd_rowindex*); /* 094 */
 
 dd_MatrixPtr dd_MatrixAppend(dd_MatrixPtr, dd_MatrixPtr);  /* a name for dd_AppendMatrix */
 dd_MatrixPtr dd_AppendMatrix(dd_MatrixPtr, dd_MatrixPtr);  /* 090c, kept for compatibility */
 
 int dd_MatrixAppendTo(dd_MatrixPtr*, dd_MatrixPtr);  /* 092 */
-int dd_MatrixRowRemove(dd_MatrixPtr*, dd_rowrange);  /* 092 */
+int dd_Remove(dd_MatrixPtr*, dd_rowrange);  /* 092 */
 dd_MatrixPtr dd_MatrixSubmatrix(dd_MatrixPtr, dd_rowset delset); /* 092 */
+dd_MatrixPtr dd_MatrixSubmatrix2(dd_MatrixPtr, dd_rowset delset,dd_rowindex*); /* 094.  It returns new row positions. */
+dd_MatrixPtr dd_MatrixSubmatrix2L(dd_MatrixPtr, dd_rowset delset,dd_rowindex*); /* 094.  Linearity shifted up. */
+int dd_MatrixShiftupLinearity(dd_MatrixPtr *,dd_rowindex *); /* 094 */
+int dd_MatrixRowRemove(dd_MatrixPtr *M, dd_rowrange r); /* 092 */
+int dd_MatrixRowRemove2(dd_MatrixPtr *M, dd_rowrange r,dd_rowindex*); /* 094*/
+int dd_MatrixRowsRemove(dd_MatrixPtr *M, dd_rowset delset); /* 094 */
+int dd_MatrixRowsRemove2(dd_MatrixPtr *M, dd_rowset delset,dd_rowindex*); /* 094 */
 
 /* input/output */
 void dd_SetInputFile(FILE **f,dd_DataFileType inputfile, dd_ErrorType *);
@@ -134,7 +169,14 @@ void dd_WriteInputIncidence(FILE *, dd_PolyhedraPtr);
 /* functions and types for LP solving */
 
 dd_LPPtr dd_Matrix2LP(dd_MatrixPtr, dd_ErrorType *);
-  /* a new way to load a matrix to create an LP object. */
+  /* Load a matrix to create an LP object. */
+  
+dd_LPPtr dd_Matrix2Feasibility(dd_MatrixPtr, dd_ErrorType *);
+  /* Load a matrix to create an LP object for feasibility (obj == 0) .*/  /*  094 */
+  
+dd_LPPtr dd_Matrix2Feasibility2(dd_MatrixPtr, dd_rowset, dd_rowset, dd_ErrorType *);
+  /* Load a matrix to create an LP object for feasibility with additional equality and
+   strict inequality constraints. */  /*  094 */
 
 dd_boolean dd_LPSolve(dd_LPPtr,dd_LPSolverType,dd_ErrorType *);
 dd_boolean dd_LPSolve0(dd_LPPtr,dd_LPSolverType,dd_ErrorType *);
@@ -159,12 +201,17 @@ void dd_FreeLPSolution(dd_LPSolutionPtr);
 void dd_WriteLPResult(FILE *, dd_LPPtr, dd_ErrorType);
 void dd_WriteLPErrorMessages(FILE *, dd_ErrorType);
 void dd_WriteLPTimes(FILE *, dd_LPPtr);
+void dd_WriteLPStats(FILE *f);
+void dd_WriteLPMode(FILE *f);
 
 dd_MatrixPtr dd_FourierElimination(dd_MatrixPtr,dd_ErrorType *);
 dd_MatrixPtr dd_BlockElimination(dd_MatrixPtr, dd_colset, dd_ErrorType *);
 
 /* ---------- FUNCTIONS MEANT TO BE NON-PUBLIC ---------- */
 void dd_QuickSort(dd_rowindex, long, long, dd_Amatrix, long);
+void dd_RandomPermutation(dd_rowindex, long, unsigned int seed);
+void dd_UniqueRows(dd_rowindex, long, long, dd_Amatrix, long, dd_rowset, long *);
+
 dd_boolean dd_DoubleDescription(dd_PolyhedraPtr, dd_ErrorType*);
 dd_boolean dd_DoubleDescription2(dd_PolyhedraPtr, dd_RowOrderType, dd_ErrorType *);
 
@@ -181,7 +228,11 @@ void dd_CheckEquality(dd_colrange, dd_RayPtr *, dd_RayPtr *, dd_boolean *);
 void dd_ComputeRowOrderVector(dd_ConePtr);
 void dd_ConditionalAddEdge(dd_ConePtr,dd_RayPtr, dd_RayPtr, dd_RayPtr);
 void dd_CopyArow(mytype *, mytype *, dd_colrange);
+void dd_CopyNormalizedAmatrix(mytype **, mytype **, dd_rowrange, dd_colrange);
+void dd_CopyNormalizedArow(mytype *, mytype *, dd_colrange);
 void dd_CopyAmatrix(mytype **, mytype **, dd_rowrange, dd_colrange);
+void dd_PermuteCopyAmatrix(mytype **, mytype **, dd_rowrange, dd_colrange, dd_rowindex);
+void dd_PermutePartialCopyAmatrix(mytype **, mytype **, dd_rowrange, dd_colrange, dd_rowindex,dd_rowrange, dd_rowrange);
 void dd_CopyBmatrix(dd_colrange, dd_Bmatrix T, dd_Bmatrix TCOPY);
 void dd_CopyRay(mytype *, dd_colrange, dd_RayPtr,
    dd_RepresentationType, dd_colindex);
@@ -197,6 +248,7 @@ void dd_ColumnReduce(dd_ConePtr);
 void dd_GaussianColumnPivot(dd_rowrange, dd_colrange, dd_Amatrix, dd_Bmatrix,  dd_rowrange, dd_colrange);
 dd_boolean dd_LexSmaller(mytype *, mytype *, long);
 dd_boolean dd_LexLarger(mytype *, mytype *, long);
+dd_boolean dd_LexEqual(mytype *, mytype *, long);
 void dd_Normalize(dd_colrange, mytype *);
 void dd_MatrixIntegerFilter(dd_MatrixPtr);
 void dd_ProcessCommandLine(FILE*,dd_MatrixPtr, char *);

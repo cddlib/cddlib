@@ -1,6 +1,6 @@
 /* cddmp.c       (cddlib arithmetic operations using gmp)
    Copyright: Komei Fukuda 2000, fukuda@ifor.math.ethz.ch
-   Version 0.93a, July 23, 2003
+   Version 0.94, Aug. 4, 2005
 */
 /* This program is free software; you can redistribute it and/or modify
    it under the terms of the GNU General Public License as published by
@@ -25,20 +25,37 @@ void dd_set_global_constants()
  dd_init(dd_zero);
  dd_init(dd_minuszero);
  dd_init(dd_one);
+ dd_init(dd_minusone);
  dd_init(dd_purezero);
+  
+ time(&dd_statStartTime); /* cddlib starting time */
+ dd_statBApivots=0;  /* basis finding pivots */
+ dd_statCCpivots=0;  /* criss-cross pivots */
+ dd_statDS1pivots=0; /* phase 1 pivots */
+ dd_statDS2pivots=0; /* phase 2 pivots */
+ dd_statACpivots=0;  /* anticycling (cc) pivots */
+
+ dd_choiceLPSolverDefault=dd_DualSimplex;  /* Default LP solver Algorithm */
+ dd_choiceRedcheckAlgorithm=dd_DualSimplex;  /* Redundancy Checking Algorithm */
+ dd_choiceLexicoPivotQ=dd_TRUE;    /* whether to use the lexicographic pivot */
+ 
 #if defined GMPRATIONAL
+ dd_statBSpivots=0;  /* basis status checking pivots */
  mpq_set_ui(dd_zero,0U,1U);
  mpq_set_ui(dd_purezero,0U,1U);
  mpq_set_ui(dd_one,1U,1U);
+ mpq_set_si(dd_minusone,-1L,1U);
  ddf_set_global_constants();
 #elif defined GMPFLOAT
  mpf_set_d(dd_zero,dd_almostzero);
  mpf_set_ui(dd_purezero,0U);
  mpf_set_ui(dd_one,1U);
+ mpf_set_si(dd_minusone,-1L,1U);
 #else
  dd_zero[0]= dd_almostzero;  /*real zero */
  dd_purezero[0]= 0.0;
  dd_one[0]= 1L;
+ dd_minusone[0]= -1L;
 #endif
  dd_neg(dd_minuszero,dd_zero);
 }

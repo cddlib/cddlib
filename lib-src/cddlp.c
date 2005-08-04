@@ -1,6 +1,6 @@
 /* cddlp.c:  dual simplex method c-code
    written by Komei Fukuda, fukuda@ifor.math.ethz.ch
-   Version 0.93a, August 11, 2003
+   Version 0.94, Aug. 4, 2005
 */
 
 /* cddlp.c : C-Implementation of the dual simplex method for
@@ -23,7 +23,7 @@
 #include "cdd_f.h"
 #endif
 
-#define dd_CDDLPVERSION  "Version 0.93a (August 11, 2003)"
+#define dd_CDDLPVERSION  "Version 0.94 (August 4, 2005)"
 
 #define dd_FALSE 0
 #define dd_TRUE 1
@@ -33,37 +33,25 @@ typedef set_type colset;
 
 void dd_CrissCrossSolve(dd_LPPtr lp,dd_ErrorType *);
 void dd_DualSimplexSolve(dd_LPPtr lp,dd_ErrorType *);
-void dd_CrissCrossMinimize(dd_rowrange,dd_colrange,dd_Amatrix,dd_Bmatrix T,dd_rowset,
-  dd_rowrange,dd_colrange,
-  dd_LPStatusType *,mytype *optvalue,dd_Arow,dd_Arow,dd_colindex,
-  dd_rowrange *,dd_colrange *,long *,dd_ErrorType *);
-void dd_CrissCrossMaximize(dd_rowrange,dd_colrange,dd_Amatrix,dd_Bmatrix T,dd_rowset,
-  dd_rowrange,dd_colrange,
-  dd_LPStatusType *,mytype *optvalue,dd_Arow,dd_Arow,dd_colindex,
-  dd_rowrange *,dd_colrange *,long *,dd_ErrorType *);
-void dd_DualSimplexMinimize(dd_rowrange,dd_colrange, dd_Amatrix,dd_Bmatrix,dd_rowset,
-  dd_rowrange,dd_colrange,
-  dd_LPStatusType *,mytype *,dd_Arow,dd_Arow,dd_colindex,
-  dd_rowrange *,dd_colrange *,long *,dd_ErrorType *);
-void dd_DualSimplexMaximize(dd_rowrange,dd_colrange,dd_Amatrix,dd_Bmatrix,dd_rowset,
-  dd_rowrange,dd_colrange,
-  dd_LPStatusType *,mytype *,dd_Arow,dd_Arow,dd_colindex,
-  dd_rowrange *,dd_colrange *,long *,dd_ErrorType *);
+void dd_CrissCrossMinimize(dd_LPPtr,dd_ErrorType *);
+void dd_CrissCrossMaximize(dd_LPPtr,dd_ErrorType *);
+void dd_DualSimplexMinimize(dd_LPPtr,dd_ErrorType *);
+void dd_DualSimplexMaximize(dd_LPPtr,dd_ErrorType *);
 void dd_FindLPBasis(dd_rowrange,dd_colrange,dd_Amatrix,dd_Bmatrix,dd_rowindex,dd_rowset,
     dd_colindex,dd_rowindex,dd_rowrange,dd_colrange,
     dd_colrange *,int *,dd_LPStatusType *,long *);
 void dd_FindDualFeasibleBasis(dd_rowrange,dd_colrange,dd_Amatrix,dd_Bmatrix,dd_rowindex,
-    dd_colindex,long *,dd_rowrange,dd_colrange,
+    dd_colindex,long *,dd_rowrange,dd_colrange,dd_boolean,
     dd_colrange *,dd_ErrorType *,dd_LPStatusType *,long *, long maxpivots);
 
 
 #ifdef GMPRATIONAL
 void dd_BasisStatus(ddf_LPPtr lpf, dd_LPPtr lp, dd_boolean*);
 void dd_BasisStatusMinimize(dd_rowrange,dd_colrange, dd_Amatrix,dd_Bmatrix,dd_rowset,
-    dd_rowrange,dd_colrange,ddf_LPStatusType, mytype *,dd_Arow,dd_Arow,ddf_colindex,
+    dd_rowrange,dd_colrange,ddf_LPStatusType,mytype *,dd_Arow,dd_Arow,dd_rowset,ddf_colindex,
     ddf_rowrange,ddf_colrange,long *, int *, int *);
-void dd_BasisStatusMaximize(dd_rowrange,dd_colrange, dd_Amatrix,dd_Bmatrix,dd_rowset,
-    dd_rowrange,dd_colrange,ddf_LPStatusType, mytype *,dd_Arow,dd_Arow,ddf_colindex,
+void dd_BasisStatusMaximize(dd_rowrange,dd_colrange,dd_Amatrix,dd_Bmatrix,dd_rowset,
+    dd_rowrange,dd_colrange,ddf_LPStatusType,mytype *,dd_Arow,dd_Arow,dd_rowset,ddf_colindex,
     ddf_rowrange,ddf_colrange,long *, int *, int *);
 #endif
 
@@ -75,7 +63,13 @@ void dd_SelectPreorderedNext2(dd_rowrange m_size,dd_colrange d_size,
     rowset excluded,dd_rowindex OV,dd_rowrange *hnext);
 void dd_SetSolutions(dd_rowrange,dd_colrange,
    dd_Amatrix,dd_Bmatrix,dd_rowrange,dd_colrange,dd_LPStatusType,
-   mytype *,dd_Arow,dd_Arow,dd_colindex,dd_rowrange,dd_colrange);
+   mytype *,dd_Arow,dd_Arow,dd_rowset,dd_colindex,dd_rowrange,dd_colrange,dd_rowindex);
+   
+void dd_WriteTableau(FILE *,dd_rowrange,dd_colrange,dd_Amatrix,dd_Bmatrix,
+  dd_colindex,dd_rowindex);
+
+void dd_WriteSignTableau(FILE *,dd_rowrange,dd_colrange,dd_Amatrix,dd_Bmatrix,
+  dd_colindex,dd_rowindex);
 
 
 dd_LPSolutionPtr dd_CopyLPSolution(dd_LPPtr lp)
@@ -120,7 +114,7 @@ dd_LPPtr dd_CreateLPData(dd_LPObjectiveType obj,
   dd_LPType *lp;
 
   lp=(dd_LPPtr) calloc(1,sizeof(dd_LPType));
-  lp->solver=dd_DualSimplex;  /* set the default lp solver */
+  lp->solver=dd_choiceLPSolverDefault;  /* set the default lp solver */
   lp->d=d;
   lp->m=m;
   lp->numbtype=nt;
@@ -133,7 +127,17 @@ dd_LPPtr dd_CreateLPData(dd_LPObjectiveType obj,
   lp->nbindex=(long*) calloc(d+1,sizeof(long));
   lp->given_nbindex=(long*) calloc(d+1,sizeof(long));
   set_initialize(&(lp->equalityset),m);  
-    /* ith component is 1 if it is equality, -1 if it is strict inequality, 0 otherwise. */
+    /* i must be in the set iff i-th row is equality . */
+
+  lp->redcheck_extensive=dd_FALSE; /* this is on only for RedundantExtensive */
+  lp->ired=0;
+  set_initialize(&(lp->redset_extra),m);  
+    /* i is in the set if i-th row is newly recognized redundant (during the checking the row ired). */
+  set_initialize(&(lp->redset_accum),m);  
+    /* i is in the set if i-th row is recognized redundant (during the checking the row ired). */
+   set_initialize(&(lp->posset_extra),m);  
+    /* i is in the set if i-th row is recognized non-linearity (during the course of computation). */
+ lp->lexicopivot=dd_choiceLexicoPivotQ;  /* dd_choice... is set in dd_set_global_constants() */
 
   lp->m_alloc=lp->m+2;
   lp->d_alloc=lp->d+2;
@@ -189,6 +193,112 @@ dd_LPPtr dd_Matrix2LP(dd_MatrixPtr M, dd_ErrorType *err)
   return lp;
 }
 
+dd_LPPtr dd_Matrix2Feasibility(dd_MatrixPtr M, dd_ErrorType *err)
+/* Load a matrix to create an LP object for feasibility.   It is 
+   essentially the dd_Matrix2LP except that the objject function
+   is set to identically ZERO (maximization).
+   
+*/  
+	 /*  094 */
+{
+  dd_rowrange m, linc;
+  dd_colrange j;
+  dd_LPType *lp;
+
+  *err=dd_NoError;
+  linc=set_card(M->linset);
+  m=M->rowsize+1+linc; 
+     /* We represent each equation by two inequalities.
+        This is not the best way but makes the code simple. */
+  
+  lp=dd_Matrix2LP(M, err);
+  lp->objective = dd_LPmax;   /* since the objective is zero, this is not important */
+  for (j = 1; j <= M->colsize; j++) {
+    dd_set(lp->A[m-1][j-1],dd_purezero);  /* set the objective to zero. */
+  }  /*of j*/
+
+  return lp;
+}
+
+dd_LPPtr dd_Matrix2Feasibility2(dd_MatrixPtr M, dd_rowset R, dd_rowset S, dd_ErrorType *err)
+/* Load a matrix to create an LP object for feasibility with additional equality and
+   strict inequality constraints given by R and S.  There are three types of inequalities:
+   
+   b_r + A_r x =  0     Linearity (Equations) specified by M
+   b_s + A_s x >  0     Strict Inequalities specified by row index set S
+   b_t + A_t x >= 0     The rest inequalities in M
+   
+   Where the linearity is considered here as the union of linearity specified by
+   M and the additional set R.  When S contains any linearity rows, those
+   rows are considered linearity (equation).  Thus S does not overlide linearity.
+   To find a feasible solution, we set an LP
+   
+   maximize  z
+   subject to
+   b_r + A_r x     =  0      all r in Linearity
+   b_s + A_s x - z >= 0      for all s in S
+   b_t + A_t x     >= 0      for all the rest rows t
+   1           - z >= 0      to make the LP bounded.
+   
+   Clearly, the feasibility problem has a solution iff the LP has a positive optimal value. 
+   The variable z will be the last variable x_{d+1}.
+   
+*/  
+/*  094 */
+{
+  dd_rowrange m, i, irev, linc;
+  dd_colrange d, j;
+  dd_LPType *lp;
+  dd_rowset L;
+  dd_boolean localdebug=dd_FALSE;
+
+  *err=dd_NoError;
+  set_initialize(&L, M->rowsize);
+  set_uni(L,M->linset,R);
+  linc=set_card(L);
+  m=M->rowsize+1+linc+1; 
+     /* We represent each equation by two inequalities.
+        This is not the best way but makes the code simple. */
+  d=M->colsize+1;
+  if (localdebug) fprintf(stderr,"number of equalities = %ld\n", linc);
+  
+  lp=dd_CreateLPData(dd_LPmax, M->numbtype, m, d);
+  lp->Homogeneous = dd_TRUE;
+  lp->eqnumber=linc;  /* this records the number of equations */
+
+  irev=M->rowsize; /* the first row of the linc reversed inequalities. */
+  for (i = 1; i <= M->rowsize; i++) {
+    if (set_member(i, L)) {
+      irev=irev+1;
+      set_addelem(lp->equalityset,i);    /* it is equality. */
+                                         /* the reversed row irev is not in the equality set. */
+      for (j = 1; j <= M->colsize; j++) {
+        dd_neg(lp->A[irev-1][j-1],M->matrix[i-1][j-1]);
+      }  /*of j*/
+      if (localdebug) fprintf(stderr,"equality row %ld generates the reverse row %ld.\n",i,irev);
+    } else if (set_member(i, S)) {
+	  dd_set(lp->A[i-1][M->colsize],dd_minusone);
+    }
+    for (j = 1; j <= M->colsize; j++) {
+      dd_set(lp->A[i-1][j-1],M->matrix[i-1][j-1]);
+      if (j==1 && i<M->rowsize && dd_Nonzero(M->matrix[i-1][j-1])) lp->Homogeneous = dd_FALSE;
+    }  /*of j*/
+  }  /*of i*/
+  for (j = 1; j <= d; j++) {
+    dd_set(lp->A[m-2][j-1],dd_purezero);  /* initialize */
+  }  /*of j*/
+  dd_set(lp->A[m-2][0],dd_one);  /* the bounding constraint. */
+  dd_set(lp->A[m-2][M->colsize],dd_minusone);  /* the bounding constraint. */
+  for (j = 1; j <= d; j++) {
+    dd_set(lp->A[m-1][j-1],dd_purezero);  /* initialize */
+  }  /*of j*/
+  dd_set(lp->A[m-1][M->colsize],dd_one);  /* maximize  z */
+  
+  set_free(L);
+  return lp;
+}
+
+
 
 void dd_FreeLPData(dd_LPPtr lp)
 {
@@ -199,6 +309,9 @@ void dd_FreeLPData(dd_LPPtr lp)
     dd_FreeBmatrix(lp->d_alloc,lp->B);
     dd_FreeAmatrix(lp->m_alloc,lp->d_alloc,lp->A);
     set_free(lp->equalityset);
+    set_free(lp->redset_extra);
+    set_free(lp->redset_accum);
+    set_free(lp->posset_extra);
     free(lp->nbindex);
     free(lp->given_nbindex);
     free(lp);
@@ -315,11 +428,103 @@ void dd_WriteTableau(FILE *f,dd_rowrange m_size,dd_colrange d_size,dd_Amatrix A,
   dd_clear(x);
 }
 
+void dd_WriteSignTableau(FILE *f,dd_rowrange m_size,dd_colrange d_size,dd_Amatrix A,dd_Bmatrix T,
+  dd_colindex nbindex,dd_rowindex bflag)
+/* Write the sign tableau  A.T   */
+{
+  dd_colrange j;
+  dd_rowrange i;
+  mytype x;
+  
+  dd_init(x);
+  fprintf(f," %ld  %ld  real\n",m_size,d_size);
+  fprintf(f,"          |");
+  for (j=1; j<= d_size; j++) {
+    fprintf(f,"%3ld",nbindex[j]);
+  } fprintf(f,"\n  ------- | ");
+  for (j=1; j<= d_size; j++) {
+    fprintf(f,"---");
+  } fprintf(f,"\n");
+  for (i=1; i<= m_size; i++) {
+    fprintf(f," %3ld(%3ld) |",i,bflag[i]);
+    for (j=1; j<= d_size; j++) {
+      dd_TableauEntry(&x,m_size,d_size,A,T,i,j);
+      if (dd_Positive(x)) fprintf(f, "  +");
+      else if (dd_Negative(x)) fprintf(f, "  -");
+        else  fprintf(f, "  0");
+    }
+    fprintf(f,"\n");
+  }
+  fprintf(f,"end\n");
+  dd_clear(x);
+}
+
+void dd_WriteSignTableau2(FILE *f,dd_rowrange m_size,dd_colrange d_size,dd_Amatrix A,dd_Bmatrix T,
+  dd_colindex nbindex_ref, dd_colindex nbindex,dd_rowindex bflag)
+/* Write the sign tableau  A.T  and the reference basis */
+{
+  dd_colrange j;
+  dd_rowrange i;
+  mytype x;
+  
+  dd_init(x);
+  fprintf(f," %ld  %ld  real\n",m_size,d_size);
+  fprintf(f,"          |");
+  for (j=1; j<= d_size; j++) fprintf(f,"%3ld",nbindex_ref[j]);
+  fprintf(f,"\n          |");
+  for (j=1; j<= d_size; j++) {
+    fprintf(f,"%3ld",nbindex[j]);
+  } fprintf(f,"\n  ------- | ");
+  for (j=1; j<= d_size; j++) {
+    fprintf(f,"---");
+  } fprintf(f,"\n");
+  for (i=1; i<= m_size; i++) {
+    fprintf(f," %3ld(%3ld) |",i,bflag[i]);
+    for (j=1; j<= d_size; j++) {
+      dd_TableauEntry(&x,m_size,d_size,A,T,i,j);
+      if (dd_Positive(x)) fprintf(f, "  +");
+      else if (dd_Negative(x)) fprintf(f, "  -");
+        else  fprintf(f, "  0");
+    }
+    fprintf(f,"\n");
+  }
+  fprintf(f,"end\n");
+  dd_clear(x);
+}
+
+
+void dd_GetRedundancyInformation(dd_rowrange m_size,dd_colrange d_size,dd_Amatrix A,dd_Bmatrix T,
+  dd_colindex nbindex,dd_rowindex bflag, dd_rowset redset)
+/* Some basic variables that are forced to be nonnegative will be output.  These are
+   variables whose dictionary row components are all nonnegative.   */
+{
+  dd_colrange j;
+  dd_rowrange i;
+  mytype x;
+  dd_boolean red=dd_FALSE,localdebug=dd_FALSE;
+  long numbred=0;
+  
+  dd_init(x);
+  for (i=1; i<= m_size; i++) {
+    red=dd_TRUE;
+    for (j=1; j<= d_size; j++) {
+      dd_TableauEntry(&x,m_size,d_size,A,T,i,j);
+      if (red && dd_Negative(x)) red=dd_FALSE;
+    }
+    if (bflag[i]<0 && red) {
+      numbred+=1;
+      set_addelem(redset,i);
+    }
+  }
+  if (localdebug) fprintf(stderr,"\ndd_GetRedundancyInformation: %ld redundant rows over %ld\n",numbred, m_size);  
+  dd_clear(x);
+}
+
 
 void dd_SelectDualSimplexPivot(dd_rowrange m_size,dd_colrange d_size,
     int Phase1,dd_Amatrix A,dd_Bmatrix T,dd_rowindex OV,
-    dd_colindex nbindex,dd_rowindex bflag,
-    dd_rowrange objrow,dd_colrange rhscol,
+    dd_colindex nbindex_ref, dd_colindex nbindex,dd_rowindex bflag,
+    dd_rowrange objrow,dd_colrange rhscol, dd_boolean lexicopivot,
     dd_rowrange *r,dd_colrange *s,int *selected,dd_LPStatusType *lps)
 { 
   /* selects a dual simplex pivot (*r,*s) if the current
@@ -331,22 +536,27 @@ void dd_SelectDualSimplexPivot(dd_rowrange m_size,dd_colrange d_size,
      dictionary dual feasible before calling this routine so that the nonbasic
      column for m_size corresponds to the auxiliary variable.
   */
-  int colselected=dd_FALSE,rowselected=dd_FALSE,
+  dd_boolean colselected=dd_FALSE,rowselected=dd_FALSE,
     dualfeasible=dd_TRUE,localdebug=dd_FALSE;
-  dd_rowrange i;
-  dd_colrange j;
-  mytype val,minval,rat,minrat;
+  dd_rowrange i,iref;
+  dd_colrange j,k;
+  mytype val,valn, minval,rat,minrat;
   static dd_Arow rcost;
   static dd_colrange d_last=0;
+  static dd_colset tieset,stieset;  /* store the column indices with tie */
 
-  dd_init(val); dd_init(minval); dd_init(rat); dd_init(minrat);
+  dd_init(val); dd_init(valn); dd_init(minval); dd_init(rat); dd_init(minrat);
   if (d_last<d_size) {
     if (d_last>0) {
       for (j=1; j<=d_last; j++){ dd_clear(rcost[j-1]);}
       free(rcost);
+      set_free(tieset);
+      set_free(stieset);
     }
     rcost=(mytype*) calloc(d_size,sizeof(mytype));
     for (j=1; j<=d_size; j++){ dd_init(rcost[j-1]);}
+    set_initialize(&tieset,d_size);
+    set_initialize(&stieset,d_size);
   }
   d_last=d_size;
 
@@ -368,7 +578,7 @@ void dd_SelectDualSimplexPivot(dd_rowrange m_size,dd_colrange d_size,
           if (Phase1){
             dd_TableauEntry(&val, m_size,d_size,A,T,i,bflag[m_size]);
             dd_neg(val,val);
-            /* for dual Phase I */
+            /* for dual Phase I.  The RHS (dual objective) is the negative of the auxiliary variable column. */
           } 
           else {dd_TableauEntry(&val,m_size,d_size,A,T,i,rhscol);}
           if (dd_Smaller(val,minval)) {
@@ -382,6 +592,7 @@ void dd_SelectDualSimplexPivot(dd_rowrange m_size,dd_colrange d_size,
       }
       else {
         rowselected=dd_TRUE;
+        set_emptyset(tieset);
         for (j=1; j<=d_size; j++){
           dd_TableauEntry(&val,m_size,d_size,A,T,*r,j);
           if (j!=rhscol && dd_Positive(val)) {
@@ -390,11 +601,62 @@ void dd_SelectDualSimplexPivot(dd_rowrange m_size,dd_colrange d_size,
             if (*s==0 || dd_Smaller(rat,minrat)){
               dd_set(minrat,rat);
               *s=j;
+              set_emptyset(tieset);
+              set_addelem(tieset, j);
+            } else if (dd_Equal(rat,minrat)){
+              set_addelem(tieset,j);
             }
           }
         }
-        if (*s>0) {colselected=dd_TRUE; *selected=dd_TRUE;}
-        else *lps=dd_Inconsistent;
+        if (*s>0) {
+          if (!lexicopivot || set_card(tieset)==1){
+            colselected=dd_TRUE; *selected=dd_TRUE;
+          } else { /* lexicographic rule with respect to the given reference cobasis.  */
+            if (localdebug) {printf("Tie occurred at:"); set_write(tieset); printf("\n");
+              dd_WriteTableau(stderr,m_size,d_size,A,T,nbindex,bflag);
+            }
+            *s=0;
+            k=2; /* k runs through the column indices except RHS. */
+            do {
+              iref=nbindex_ref[k];  /* iref runs though the reference basic indices */
+              if (iref>0) {
+                j=bflag[iref];
+                if (j>0) {
+                  if (set_member(j,tieset) && set_card(tieset)==1) {
+                    *s=j;
+                     colselected=dd_TRUE;
+                  } else {
+                    set_delelem(tieset, j);
+                    /* iref is cobasic, and the corresponding col is not the pivot column except it is the last one. */
+                  }
+                } else {
+                  *s=0;
+                  for (j=1; j<=d_size; j++){
+                    if (set_member(j,tieset)) {
+                      dd_TableauEntry(&val,m_size,d_size,A,T,*r,j);
+                      dd_TableauEntry(&valn,m_size,d_size,A,T,iref,j);
+                      if (j!=rhscol && dd_Positive(val)) {
+                        dd_div(rat,valn,val);
+                        if (*s==0 || dd_Smaller(rat,minrat)){
+                          dd_set(minrat,rat);
+                          *s=j;
+                          set_emptyset(stieset);
+                          set_addelem(stieset, j);
+                        } else if (dd_Equal(rat,minrat)){
+                          set_addelem(stieset,j);
+                        }
+                      }
+                    }
+                  }
+                  set_copy(tieset,stieset);              
+                  if (set_card(tieset)==1) colselected=dd_TRUE;
+                }
+              }
+              k+=1;
+            } while (!colselected && k<=d_size);
+            *selected=dd_TRUE;
+          }
+        } else *lps=dd_Inconsistent;
       }
     } /* end of while */
   }
@@ -402,7 +664,7 @@ void dd_SelectDualSimplexPivot(dd_rowrange m_size,dd_colrange d_size,
      if (Phase1) fprintf(stderr,"Phase 1 : select %ld,%ld\n",*r,*s);
      else fprintf(stderr,"Phase 2 : select %ld,%ld\n",*r,*s);
   }
-  dd_clear(val); dd_clear(minval); dd_clear(rat); dd_clear(minrat);
+  dd_clear(val); dd_clear(valn); dd_clear(minval); dd_clear(rat); dd_clear(minrat);
 }
 
 void dd_TableauEntry(mytype *x,dd_rowrange m_size, dd_colrange d_size, dd_Amatrix X, dd_Bmatrix T,
@@ -492,7 +754,6 @@ void dd_GaussianColumnPivot(dd_rowrange m_size, dd_colrange d_size,
   mytype Xtemp0, Xtemp1, Xtemp;
   static dd_Arow Rtemp;
   static dd_colrange last_d=0;
-  dd_boolean localdebug=dd_debug;
 
   dd_init(Xtemp0); dd_init(Xtemp1); dd_init(Xtemp);
   if (last_d!=d_size){
@@ -509,10 +770,6 @@ void dd_GaussianColumnPivot(dd_rowrange m_size, dd_colrange d_size,
     dd_TableauEntry(&(Rtemp[j-1]), m_size, d_size, X, T, r,j);
   }
   dd_set(Xtemp0,Rtemp[s-1]);
-  if (localdebug) {
-    fprintf(stderr,"Gaussian Pivot: pivot entry = "); dd_WriteNumber(stderr,Xtemp0);
-    fprintf(stderr,"\n");
-  }
   for (j = 1; j <= d_size; j++) {
     if (j != s) {
       dd_div(Xtemp,Rtemp[j-1],Xtemp0);
@@ -521,13 +778,8 @@ void dd_GaussianColumnPivot(dd_rowrange m_size, dd_colrange d_size,
         dd_mul(Xtemp1,Xtemp,T[j1-1][s - 1]);
         dd_sub(T[j1-1][j-1],T[j1-1][j-1],Xtemp1);
  /*     T[j1-1][j-1] -= T[j1-1][s - 1] * Xtemp / Xtemp0;  */
-        if (localdebug){
-          dd_WriteNumber(stderr, T[j1-1][j-1]);
-        }
       }
-      if (localdebug) fprintf(stderr,"\n");
     }
-    if (localdebug) fprintf(stderr,"\n");
   }
   for (j = 1; j <= d_size; j++)
     dd_div(T[j-1][s - 1],T[j-1][s - 1],Xtemp0);
@@ -545,21 +797,20 @@ void dd_GaussianColumnPivot2(dd_rowrange m_size,dd_colrange d_size,
   int localdebug=dd_FALSE;
   long entering;
 
+  if (dd_debug) localdebug=dd_debug;
   dd_GaussianColumnPivot(m_size,d_size,A,T,r,s);
   entering=nbindex[s];
   bflag[r]=s;     /* the nonbasic variable r corresponds to column s */
   nbindex[s]=r;   /* the nonbasic variable on s column is r */
-  if (localdebug) {
-    fprintf(stderr,"Column pivot: (leaving, entering) = (%ld, %ld)\n", r,entering);
-    fprintf(stderr, "bflag[%ld] is set to %ld\n", r, s);
-    if (d_size <=20 && m_size <40){
-      dd_WriteBmatrix(stderr,d_size,T);
-      dd_WriteTableau(stderr,m_size,d_size,A,T,nbindex,bflag);
-    }
-  }
 
   if (entering>0) bflag[entering]=-1;
      /* original variables have negative index and should not affect the row index */
+
+  if (localdebug) {
+    fprintf(stderr,"dd_GaussianColumnPivot2\n");
+    fprintf(stderr," pivot: (leaving, entering) = (%ld, %ld)\n", r,entering);
+    fprintf(stderr, " bflag[%ld] is set to %ld\n", r, s);
+  }
 }
 
 
@@ -662,13 +913,11 @@ void dd_CrissCrossSolve(dd_LPPtr lp, dd_ErrorType *err)
 {
   switch (lp->objective) {
     case dd_LPmax:
-         dd_CrissCrossMaximize(lp->m,lp->d,lp->A,lp->B,lp->equalityset,lp->objrow,lp->rhscol,
-           &(lp->LPS),&(lp->optvalue),lp->sol,lp->dsol,lp->nbindex,&(lp->re),&(lp->se),lp->pivots,err);
+         dd_CrissCrossMaximize(lp,err);
       break;
       
     case dd_LPmin:
-         dd_CrissCrossMinimize(lp->m,lp->d,lp->A,lp->B,lp->equalityset,lp->objrow,lp->rhscol,
-           &(lp->LPS),&(lp->optvalue),lp->sol,lp->dsol,lp->nbindex,&(lp->re),&(lp->se),lp->pivots,err);
+         dd_CrissCrossMinimize(lp,err);
       break;
 
     case dd_LPnone: *err=dd_NoLPObjective; break;
@@ -680,13 +929,11 @@ void dd_DualSimplexSolve(dd_LPPtr lp, dd_ErrorType *err)
 {
   switch (lp->objective) {
     case dd_LPmax:
-         dd_DualSimplexMaximize(lp->m,lp->d,lp->A,lp->B,lp->equalityset,lp->objrow,lp->rhscol,
-           &(lp->LPS),&(lp->optvalue),lp->sol,lp->dsol,lp->nbindex,&(lp->re),&(lp->se),lp->pivots,err);
+         dd_DualSimplexMaximize(lp,err);
       break;
       
     case dd_LPmin:
-         dd_DualSimplexMinimize(lp->m,lp->d,lp->A,lp->B,lp->equalityset,lp->objrow,lp->rhscol,
-           &(lp->LPS),&(lp->optvalue),lp->sol,lp->dsol,lp->nbindex,&(lp->re),&(lp->se),lp->pivots,err);
+         dd_DualSimplexMinimize(lp,err);
       break;
 
     case dd_LPnone: *err=dd_NoLPObjective; break;
@@ -722,132 +969,34 @@ void dd_BasisStatus(ddf_LPPtr lpf, dd_LPPtr lp, dd_boolean *LPScorrect)
   switch (lp->objective) {
     case dd_LPmax:
       dd_BasisStatusMaximize(lp->m,lp->d,lp->A,lp->B,lp->equalityset,lp->objrow,lp->rhscol,
-           lpf->LPS,&(lp->optvalue),lp->sol,lp->dsol,lpf->nbindex,lpf->re,lpf->se,lp->pivots, 
+           lpf->LPS,&(lp->optvalue),lp->sol,lp->dsol,lp->posset_extra,lpf->nbindex,lpf->re,lpf->se,lp->pivots, 
            &basisfound, LPScorrect);
       if (*LPScorrect) {
          /* printf("BasisStatus Check: the current basis is verified with GMP\n"); */
          lp->LPS=LPSf2LPS(lpf->LPS);
          lp->re=lpf->re;
          lp->se=lpf->se;
-         for (i=1; i<=5; i++) lp->pivots[i-1]+=lpf->pivots[i-1]; 
          for (j=1; j<=lp->d; j++) lp->nbindex[j]=lpf->nbindex[j]; 
       }
+      for (i=1; i<=5; i++) lp->pivots[i-1]+=lpf->pivots[i-1]; 
       break;
     case dd_LPmin:
       dd_BasisStatusMinimize(lp->m,lp->d,lp->A,lp->B,lp->equalityset,lp->objrow,lp->rhscol,
-           lpf->LPS,&(lp->optvalue),lp->sol,lp->dsol,lpf->nbindex,lpf->re,lpf->se,lp->pivots, 
+           lpf->LPS,&(lp->optvalue),lp->sol,lp->dsol,lp->posset_extra,lpf->nbindex,lpf->re,lpf->se,lp->pivots, 
            &basisfound, LPScorrect);
       if (*LPScorrect) {
          /* printf("BasisStatus Check: the current basis is verified with GMP\n"); */
          lp->LPS=LPSf2LPS(lpf->LPS);
          lp->re=lpf->re;
          lp->se=lpf->se;
-         for (i=1; i<=4; i++) lp->pivots[i-1]+=lpf->pivots[i-1]; 
          for (j=1; j<=lp->d; j++) lp->nbindex[j]=lpf->nbindex[j]; 
       }
+      for (i=1; i<=5; i++) lp->pivots[i-1]+=lpf->pivots[i-1]; 
       break;
     case dd_LPnone:  break;
    }      
 }
 #endif
-
-void dd_CrissCrossMinimize(dd_rowrange m_size,dd_colrange d_size,
-    dd_Amatrix A,dd_Bmatrix T,dd_rowset equalityset,
-    dd_rowrange objrow,dd_colrange rhscol,dd_LPStatusType *LPS,
-    mytype *optvalue,dd_Arow sol,dd_Arow dsol,dd_colindex nbindex,
-    dd_rowrange *re,dd_colrange *se,long *pivots,dd_ErrorType *err)
-{
-   dd_colrange j;
-
-   *err=dd_NoError;
-   for (j=1; j<=d_size; j++)
-     dd_neg(A[objrow-1][j-1],A[objrow-1][j-1]);
-   dd_CrissCrossMaximize(m_size,d_size,A,T,equalityset, objrow,rhscol,
-     LPS,optvalue,sol,dsol,nbindex,re,se,pivots,err);
-   dd_neg(*optvalue,*optvalue);
-   for (j=1; j<=d_size; j++){
-     dd_neg(dsol[j-1],dsol[j-1]);
-     dd_neg(A[objrow-1][j-1],A[objrow-1][j-1]);
-   }
-}
-
-void dd_CrissCrossMaximize(dd_rowrange m_size,dd_colrange d_size,
-    dd_Amatrix A,dd_Bmatrix T,dd_rowset equalityset,
-    dd_rowrange objrow,dd_colrange rhscol,dd_LPStatusType *LPS,
-    mytype *optvalue,dd_Arow sol,dd_Arow dsol,dd_colindex nbindex,
-    dd_rowrange *re,dd_colrange *se,long *pivots,dd_ErrorType *err)
-/* 
-When LP is inconsistent then *re returns the evidence row.
-When LP is dual-inconsistent then *se returns the evidence column.
-*/
-{
-  int stop,chosen,found;
-  long pivots0,pivots1;
-  dd_rowrange i,r;
-  dd_colrange s;
-  static dd_rowindex bflag;
-  static long mlast=0;
-  static dd_rowindex OrderVector;  /* the permutation vector to store a preordered row indeces */
-  unsigned int rseed=1;
-  dd_colindex nbtemp;
-
-  *err=dd_NoError;
-  nbtemp=(long *) calloc(d_size+1,sizeof(long*));
-  for (i=0; i<= 4; i++) pivots[i]=0;
-  if (bflag==NULL || mlast!=m_size){
-     if (mlast!=m_size && mlast>0) {
-       free(bflag);   /* called previously with different m_size */
-       free(OrderVector);
-     }
-     bflag=(long *) calloc(m_size+1,sizeof(long*));
-     OrderVector=(long *)calloc(m_size+1,sizeof(long*)); 
-     /* initialize only for the first time or when a larger space is needed */
-     
-     mlast=m_size;
-  }
-  /* Initializing control variables. */
-  dd_ComputeRowOrderVector2(m_size,d_size,A,OrderVector,dd_MinIndex,rseed);
-
-  *re=0; *se=0; pivots1=0;
-
-  dd_ResetTableau(m_size,d_size,T,nbindex,bflag,objrow,rhscol);
-
-  dd_FindLPBasis(m_size,d_size,A,T,OrderVector, equalityset,
-      nbindex,bflag, objrow,rhscol,&s,&found,LPS,&pivots0);
-  pivots[0]=pivots0;
-
-  if (!found){
-     *se=s;
-     goto _L99;
-     /* No LP basis is found, and thus Inconsistent.  
-     Output the evidence column. */
-  }
-
-  stop=dd_FALSE;
-  do {   /* Criss-Cross Method */
-    dd_SelectCrissCrossPivot(m_size,d_size,A,T,bflag,
-       objrow,rhscol,&r,&s,&chosen,LPS);
-    if (chosen) {
-      dd_GaussianColumnPivot2(m_size,d_size,A,T,nbindex,bflag,r,s);
-      pivots1++;
-    } else {
-      switch (*LPS){
-        case dd_Inconsistent: *re=r;
-        case dd_DualInconsistent: *se=s;
-        default: break;
-      }
-      stop=dd_TRUE;
-    }
-  } while(!stop);
-  pivots[1]=pivots1;
-  
-_L99:
-
-  dd_SetSolutions(m_size,d_size,A,T,
-   objrow,rhscol,*LPS,optvalue,sol,dsol,nbindex,*re,*se);
-  free(nbtemp);
-
-}
 
 void dd_FindLPBasis(dd_rowrange m_size,dd_colrange d_size,
     dd_Amatrix A, dd_Bmatrix T,dd_rowindex OV,dd_rowset equalityset, dd_colindex nbindex,
@@ -916,6 +1065,7 @@ void dd_FindLPBasis(dd_rowrange m_size,dd_colrange d_size,
   } while (!stop);
 
   *pivot_no=pivots_p0;
+  dd_statBApivots+=pivots_p0;
   set_free(RowSelected);
   set_free(ColSelected);
   dd_clear(val);
@@ -1012,7 +1162,7 @@ void dd_FindLPBasis2(dd_rowrange m_size,dd_colrange d_size,
 
 void dd_FindDualFeasibleBasis(dd_rowrange m_size,dd_colrange d_size,
     dd_Amatrix A,dd_Bmatrix T,dd_rowindex OV,
-    dd_colindex nbindex,dd_rowindex bflag,dd_rowrange objrow,dd_colrange rhscol,
+    dd_colindex nbindex,dd_rowindex bflag,dd_rowrange objrow,dd_colrange rhscol, dd_boolean lexicopivot,
     dd_colrange *s,dd_ErrorType *err,dd_LPStatusType *lps,long *pivot_no, long maxpivots)
 { 
   /* Find a dual feasible basis using Phase I of Dual Simplex method.
@@ -1023,23 +1173,32 @@ void dd_FindDualFeasibleBasis(dd_rowrange m_size,dd_colrange d_size,
      Caution: matrix A must have at least one extra row:  the row space A[m_size] must
      have been allocated.
   */
-  int phase1,dualfeasible=dd_TRUE,localdebug=dd_FALSE,chosen,stop;
+  dd_boolean phase1,dualfeasible=dd_TRUE;
+  dd_boolean localdebug=dd_FALSE,chosen,stop;
   dd_LPStatusType LPSphase1;
   long pivots_p1=0;
   dd_rowrange i,r_val;
   dd_colrange j,l,ms=0,s_val,local_m_size;
-  mytype x,val,maxcost;
+  mytype x,val,maxcost,axvalue,maxratio;
   static dd_colrange d_last=0;
   static dd_Arow rcost;
+  static dd_colindex nbindex_ref; /* to be used to store the initial feasible basis for lexico rule */
 
-  dd_init(x); dd_init(val);
+  mytype scaling,svalue;  /* random scaling mytype value */
+  mytype minval;
+
+  if (dd_debug) localdebug=dd_debug;
+  dd_init(x); dd_init(val); dd_init(scaling); dd_init(svalue);  dd_init(axvalue);
   dd_init(maxcost);  dd_set(maxcost,dd_minuszero);
+  dd_init(maxratio);  dd_set(maxratio,dd_minuszero);
   if (d_last<d_size) {
     if (d_last>0) {
       for (j=1; j<=d_last; j++){ dd_clear(rcost[j-1]);}
       free(rcost);
+      free(nbindex_ref);
     }
     rcost=(mytype*) calloc(d_size,sizeof(mytype));
+    nbindex_ref=(long*) calloc(d_size+1,sizeof(long));
     for (j=1; j<=d_size; j++){ dd_init(rcost[j-1]);}
   }
   d_last=d_size;
@@ -1050,9 +1209,7 @@ void dd_FindDualFeasibleBasis(dd_rowrange m_size,dd_colrange d_size,
   ms=0;  /* ms will be the index of column which has the largest reduced cost */
   for (j=1; j<=d_size; j++){
     if (j!=rhscol){
-      if (localdebug) fprintf(stderr,"checking the column %ld var %ld\n",j,nbindex[j]); 
       dd_TableauEntry(&(rcost[j-1]),local_m_size,d_size,A,T,objrow,j);
-      if (localdebug) {fprintf(stderr,"reduced cost = "); dd_WriteNumber(stderr, rcost[j-1]); }
       if (dd_Larger(rcost[j-1],maxcost)) {dd_set(maxcost,rcost[j-1]); ms = j;}
     }
   }
@@ -1063,21 +1220,72 @@ void dd_FindDualFeasibleBasis(dd_rowrange m_size,dd_colrange d_size,
       dd_set(A[local_m_size-1][j-1], dd_purezero);
       for (l=1; l<=d_size; l++){
         if (nbindex[l]>0) {
-          dd_sub(A[local_m_size-1][j-1],A[local_m_size-1][j-1],A[nbindex[l]-1][j-1]); 
-          /* To make the auxiliary row (0,-1,-1,...,-1).  */
+          dd_set_si(scaling,l+10);
+          dd_mul(svalue,A[nbindex[l]-1][j-1],scaling); 
+          dd_sub(A[local_m_size-1][j-1],A[local_m_size-1][j-1],svalue); 
+          /* To make the auxiliary row (0,-11,-12,...,-d-10).
+             It is likely to be better than  (0, -1, -1, ..., -1)
+             to avoid a degenerate LP.  Version 093c. */
         }
       }
     }
+    
     if (localdebug){
-      fprintf(stderr,"dd_FindDualFeasibleBasis: curruent basis is not dual feasible.\n");
+      fprintf(stderr,"\ndd_FindDualFeasibleBasis: curruent basis is not dual feasible.\n");
       fprintf(stderr,"because of the column %ld assoc. with var %ld   dual cost =",
        ms,nbindex[ms]);
       dd_WriteNumber(stderr, maxcost);
+      if (localdebug) {
+        if (m_size <=100 && d_size <=30){
+          printf("\ndd_FindDualFeasibleBasis: the starting dictionary.\n");
+          dd_WriteSignTableau(stdout,m_size+1,d_size,A,T,nbindex,bflag);
+        }
+      }
+    }
+    
+    ms=0; 
+     /* Ratio Test: ms will be now the index of column which has the largest reduced cost 
+        over the auxiliary row entry */
+    for (j=1; j<=d_size; j++){
+      if ((j!=rhscol) && dd_Positive(rcost[j-1])){
+        dd_TableauEntry(&axvalue,local_m_size,d_size,A,T,local_m_size,j);
+        if (dd_Nonnegative(axvalue)) {
+          *err=dd_NumericallyInconsistent; 
+           /* This should not happen as they are set negative above.  Quit the phase I.*/
+          if (localdebug) fprintf(stderr,"dd_FindDualFeasibleBasis: Numerical Inconsistency detected.\n");
+          goto _L99;
+        }
+        dd_neg(axvalue,axvalue);
+        dd_div(axvalue,rcost[j-1],axvalue);  /* axvalue is the negative of ratio that is to be maximized. */
+        if (dd_Larger(axvalue,maxratio)) {
+          dd_set(maxratio,axvalue); 
+          ms = j;
+        }
+      }
+    }
+
+    if (ms==0) {
+      *err=dd_NumericallyInconsistent; /* This should not happen. Quit the phase I.*/
+      if (localdebug) fprintf(stderr,"dd_FindDualFeasibleBasis: Numerical Inconsistency detected.\n");
+      goto _L99;
     }
 
     /* Pivot on (local_m_size,ms) so that the dual basic solution becomes feasible */
     dd_GaussianColumnPivot2(local_m_size,d_size,A,T,nbindex,bflag,local_m_size,ms);
     pivots_p1=pivots_p1+1;
+    if (localdebug) {
+      printf("\ndd_FindDualFeasibleBasis: Pivot on %ld %ld.\n",local_m_size,ms);
+    }
+
+  for (j=1; j<=d_size; j++) nbindex_ref[j]=nbindex[j];
+     /* set the reference basis to be the current feasible basis. */
+  if (localdebug){
+    fprintf(stderr, "Store the current feasible basis:");
+    for (j=1; j<=d_size; j++) fprintf(stderr, " %ld", nbindex_ref[j]);
+    fprintf(stderr, "\n");   
+    if (m_size <=100 && d_size <=30)
+      dd_WriteSignTableau2(stdout,m_size+1,d_size,A,T,nbindex_ref,nbindex,bflag);
+  }
 
     phase1=dd_TRUE; stop=dd_FALSE;
     do {   /* Dual Simplex Phase I */
@@ -1087,8 +1295,8 @@ void dd_FindDualFeasibleBasis(dd_rowrange m_size,dd_colrange d_size,
         fprintf(stderr,"max number %ld of pivots performed in Phase I. Switch to the anticycling phase.\n", maxpivots);
         goto _L99;  /* failure due to max no. of pivots performed */
       }
-      dd_SelectDualSimplexPivot(local_m_size,d_size,phase1,A,T,OV,nbindex,bflag,
-        objrow,rhscol,&r_val,&s_val,&chosen,&LPSphase1);
+      dd_SelectDualSimplexPivot(local_m_size,d_size,phase1,A,T,OV,nbindex_ref,nbindex,bflag,
+        objrow,rhscol,lexicopivot,&r_val,&s_val,&chosen,&LPSphase1);
       if (!chosen) {
         /* The current dictionary is terminal.  There are two cases:
            dd_TableauEntry(local_m_size,d_size,A,T,objrow,ms) is negative or zero.
@@ -1096,8 +1304,21 @@ void dd_FindDualFeasibleBasis(dd_rowrange m_size,dd_colrange d_size,
            and the latter implies dual feasible but local_m_size is still in nonbasis.
            We must pivot in the auxiliary variable local_m_size. 
         */
+        dd_TableauEntry(&x,local_m_size,d_size,A,T,objrow,ms);
+        if (dd_Negative(x)){
+          *err=dd_NoError; *lps=dd_DualInconsistent;  *s=ms;
+        }
+        if (localdebug) {
+          fprintf(stderr,"\ndd_FindDualFeasibleBasis: the auxiliary variable was forced to enter the basis (# pivots = %ld).\n",pivots_p1);
+          fprintf(stderr," -- objrow %ld, ms %ld entry: ",objrow,ms);
+          dd_WriteNumber(stderr, x); fprintf(stderr,"\n");
+          if (dd_Negative(x)){
+            fprintf(stderr,"->The basis is dual inconsistent. Terminate.\n");
+          } else {
+            fprintf(stderr,"->The basis is feasible. Go to phase II.\n");
+          }
+        }
 
-        mytype minval;
         dd_init(minval);
         r_val=0;
         for (i=1; i<=local_m_size; i++){
@@ -1107,121 +1328,153 @@ void dd_FindDualFeasibleBasis(dd_rowrange m_size,dd_colrange d_size,
             if (dd_Smaller(val, minval)) {
               r_val=i;
               dd_set(minval,val);
-              if (localdebug) {
-                fprintf(stderr,"update minval with = ");
-                dd_WriteNumber(stderr, minval);
-                fprintf(stderr,"  r_val = %ld\n",r_val);
-              }
             }
           }
         }
         dd_clear(minval);
+        
+        if (r_val==0) {
+          *err=dd_NumericallyInconsistent; /* This should not happen. Quit the phase I.*/
+          if (localdebug) fprintf(stderr,"dd_FindDualFeasibleBasis: Numerical Inconsistency detected (r_val is 0).\n");
+          goto _L99;
+        }
 
         dd_GaussianColumnPivot2(local_m_size,d_size,A,T,nbindex,bflag,r_val,ms);
         pivots_p1=pivots_p1+1;
-
-        dd_TableauEntry(&x,local_m_size,d_size,A,T,objrow,ms);
-        if (dd_Negative(x)){
-          *err=dd_NoError; *lps=dd_DualInconsistent;  *s=ms;
+        if (localdebug) {
+          printf("\ndd_FindDualFeasibleBasis: make the %ld-th pivot on %ld  %ld to force the auxiliary variable to enter the basis.\n",pivots_p1,r_val,ms);
+          if (m_size <=100 && d_size <=30)
+            dd_WriteSignTableau2(stdout,m_size+1,d_size,A,T,nbindex_ref,nbindex,bflag);
         }
+
         stop=dd_TRUE;
+
       } else {
-        dd_GaussianColumnPivot2(local_m_size,d_size,A,T,nbindex,bflag,r_val,s_val);
+        dd_GaussianColumnPivot2(local_m_size,d_size,A,T,nbindex,bflag,r_val,s_val);  
         pivots_p1=pivots_p1+1;
+        if (localdebug) {
+          printf("\ndd_FindDualFeasibleBasis: make a %ld-th pivot on %ld  %ld\n",pivots_p1,r_val,s_val);
+          if (m_size <=100 && d_size <=30)
+            dd_WriteSignTableau2(stdout,local_m_size,d_size,A,T,nbindex_ref,nbindex,bflag);
+        }
+
+
         if (bflag[local_m_size]<0) {
           stop=dd_TRUE; 
           if (localdebug) 
-            fprintf(stderr,"Dual Phase I: the auxiliary variable entered the basis, go to phase II\n");
+            fprintf(stderr,"\nDualSimplex Phase I: the auxiliary variable entered the basis (# pivots = %ld).\nGo to phase II\n",pivots_p1);
         }
       }
     } while(!stop);
   }
 _L99:
   *pivot_no=pivots_p1;
-  dd_clear(x); dd_clear(val); dd_clear(maxcost);
+  dd_statDS1pivots+=pivots_p1;
+  dd_clear(x); dd_clear(val); dd_clear(maxcost); dd_clear(maxratio);
+  dd_clear(scaling); dd_clear(svalue); dd_clear(axvalue);
 }
 
-void dd_DualSimplexMinimize(dd_rowrange m_size,dd_colrange d_size,
-   dd_Amatrix A,dd_Bmatrix T,dd_rowset equalityset,
-   dd_rowrange objrow,dd_colrange rhscol,dd_LPStatusType *LPS,
-   mytype *optvalue,dd_Arow sol,dd_Arow dsol,dd_colindex nbindex,
-   dd_rowrange *re,dd_colrange *se,long *pivots,dd_ErrorType *err)
+void dd_DualSimplexMinimize(dd_LPPtr lp,dd_ErrorType *err)
 {
    dd_colrange j;
 
    *err=dd_NoError;
-   for (j=1; j<=d_size; j++)
-     dd_neg(A[objrow-1][j-1],A[objrow-1][j-1]);
-   dd_DualSimplexMaximize(m_size,d_size,A,T,equalityset, objrow,rhscol,
-     LPS,optvalue,sol,dsol,nbindex,re,se,pivots,err);
-   dd_neg(*optvalue,*optvalue);
-   for (j=1; j<=d_size; j++){
-     dd_neg(dsol[j-1],dsol[j-1]);
-     dd_neg(A[objrow-1][j-1],A[objrow-1][j-1]);
+   for (j=1; j<=lp->d; j++)
+     dd_neg(lp->A[lp->objrow-1][j-1],lp->A[lp->objrow-1][j-1]);
+   dd_DualSimplexMaximize(lp,err);
+   dd_neg(lp->optvalue,lp->optvalue);
+   for (j=1; j<=lp->d; j++){
+     dd_neg(lp->dsol[j-1],lp->dsol[j-1]);
+     dd_neg(lp->A[lp->objrow-1][j-1],lp->A[lp->objrow-1][j-1]);
    }
 }
 
-void dd_DualSimplexMaximize(dd_rowrange m_size,dd_colrange d_size,
-   dd_Amatrix A,dd_Bmatrix T,dd_rowset equalityset,
-   dd_rowrange objrow,dd_colrange rhscol,dd_LPStatusType *LPS,
-   mytype *optvalue,dd_Arow sol,dd_Arow dsol,dd_colindex nbindex,
-   dd_rowrange *re,dd_colrange *se,long *pivots,dd_ErrorType *err)
+void dd_DualSimplexMaximize(dd_LPPtr lp,dd_ErrorType *err)
 /* 
-When LP is inconsistent then *re returns the evidence row.
-When LP is dual-inconsistent then *se returns the evidence column.
+When LP is inconsistent then lp->re returns the evidence row.
+When LP is dual-inconsistent then lp->se returns the evidence column.
 */
 {
   int stop,chosen,phase1,found;
-  long pivots_ds=0,pivots_p0=0,pivots_p1=0,pivots_pc=0,maxpivots,maxpivfactor=40;
+  long pivots_ds=0,pivots_p0=0,pivots_p1=0,pivots_pc=0,maxpivots,maxpivfactor=20;
+  dd_boolean localdebug=dd_FALSE,localdebug1=dd_FALSE;
+
+#if !defined GMPRATIONAL
+  long maxccpivots,maxccpivfactor=100; 
+    /* criss-cross should not cycle, but with floating-point arithmetics, it happens
+       (very rarely).  Jorg Rambau reported such an LP, in August 2003.  Thanks Jorg!
+    */
+#endif
+
   dd_rowrange i,r;
-  dd_colrange s;
+  dd_colrange j,s;
   static dd_rowindex bflag;
   static long mlast=0,nlast=0;
   static dd_rowindex OrderVector;  /* the permutation vector to store a preordered row indeces */
+  static dd_colindex nbindex_ref; /* to be used to store the initial feasible basis for lexico rule */
+
+  double redpercent=0,redpercent_prev=0,redgain=0;
   unsigned int rseed=1;
   
   /* *err=dd_NoError; */
-  for (i=0; i<= 4; i++) pivots[i]=0;
-  maxpivots=maxpivfactor*d_size;  /* maximum pivots to be performed before cc pivot is applied. */
-  if (mlast!=m_size || nlast!=d_size){
-     if (mlast>0) { /* called previously with different m_size */
+  if (dd_debug) localdebug=dd_debug;
+  set_emptyset(lp->redset_extra);
+  for (i=0; i<= 4; i++) lp->pivots[i]=0;
+  maxpivots=maxpivfactor*lp->d;  /* maximum pivots to be performed before cc pivot is applied. */
+#if !defined GMPRATIONAL
+  maxccpivots=maxccpivfactor*lp->d;  /* maximum pivots to be performed with emergency cc pivots. */
+#endif
+  if (mlast!=lp->m || nlast!=lp->d){
+     if (mlast>0) { /* called previously with different lp->m */
        free(OrderVector);
        free(bflag);
+       free(nbindex_ref);
      }
-     OrderVector=(long *)calloc(m_size+1,sizeof(*OrderVector));
-     bflag=(long *) calloc(m_size+2,sizeof(*bflag));  /* one more element for an auxiliary variable  */
-     mlast=m_size;nlast=d_size;
+     OrderVector=(long *)calloc(lp->m+1,sizeof(*OrderVector));
+     bflag=(long *) calloc(lp->m+2,sizeof(*bflag));  /* one more element for an auxiliary variable  */
+     nbindex_ref=(long*) calloc(lp->d+1,sizeof(long));
+     mlast=lp->m;nlast=lp->d;
   }
   /* Initializing control variables. */
-  dd_ComputeRowOrderVector2(m_size,d_size,A,OrderVector,dd_MinIndex,rseed);
+  dd_ComputeRowOrderVector2(lp->m,lp->d,lp->A,OrderVector,dd_MinIndex,rseed);
 
-  *re=0; *se=0;
+  lp->re=0; lp->se=0;
   
-  dd_ResetTableau(m_size,d_size,T,nbindex,bflag,objrow,rhscol);
+  dd_ResetTableau(lp->m,lp->d,lp->B,lp->nbindex,bflag,lp->objrow,lp->rhscol);
    
-  dd_FindLPBasis(m_size,d_size,A,T,OrderVector,equalityset,nbindex,bflag,
-      objrow,rhscol,&s,&found,LPS,&pivots_p0);
-  pivots[0]=pivots_p0;
+  dd_FindLPBasis(lp->m,lp->d,lp->A,lp->B,OrderVector,lp->equalityset,lp->nbindex,bflag,
+      lp->objrow,lp->rhscol,&s,&found,&(lp->LPS),&pivots_p0);
+  lp->pivots[0]=pivots_p0;
 
   if (!found){
-     *se=s;
+     lp->se=s;
      goto _L99;
      /* No LP basis is found, and thus Inconsistent.  
      Output the evidence column. */
   }
 
-  dd_FindDualFeasibleBasis(m_size,d_size,A,T,OrderVector,nbindex,bflag,
-      objrow,rhscol,&s, err, LPS,&pivots_p1, maxpivots);
-  pivots[1]=pivots_p1;
+  dd_FindDualFeasibleBasis(lp->m,lp->d,lp->A,lp->B,OrderVector,lp->nbindex,bflag,
+      lp->objrow,lp->rhscol,lp->lexicopivot,&s, err,&(lp->LPS),&pivots_p1, maxpivots);
+  lp->pivots[1]=pivots_p1;
 
-  if (*err==dd_LPCycling){
-    if (dd_debug) fprintf(stderr, "Phase I failed and thus switch to the Criss-Cross method\n");
-    dd_CrissCrossMaximize(m_size,d_size,A,T,equalityset,
-    objrow,rhscol,LPS,optvalue,sol,dsol,nbindex,re,se,pivots,err);
+  for (j=1; j<=lp->d; j++) nbindex_ref[j]=lp->nbindex[j];
+     /* set the reference basis to be the current feasible basis. */
+  if (localdebug){
+    fprintf(stderr, "dd_DualSimplexMaximize: Store the current feasible basis:");
+    for (j=1; j<=lp->d; j++) fprintf(stderr, " %ld", nbindex_ref[j]);
+    fprintf(stderr, "\n");
+    if (lp->m <=100 && lp->d <=30)
+      dd_WriteSignTableau2(stdout,lp->m+1,lp->d,lp->A,lp->B,nbindex_ref,lp->nbindex,bflag); 
+  }
+  
+  if (*err==dd_LPCycling || *err==dd_NumericallyInconsistent){
+    if (localdebug) fprintf(stderr, "Phase I failed and thus switch to the Criss-Cross method\n");
+    dd_CrissCrossMaximize(lp,err);
     return;
   }
-  if (*LPS==dd_DualInconsistent){
-     *se=s;
+
+  if (lp->LPS==dd_DualInconsistent){
+     lp->se=s;
      goto _L99;
      /* No dual feasible basis is found, and thus DualInconsistent.  
      Output the evidence column. */
@@ -1230,50 +1483,195 @@ When LP is dual-inconsistent then *se returns the evidence column.
   /* Dual Simplex Method */
   stop=dd_FALSE;
   do {
-    chosen=dd_FALSE; *LPS=dd_LPSundecided; phase1=dd_FALSE;
+    chosen=dd_FALSE; lp->LPS=dd_LPSundecided; phase1=dd_FALSE;
     if (pivots_ds<maxpivots) {
-      dd_SelectDualSimplexPivot(m_size,d_size,phase1,A,T,OrderVector,nbindex,bflag,
-        objrow,rhscol,&r,&s,&chosen,LPS);
+      dd_SelectDualSimplexPivot(lp->m,lp->d,phase1,lp->A,lp->B,OrderVector,nbindex_ref,lp->nbindex,bflag,
+        lp->objrow,lp->rhscol,lp->lexicopivot,&r,&s,&chosen,&(lp->LPS));
     }
-    if (chosen) pivots_ds=pivots_ds+1;
-    if (!chosen && *LPS==dd_LPSundecided) {  
-      if (dd_debug) fprintf(stderr,"Warning: an emergency CC pivot in Phase II is performed\n");
-      /* In principle this should not be executed because we already have dual feasibility
-         attained and dual simplex pivot should have been chosen.  This might occur
-         under floating point computation, or the case of cycling.
-      */
-      dd_SelectCrissCrossPivot(m_size,d_size,A,T,bflag,
-        objrow,rhscol,&r,&s,&chosen,LPS);
+    if (chosen) {
+      pivots_ds=pivots_ds+1;
+      if (lp->redcheck_extensive) {
+        dd_GetRedundancyInformation(lp->m,lp->d,lp->A,lp->B,lp->nbindex, bflag, lp->redset_extra);
+        set_uni(lp->redset_accum, lp->redset_accum,lp->redset_extra);
+        redpercent=100*(double)set_card(lp->redset_extra)/(double)lp->m;
+        redgain=redpercent-redpercent_prev;
+        redpercent_prev=redpercent;
+        if (localdebug1){
+          fprintf(stderr,"\ndd_DualSimplexMaximize: Phase II pivot %ld on (%ld, %ld).\n",pivots_ds,r,s);
+          fprintf(stderr,"  redundancy %f percent: redset size = %ld\n",redpercent,set_card(lp->redset_extra));
+        }
+      }
+    }
+    if (!chosen && lp->LPS==dd_LPSundecided) {  
+      if (localdebug1){
+         fprintf(stderr,"Warning: an emergency CC pivot in Phase II is performed\n");
+         /* In principle this should not be executed because we already have dual feasibility
+            attained and dual simplex pivot should have been chosen.  This might occur
+            under floating point computation, or the case of cycling.
+         */
+      if (localdebug && lp->m <=100 && lp->d <=30){
+          fprintf(stderr,"\ndd_DualSimplexMaximize: The current dictionary.\n");
+          dd_WriteSignTableau2(stdout,lp->m,lp->d,lp->A,lp->B,nbindex_ref,lp->nbindex,bflag);
+      }
+    }
+
+#if !defined GMPRATIONAL
+      if (pivots_pc>maxccpivots) {
+        *err=dd_LPCycling;
+        stop=dd_TRUE;
+        goto _L99;
+      }
+#endif
+      
+      dd_SelectCrissCrossPivot(lp->m,lp->d,lp->A,lp->B,bflag,
+        lp->objrow,lp->rhscol,&r,&s,&chosen,&(lp->LPS));
       if (chosen) pivots_pc=pivots_pc+1;
     }
     if (chosen) {
-      dd_GaussianColumnPivot2(m_size,d_size,A,T,nbindex,bflag,r,s);
+      dd_GaussianColumnPivot2(lp->m,lp->d,lp->A,lp->B,lp->nbindex,bflag,r,s);
+      if (localdebug && lp->m <=100 && lp->d <=30){
+          fprintf(stderr,"\ndd_DualSimplexMaximize: The current dictionary.\n");
+          dd_WriteSignTableau2(stdout,lp->m,lp->d,lp->A,lp->B,nbindex_ref,lp->nbindex,bflag);
+      }
     } else {
-      switch (*LPS){
-        case dd_Inconsistent: *re=r;
-        case dd_DualInconsistent: *se=s;
+      switch (lp->LPS){
+        case dd_Inconsistent: lp->re=r;
+        case dd_DualInconsistent: lp->se=s;
+
         default: break;
       }
       stop=dd_TRUE;
     }
   } while(!stop);
-  pivots[2]=pivots_ds;
-  pivots[3]=pivots_pc;
-
 _L99: 
-  dd_SetSolutions(m_size,d_size,A,T,objrow,rhscol,*LPS,optvalue,sol,dsol,nbindex,*re,*se);
+  lp->pivots[2]=pivots_ds;
+  lp->pivots[3]=pivots_pc;
+  dd_statDS2pivots+=pivots_ds;
+  dd_statACpivots+=pivots_pc;
+
+  dd_SetSolutions(lp->m,lp->d,lp->A,lp->B,lp->objrow,lp->rhscol,lp->LPS,&(lp->optvalue),lp->sol,lp->dsol,lp->posset_extra,lp->nbindex,lp->re,lp->se,bflag);
+}
+
+
+
+void dd_CrissCrossMinimize(dd_LPPtr lp,dd_ErrorType *err)
+{
+   dd_colrange j;
+
+   *err=dd_NoError;
+   for (j=1; j<=lp->d; j++)
+     dd_neg(lp->A[lp->objrow-1][j-1],lp->A[lp->objrow-1][j-1]);
+   dd_CrissCrossMaximize(lp,err);
+   dd_neg(lp->optvalue,lp->optvalue);
+   for (j=1; j<=lp->d; j++){
+     dd_neg(lp->dsol[j-1],lp->dsol[j-1]);
+     dd_neg(lp->A[lp->objrow-1][j-1],lp->A[lp->objrow-1][j-1]);
+   }
+}
+
+void dd_CrissCrossMaximize(dd_LPPtr lp,dd_ErrorType *err)
+/* 
+When LP is inconsistent then lp->re returns the evidence row.
+When LP is dual-inconsistent then lp->se returns the evidence column.
+*/
+{
+  int stop,chosen,found;
+  long pivots0,pivots1;
+#if !defined GMPRATIONAL
+  long maxpivots,maxpivfactor=1000; 
+    /* criss-cross should not cycle, but with floating-point arithmetics, it happens
+       (very rarely).  Jorg Rambau reported such an LP, in August 2003.  Thanks Jorg!
+    */
+#endif
+
+  dd_rowrange i,r;
+  dd_colrange s;
+  static dd_rowindex bflag;
+  static long mlast=0;
+  static dd_rowindex OrderVector;  /* the permutation vector to store a preordered row indeces */
+  unsigned int rseed=1;
+  dd_colindex nbtemp;
+
+  *err=dd_NoError;
+#if !defined GMPRATIONAL
+  maxpivots=maxpivfactor*lp->d;  /* maximum pivots to be performed when floating-point arithmetics is used. */
+#endif
+  nbtemp=(long *) calloc(lp->d+1,sizeof(long*));
+  for (i=0; i<= 4; i++) lp->pivots[i]=0;
+  if (bflag==NULL || mlast!=lp->m){
+     if (mlast!=lp->m && mlast>0) {
+       free(bflag);   /* called previously with different lp->m */
+       free(OrderVector);
+     }
+     bflag=(long *) calloc(lp->m+1,sizeof(long*));
+     OrderVector=(long *)calloc(lp->m+1,sizeof(long*)); 
+     /* initialize only for the first time or when a larger space is needed */
+     
+     mlast=lp->m;
+  }
+  /* Initializing control variables. */
+  dd_ComputeRowOrderVector2(lp->m,lp->d,lp->A,OrderVector,dd_MinIndex,rseed);
+
+  lp->re=0; lp->se=0; pivots1=0;
+
+  dd_ResetTableau(lp->m,lp->d,lp->B,lp->nbindex,bflag,lp->objrow,lp->rhscol);
+
+  dd_FindLPBasis(lp->m,lp->d,lp->A,lp->B,OrderVector,lp->equalityset,
+      lp->nbindex,bflag,lp->objrow,lp->rhscol,&s,&found,&(lp->LPS),&pivots0);
+  lp->pivots[0]=pivots0;
+
+  if (!found){
+     lp->se=s;
+     goto _L99;
+     /* No LP basis is found, and thus Inconsistent.  
+     Output the evidence column. */
+  }
+
+  stop=dd_FALSE;
+  do {   /* Criss-Cross Method */
+#if !defined GMPRATIONAL
+    if (pivots1>maxpivots) {
+      *err=dd_LPCycling;
+      fprintf(stderr,"max number %ld of pivots performed by the criss-cross method. Most likely due to the floating-point arithmetics error.\n", maxpivots);
+      goto _L99;  /* failure due to max no. of pivots performed */
+    }
+#endif
+
+    dd_SelectCrissCrossPivot(lp->m,lp->d,lp->A,lp->B,bflag,
+       lp->objrow,lp->rhscol,&r,&s,&chosen,&(lp->LPS));
+    if (chosen) {
+      dd_GaussianColumnPivot2(lp->m,lp->d,lp->A,lp->B,lp->nbindex,bflag,r,s);
+      pivots1++;
+    } else {
+      switch (lp->LPS){
+        case dd_Inconsistent: lp->re=r;
+        case dd_DualInconsistent: lp->se=s;
+
+        default: break;
+      }
+      stop=dd_TRUE;
+    }
+  } while(!stop);
+  
+_L99:
+  lp->pivots[1]=pivots1;
+  dd_statCCpivots+=pivots1;
+  dd_SetSolutions(lp->m,lp->d,lp->A,lp->B,
+   lp->objrow,lp->rhscol,lp->LPS,&(lp->optvalue),lp->sol,lp->dsol,lp->posset_extra,lp->nbindex,lp->re,lp->se,bflag);
+  free(nbtemp);
 }
 
 void dd_SetSolutions(dd_rowrange m_size,dd_colrange d_size,
    dd_Amatrix A,dd_Bmatrix T,
    dd_rowrange objrow,dd_colrange rhscol,dd_LPStatusType LPS,
-   mytype *optvalue,dd_Arow sol,dd_Arow dsol,dd_colindex nbindex,
-   dd_rowrange re,dd_colrange se)
+   mytype *optvalue,dd_Arow sol,dd_Arow dsol,dd_rowset posset, dd_colindex nbindex,
+   dd_rowrange re,dd_colrange se,dd_rowindex bflag)
 /* 
 Assign the solution vectors to sol,dsol,*optvalue after solving
 the LP.
 */
 {
+  dd_rowrange i;
   dd_colrange j;
   mytype x,sw;
   int localdebug=dd_FALSE;
@@ -1288,6 +1686,13 @@ the LP.
       dd_TableauEntry(optvalue,m_size,d_size,A,T,objrow,rhscol);
       if (localdebug) {fprintf(stderr,"dsol[%ld]= ",nbindex[j]); dd_WriteNumber(stderr, dsol[j-1]); }
     }
+    for (i=1; i<=m_size; i++) {
+      if (bflag[i]==-1) {  /* i is a basic variable */
+        dd_TableauEntry(&x,m_size,d_size,A,T,i,rhscol);
+        if (dd_Positive(x)) set_addelem(posset, i);
+      }
+    }
+
     break;
   case dd_Inconsistent:
     if (localdebug) fprintf(stderr,"DualSimplexSolve: LP is inconsistent.\n");
@@ -1465,7 +1870,7 @@ When LP is dual-inconsistent then *se returns the evidence column.
 
   *err=dd_NoError;
   lp->solver=solver;
-  time(&lp->starttime);
+   time(&lp->starttime);
 
 #ifndef GMPRATIONAL
   switch (lp->solver) {
@@ -1548,6 +1953,7 @@ When LP is dual-inconsistent then *se returns the evidence column.
   return found;
 }
 
+
 dd_LPPtr dd_MakeLPforInteriorFinding(dd_LPPtr lp)
 /* Delete the objective row,
    add an extra column with -1's to the matrix A,
@@ -1559,6 +1965,7 @@ dd_LPPtr dd_MakeLPforInteriorFinding(dd_LPPtr lp)
   s.t.    A x + x_{d+1}  <=  b
                 x_{d+1}  <=  bm * bmax,
   where bm is set to 2 by default, and bmax=max{1, b[1],...,b[m_size]}.
+  Note that the equalitions (linearity) in the input lp will be ignored.
 */
 {
   dd_rowrange m;
@@ -1719,6 +2126,110 @@ void dd_WriteLPResult(FILE *f,dd_LPPtr lp,dd_ErrorType err)
 _L99:;
 }
 
+dd_LPPtr dd_CreateLP_H_ImplicitLinearity(dd_MatrixPtr M)
+{
+  dd_rowrange m, i, irev, linc;
+  dd_colrange d, j;
+  dd_LPPtr lp;
+  dd_boolean localdebug=dd_FALSE;
+
+  linc=set_card(M->linset);
+  m=M->rowsize+1+linc+1; 
+     /* We represent each equation by two inequalities.
+        This is not the best way but makes the code simple. */
+  d=M->colsize+1;
+  
+  lp=dd_CreateLPData(M->objective, M->numbtype, m, d);
+  lp->Homogeneous = dd_TRUE;
+  lp->objective = dd_LPmax;
+  lp->eqnumber=linc;  /* this records the number of equations */
+  lp->redcheck_extensive=dd_FALSE;  /* this is default */
+
+  irev=M->rowsize; /* the first row of the linc reversed inequalities. */
+  for (i = 1; i <= M->rowsize; i++) {
+    if (set_member(i, M->linset)) {
+      irev=irev+1;
+      set_addelem(lp->equalityset,i);    /* it is equality. */
+            /* the reversed row irev is not in the equality set. */
+      for (j = 1; j <= M->colsize; j++) {
+        dd_neg(lp->A[irev-1][j-1],M->matrix[i-1][j-1]);
+      }  /*of j*/
+    } else {
+      dd_set(lp->A[i-1][d-1],dd_minusone);  /* b_I + A_I x - 1 z >= 0  (z=x_d) */
+    }
+    for (j = 1; j <= M->colsize; j++) {
+      dd_set(lp->A[i-1][j-1],M->matrix[i-1][j-1]);
+      if (j==1 && i<M->rowsize && dd_Nonzero(M->matrix[i-1][j-1])) lp->Homogeneous = dd_FALSE;
+    }  /*of j*/
+  }  /*of i*/
+  dd_set(lp->A[m-2][0],dd_one);  dd_set(lp->A[m-2][d-1],dd_minusone);
+      /* make the LP bounded.  */
+  
+  dd_set(lp->A[m-1][d-1],dd_one);
+      /* objective is to maximize z.  */
+
+  if (localdebug) {
+    fprintf(stderr,"dd_CreateLP_H_ImplicitLinearity: an new lp is\n");
+    dd_WriteLP(stderr,lp);
+  }
+
+  return lp;
+}
+
+dd_LPPtr dd_CreateLP_V_ImplicitLinearity(dd_MatrixPtr M)
+{
+  dd_rowrange m, i, irev, linc;
+  dd_colrange d, j;
+  dd_LPPtr lp;
+  dd_boolean localdebug=dd_FALSE;
+
+  linc=set_card(M->linset);
+  m=M->rowsize+1+linc+1; 
+     /* We represent each equation by two inequalities.
+        This is not the best way but makes the code simple. */
+  d=(M->colsize)+2;  
+     /* Two more columns.  This is different from the H-reprentation case */
+  
+/* The below must be modified for V-representation!!!  */
+
+  lp=dd_CreateLPData(M->objective, M->numbtype, m, d);
+  lp->Homogeneous = dd_FALSE;
+  lp->objective = dd_LPmax;
+  lp->eqnumber=linc;  /* this records the number of equations */
+  lp->redcheck_extensive=dd_FALSE;  /* this is default */
+
+  irev=M->rowsize; /* the first row of the linc reversed inequalities. */
+  for (i = 1; i <= M->rowsize; i++) {
+    dd_set(lp->A[i-1][0],dd_purezero);  /* It is almost completely degerate LP */
+    if (set_member(i, M->linset)) {
+      irev=irev+1;
+      set_addelem(lp->equalityset,i);    /* it is equality. */
+            /* the reversed row irev is not in the equality set. */
+      for (j = 2; j <= (M->colsize)+1; j++) {
+        dd_neg(lp->A[irev-1][j-1],M->matrix[i-1][j-2]);
+      }  /*of j*/
+      if (localdebug) fprintf(stderr,"equality row %ld generates the reverse row %ld.\n",i,irev);
+    } else {
+      dd_set(lp->A[i-1][d-1],dd_minusone);  /* b_I x_0 + A_I x - 1 z >= 0 (z=x_d) */
+    }
+    for (j = 2; j <= (M->colsize)+1; j++) {
+      dd_set(lp->A[i-1][j-1],M->matrix[i-1][j-2]);
+    }  /*of j*/
+  }  /*of i*/
+  dd_set(lp->A[m-2][0],dd_one);  dd_set(lp->A[m-2][d-1],dd_minusone);
+      /* make the LP bounded.  */
+  dd_set(lp->A[m-1][d-1],dd_one);
+      /* objective is to maximize z.  */
+
+  if (localdebug) {
+    fprintf(stderr,"dd_CreateLP_V_ImplicitLinearity: an new lp is\n");
+    dd_WriteLP(stderr,lp);
+  }
+
+  return lp;
+}
+
+
 dd_LPPtr dd_CreateLP_H_Redundancy(dd_MatrixPtr M, dd_rowrange itest)
 {
   dd_rowrange m, i, irev, linc;
@@ -1736,6 +2247,7 @@ dd_LPPtr dd_CreateLP_H_Redundancy(dd_MatrixPtr M, dd_rowrange itest)
   lp->Homogeneous = dd_TRUE;
   lp->objective = dd_LPmin;
   lp->eqnumber=linc;  /* this records the number of equations */
+  lp->redcheck_extensive=dd_FALSE;  /* this is default */
 
   irev=M->rowsize; /* the first row of the linc reversed inequalities. */
   for (i = 1; i <= M->rowsize; i++) {
@@ -1762,6 +2274,7 @@ dd_LPPtr dd_CreateLP_H_Redundancy(dd_MatrixPtr M, dd_rowrange itest)
   return lp;
 }
 
+
 dd_LPPtr dd_CreateLP_V_Redundancy(dd_MatrixPtr M, dd_rowrange itest)
 {
   dd_rowrange m, i, irev, linc;
@@ -1782,6 +2295,7 @@ dd_LPPtr dd_CreateLP_V_Redundancy(dd_MatrixPtr M, dd_rowrange itest)
   lp->Homogeneous = dd_FALSE;
   lp->objective = dd_LPmin;
   lp->eqnumber=linc;  /* this records the number of equations */
+  lp->redcheck_extensive=dd_FALSE;  /* this is default */
 
   irev=M->rowsize; /* the first row of the linc reversed inequalities. */
   for (i = 1; i <= M->rowsize; i++) {
@@ -1813,6 +2327,7 @@ dd_LPPtr dd_CreateLP_V_Redundancy(dd_MatrixPtr M, dd_rowrange itest)
 
   return lp;
 }
+
 
 dd_LPPtr dd_CreateLP_V_SRedundancy(dd_MatrixPtr M, dd_rowrange itest)
 {
@@ -1933,7 +2448,7 @@ dd_boolean dd_Redundant(dd_MatrixPtr M, dd_rowrange itest, dd_Arow certificate, 
     lp=dd_CreateLP_H_Redundancy(M, itest);
   }
 
-  dd_LPSolve(lp,dd_DualSimplex,&err);
+  dd_LPSolve(lp,dd_choiceRedcheckAlgorithm,&err);
   if (err!=dd_NoError){
     *error=err;
     goto _L999;
@@ -1946,10 +2461,76 @@ dd_boolean dd_Redundant(dd_MatrixPtr M, dd_rowrange itest, dd_Arow certificate, 
 
     if (dd_Negative(lps->optvalue)){
       answer=dd_FALSE;
-      if (localdebug) fprintf(stderr,"==> %ld th inequality is nonredundant.\n",itest);
+      if (localdebug) fprintf(stderr,"==> %ld th row is nonredundant.\n",itest);
     } else {
       answer=dd_TRUE;
-      if (localdebug) fprintf(stderr,"==> %ld th inequality is redundant.\n",itest);
+      if (localdebug) fprintf(stderr,"==> %ld th row is redundant.\n",itest);
+    }
+    dd_FreeLPSolution(lps);
+  }
+  _L999:
+  dd_FreeLPData(lp);
+_L99:
+  return answer;
+}
+
+dd_boolean dd_RedundantExtensive(dd_MatrixPtr M, dd_rowrange itest, dd_Arow certificate, 
+dd_rowset *redset,dd_ErrorType *error)  
+  /* 094 */
+{
+  /* This uses the same LP construction as dd_Reduandant.  But, while it is checking
+     the redundancy of itest, it also tries to find some other variable that are
+     redundant (i.e. forced to be nonnegative).  This is expensive as it used
+     the complete tableau information at each DualSimplex pivot.  The redset must
+     be initialized before this function is called.
+  */
+
+  dd_colrange j;
+  dd_LPPtr lp;
+  dd_LPSolutionPtr lps;
+  dd_ErrorType err=dd_NoError;
+  dd_boolean answer=dd_FALSE,localdebug=dd_FALSE;
+
+  *error=dd_NoError;
+  if (set_member(itest, M->linset)){
+    if (localdebug) printf("The %ld th row is linearity and redundancy checking is skipped.\n",itest);
+    goto _L99;
+  }
+  
+  /* Create an LP data for redundancy checking */
+  if (M->representation==dd_Generator){
+    lp=dd_CreateLP_V_Redundancy(M, itest);
+  } else {
+    lp=dd_CreateLP_H_Redundancy(M, itest);
+  }
+  
+  lp->redcheck_extensive=dd_TRUE;
+
+  dd_LPSolve0(lp,dd_DualSimplex,&err);
+  if (err!=dd_NoError){
+    *error=err;
+    goto _L999;
+  } else {
+    set_copy(*redset,lp->redset_extra);
+    set_delelem(*redset, itest);  
+    /* itest row might be redundant in the lp but this has nothing to do with its redundancy
+    in the original system M.   Thus we must delete it.  */
+    if (localdebug){
+      fprintf(stderr, "dd_RedundantExtensive: checking for %ld, extra redset with cardinality %ld (%ld)\n",itest,set_card(*redset),set_card(lp->redset_extra)); 
+      set_fwrite(stderr, *redset); fprintf(stderr, "\n");
+    }
+    lps=dd_CopyLPSolution(lp);
+
+    for (j=0; j<lps->d; j++) {
+      dd_set(certificate[j], lps->sol[j]);
+    }
+
+    if (dd_Negative(lps->optvalue)){
+      answer=dd_FALSE;
+      if (localdebug) fprintf(stderr,"==> %ld th row is nonredundant.\n",itest);
+    } else {
+      answer=dd_TRUE;
+      if (localdebug) fprintf(stderr,"==> %ld th row is redundant.\n",itest);
     }
     dd_FreeLPSolution(lps);
   }
@@ -1992,6 +2573,102 @@ _L99:
   dd_FreeArow(d, cvec);
   return redset;
 }
+
+
+dd_boolean dd_MatrixRedundancyRemove(dd_MatrixPtr *M, dd_rowset *redset,dd_rowindex *newpos, dd_ErrorType *error) /* 094 */
+{
+  /* It returns the set of all redundant rows.  This should be called after all
+     implicit linearity are recognized with dd_MatrixCanonicalizeLinearity.
+  */
+
+ 
+  dd_rowrange i,k,m,m1;
+  dd_colrange d;
+  dd_rowset redset1;
+  dd_rowindex newpos1;
+  dd_MatrixPtr M1=NULL;
+  dd_Arow cvec; /* certificate */ 
+  dd_boolean success=dd_FALSE, localdebug=dd_FALSE;
+
+  m=(*M)->rowsize;
+  set_initialize(redset, m);
+  M1=dd_MatrixSortedUniqueCopy(*M,newpos);
+  for (i=1; i<=m; i++){
+    if ((*newpos)[i]<=0) set_addelem(*redset,i);
+    if (localdebug) printf(" %ld:%ld",i,(*newpos)[i]);
+  }
+  if (localdebug) printf("\n");
+  
+  if ((*M)->representation==dd_Generator){
+    d=((*M)->colsize)+1;
+  } else {
+    d=(*M)->colsize;
+  }
+  m1=M1->rowsize;
+  if (localdebug){
+    fprintf(stderr,"dd_MatrixRedundancyRemove: By sorting, %ld rows have been removed.  The remaining has %ld rows.\n",m-m1,m1);
+    /* dd_WriteMatrix(stdout,M1);  */
+  }
+  dd_InitializeArow(d,&cvec); 
+  set_initialize(&redset1, M1->rowsize);
+  k=1;
+  do {
+    if (dd_RedundantExtensive(M1, k, cvec, &redset1,error)) {
+      set_addelem(redset1, k);
+      dd_MatrixRowsRemove2(&M1,redset1,&newpos1);
+      for (i=1; i<=m; i++){
+        if ((*newpos)[i]>0){
+          if  (set_member((*newpos)[i],redset1)){
+            set_addelem(*redset,i);
+            (*newpos)[i]=0;  /* now the original row i is recognized redundant and removed from M1 */
+          } else {
+            (*newpos)[i]=newpos1[(*newpos)[i]];  /* update the new pos vector */
+          }
+        }
+      }
+      set_free(redset1);
+      set_initialize(&redset1, M1->rowsize); 
+      if (localdebug) {
+        printf("dd_MatrixRedundancyRemove: the row %ld is redundant. The new matrix has %ld rows.\n", k, M1->rowsize);
+        /* dd_WriteMatrix(stderr, M1);  */
+      }
+      free(newpos1);
+    } else {
+      if (set_card(redset1)>0) {
+        dd_MatrixRowsRemove2(&M1,redset1,&newpos1);
+        for (i=1; i<=m; i++){
+          if ((*newpos)[i]>0){
+            if  (set_member((*newpos)[i],redset1)){
+              set_addelem(*redset,i);
+              (*newpos)[i]=0;  /* now the original row i is recognized redundant and removed from M1 */
+            } else {
+              (*newpos)[i]=newpos1[(*newpos)[i]];  /* update the new pos vector */
+            }
+          }
+        }
+        set_free(redset1);
+        set_initialize(&redset1, M1->rowsize);
+        free(newpos1);
+      }
+      if (localdebug) {
+        printf("dd_MatrixRedundancyRemove: the row %ld is essential. The new matrix has %ld rows.\n", k, M1->rowsize);
+        /* dd_WriteMatrix(stderr, M1);  */
+      }
+      k=k+1;
+    }
+    if (*error!=dd_NoError) goto _L99;
+  } while  (k<=M1->rowsize);
+  if (localdebug) dd_WriteMatrix(stderr, M1);
+  success=dd_TRUE;
+  
+_L99:
+  dd_FreeMatrix(*M);
+  *M=M1;
+  dd_FreeArow(d, cvec);
+  set_free(redset1);
+  return success;
+}
+
 
 dd_boolean dd_SRedundant(dd_MatrixPtr M, dd_rowrange itest, dd_Arow certificate, dd_ErrorType *error)  
   /* 093a */
@@ -2064,7 +2741,7 @@ dd_boolean dd_SRedundant(dd_MatrixPtr M, dd_rowrange itest, dd_Arow certificate,
     lp=dd_CreateLP_H_Redundancy(M, itest);
   }
 
-  dd_LPSolve(lp,dd_DualSimplex,&err);
+  dd_LPSolve(lp,dd_choiceRedcheckAlgorithm,&err);
   if (err!=dd_NoError){
     *error=err;
     goto _L999;
@@ -2393,7 +3070,7 @@ dd_boolean dd_ImplicitLinearity(dd_MatrixPtr M, dd_rowrange itest, dd_Arow certi
   }
 
   lp->objective = dd_LPmax;  /* the lp->objective is set by CreateLP* to LPmin */
-  dd_LPSolve(lp,dd_DualSimplex,&err);
+  dd_LPSolve(lp,dd_choiceRedcheckAlgorithm,&err);
   if (err!=dd_NoError){
     *error=err;
     goto _L999;
@@ -2420,32 +3097,383 @@ _L99:
 }
 
 
+int dd_FreeOfImplicitLinearity(dd_MatrixPtr M, dd_Arow certificate, dd_rowset *imp_linrows, dd_ErrorType *error)  
+  /* 092 */
+{
+  /* Checks whether the matrix M constains any implicit linearity at all.
+  It returns 1 if it is free of any implicit linearity.  This means that 
+  the present linearity rows define the linearity correctly.  It returns
+  nonpositive values otherwise.  
+
+
+     H-representation
+       f* = maximize    z
+       subject to
+         b_I  + A_I x - 1 z >= 0 
+         b_L  + A_L x = 0  (linearity)
+         z <= 1.
+
+     V-representation (=separation problem)
+       f* = maximize    z
+       subject to
+         b_I x_0 + A_I x - 1 z >= 0 (all nonlinearity generators in one side)
+         b_L x_0 + A_L x  = 0  (linearity generators)
+         z <= 1.
+    
+    Here, the input matrix is considered as (b, A), i.e. b corresponds to the first column of input
+    and the row indices of input is partitioned into I and L where L is the set of linearity.
+    In both cases, any implicit linearity exists if and only if the optimal value f* is nonpositive.
+    The certificate has dimension one more for V-representation case.
+  */
+
+  dd_LPPtr lp;
+  dd_rowrange i,m;
+  dd_colrange j,d1;
+  dd_ErrorType err=dd_NoError;
+  dd_Arow cvec; /* certificate for implicit linearity */
+
+  int answer=0,localdebug=dd_FALSE;
+
+  *error=dd_NoError;
+  /* Create an LP data for redundancy checking */
+  if (M->representation==dd_Generator){
+    lp=dd_CreateLP_V_ImplicitLinearity(M);
+  } else {
+    lp=dd_CreateLP_H_ImplicitLinearity(M);
+  }
+
+  dd_LPSolve(lp,dd_choiceRedcheckAlgorithm,&err);
+  if (err!=dd_NoError){
+    *error=err;
+    goto _L999;
+  } else {
+
+    for (j=0; j<lp->d; j++) {
+      dd_set(certificate[j], lp->sol[j]);
+    }
+
+    if (localdebug) dd_WriteLPResult(stderr,lp,err);
+    
+    /* *posset contains a set of row indices that are recognized as nonlinearity.  */
+    if (localdebug) {
+      fprintf(stderr,"==> The following variables are not implicit linearity:\n");
+      set_fwrite(stderr, lp->posset_extra);
+      fprintf(stderr,"\n");
+    }
+    
+    if (M->representation==dd_Generator){
+      d1=(M->colsize)+1;
+    } else {
+      d1=M->colsize;
+    }
+    m=M->rowsize;
+    dd_InitializeArow(d1,&cvec);
+    set_initialize(imp_linrows,m);
+
+    if (lp->LPS==dd_Optimal){
+      if (dd_Positive(lp->optvalue)){
+        answer=1;
+        if (localdebug) fprintf(stderr,"==> The matrix has no implicit linearity.\n");
+      } else if (dd_Negative(lp->optvalue)) {
+          answer=-1;
+          if (localdebug) fprintf(stderr,"==> The matrix defines the trivial system.\n");
+        } else {
+            answer=0;
+            if (localdebug) fprintf(stderr,"==> The matrix has some implicit linearity.\n");
+          }
+    } else {
+          answer=-2;
+          if (localdebug) fprintf(stderr,"==> The LP fails.\n");
+    }
+    if (answer==0){
+      /* List the implicit linearity rows */
+      for (i=m; i>=1; i--) {
+        if (!set_member(i,lp->posset_extra)) {
+          if (dd_ImplicitLinearity(M, i, cvec, error)) {
+            set_addelem(*imp_linrows, i);
+            if (localdebug) {
+              fprintf(stderr," row %ld is implicit linearity\n",i);
+              fprintf(stderr,"\n");
+            }
+          }
+          if (*error!=dd_NoError) goto _L999;
+        }
+      }
+    }  /* end of if (answer==0) */
+    if (answer==-1) {      
+      for (i=m; i>=1; i--) set_addelem(*imp_linrows, i);
+    } /* all rows are considered implicit linearity */
+
+    dd_FreeArow(d1,cvec);
+  }
+  _L999:
+  dd_FreeLPData(lp);
+
+  return answer;
+}
+
+
 dd_rowset dd_ImplicitLinearityRows(dd_MatrixPtr M, dd_ErrorType *error)  /* 092 */
 {
-  dd_rowrange i,m;
   dd_colrange d;
-  dd_rowset eqset;
+  dd_rowset imp_linset;
   dd_Arow cvec; /* certificate */
+  int foi;
+  dd_boolean localdebug=dd_FALSE;
 
   if (M->representation==dd_Generator){
-    d=(M->colsize)+1;
+    d=(M->colsize)+2;
   } else {
-    d=M->colsize;
+    d=M->colsize+1;
   }
 
   dd_InitializeArow(d,&cvec);
-  m=M->rowsize;
-  set_initialize(&eqset, m);
-  for (i=m; i>=1; i--) {
-    if (dd_ImplicitLinearity(M, i, cvec, error)) {
-      set_addelem(eqset, i);
+  if (localdebug) fprintf(stdout, "\ndd_ImplicitLinearityRows: Check whether the system contains any implicit linearity.\n");
+  foi=dd_FreeOfImplicitLinearity(M, cvec, &imp_linset, error);
+  if (localdebug){
+    switch (foi) {
+      case 1:
+        fprintf(stdout, "  It is free of implicit linearity.\n");
+        break;
+      
+      case 0:
+        fprintf(stdout, "  It is not free of implicit linearity.\n");
+        break;
+
+    case -1:
+        fprintf(stdout, "  The input system is trivial (i.e. the empty H-polytope or the V-rep of the whole space.\n");
+        break;
+    
+    default:
+        fprintf(stdout, "  The LP was not solved correctly.\n");
+        break;
+    
     }
-    if (*error!=dd_NoError) goto _L99;
   }
-_L99:
+  
+  if (localdebug){
+    fprintf(stderr, "  Implicit linearity rows are:\n");
+    set_fwrite(stderr,imp_linset);
+    fprintf(stderr, "\n");  
+  }
   dd_FreeArow(d, cvec);
-  return eqset;
+  return imp_linset;
 }
+
+dd_boolean dd_MatrixCanonicalizeLinearity(dd_MatrixPtr *M, dd_rowset *impl_linset,dd_rowindex *newpos, 
+dd_ErrorType *error) /* 094 */
+{
+/* This is to recongnize all implicit linearities, and put all linearities at the top of
+   the matrix.    All implicit linearities will be returned by *impl_linset.
+*/
+  dd_rowrange rank;
+  dd_rowset linrows,ignoredrows,basisrows;
+  dd_colset ignoredcols,basiscols;
+  dd_rowrange i,k,m;
+  dd_rowindex newpos1;
+  dd_boolean success=dd_FALSE;
+  
+  linrows=dd_ImplicitLinearityRows(*M, error);
+  if (*error!=dd_NoError) goto _L99;
+  
+  m=(*M)->rowsize;
+      
+  set_uni((*M)->linset, (*M)->linset, linrows); 
+      /* add the implicit linrows to the explicit linearity rows */
+
+  /* To remove redundancy of the linearity part, 
+     we need to compute the rank and a basis of the linearity part. */
+  set_initialize(&ignoredrows,  (*M)->rowsize);
+  set_initialize(&ignoredcols,  (*M)->colsize);
+  set_compl(ignoredrows,  (*M)->linset);
+  rank=dd_MatrixRank(*M,ignoredrows,ignoredcols,&basisrows,&basiscols);
+  set_diff(ignoredrows,  (*M)->linset, basisrows);
+  dd_MatrixRowsRemove2(M,ignoredrows,newpos);
+  
+  dd_MatrixShiftupLinearity(M,&newpos1); 
+ 
+  for (i=1; i<=m; i++){
+    k=(*newpos)[i];
+    if (k>0) {
+      (*newpos)[i]=newpos1[k];
+    }
+  }
+  
+  *impl_linset=linrows;
+  success=dd_TRUE;
+  free(newpos1);
+  set_free(basisrows);
+  set_free(basiscols);
+  set_free(ignoredrows);
+  set_free(ignoredcols);
+_L99:
+  return success;
+}
+
+dd_boolean dd_MatrixCanonicalize(dd_MatrixPtr *M, dd_rowset *impl_linset, dd_rowset *redset, 
+dd_rowindex *newpos, dd_ErrorType *error) /* 094 */
+{
+/* This is to find a canonical representation of a matrix *M by 
+   recognizing all implicit linearities and all redundancies.  
+   All implicit linearities will be returned by *impl_linset and
+   redundancies will be returned by *redset.
+*/
+  dd_rowrange i,k,m;
+  dd_rowindex newpos1,revpos;
+  dd_rowset redset1;
+  dd_boolean success=dd_TRUE;
+  
+  m=(*M)->rowsize;
+  set_initialize(redset, m);
+  revpos=(long *)calloc(m+1,sizeof(long*));
+  
+  success=dd_MatrixCanonicalizeLinearity(M, impl_linset, newpos, error);
+
+  if (!success) goto _L99;  
+  
+  for (i=1; i<=m; i++){
+    k=(*newpos)[i];
+    if (k>0) revpos[k]=i;  /* inverse of *newpos[] */
+  }
+ 
+  success=dd_MatrixRedundancyRemove(M, &redset1, &newpos1, error);  /* 094 */
+  
+  if (!success) goto _L99;
+
+  for (i=1; i<=m; i++){
+    k=(*newpos)[i];
+    if (k>0) {
+      (*newpos)[i]=newpos1[k];
+      if (newpos1[k]<0) (*newpos)[i]=-revpos[-newpos1[k]];  /* update the certificate of its duplicate removal. */
+      if (set_member(k,redset1)) set_addelem(*redset, i);
+    }
+  }
+
+_L99:
+  set_free(redset1);
+  free(newpos1);
+  free(revpos);
+  return success;
+}
+
+
+dd_boolean dd_ExistsRestrictedFace(dd_MatrixPtr M, dd_rowset R, dd_rowset S, dd_ErrorType *err)
+/* 0.94 */
+{
+/* This function checkes if there is a point that satifies all the constraints of
+the matrix M (interpreted as an H-representation) with additional equality contraints
+specified by R and additional strict inequality constraints specified by S.
+The set S is supposed to be disjoint from both R and M->linset.   When it is not,
+the set S will be considered as S\(R U M->linset).
+*/
+  dd_boolean answer=dd_FALSE;
+  dd_LPPtr lp=NULL;
+
+/*
+  printf("\n--- ERF ---\n");
+  printf("R = "); set_write(R); 
+  printf("S = "); set_write(S);
+*/
+  
+  lp=dd_Matrix2Feasibility2(M, R, S, err);
+
+  if (*err!=dd_NoError) goto _L99;
+ 
+/* Solve the LP by cdd LP solver. */
+  dd_LPSolve(lp, dd_DualSimplex, err);  /* Solve the LP */
+  if (*err!=dd_NoError) goto _L99;
+  if (lp->LPS==dd_Optimal && dd_Positive(lp->optvalue)) {
+    answer=dd_TRUE;
+  } 
+
+  dd_FreeLPData(lp);
+_L99:
+  return answer;
+}
+
+dd_boolean dd_ExistsRestrictedFace2(dd_MatrixPtr M, dd_rowset R, dd_rowset S, dd_LPSolutionPtr *lps, dd_ErrorType *err)
+/* 0.94 */
+{
+/* This function checkes if there is a point that satifies all the constraints of
+the matrix M (interpreted as an H-representation) with additional equality contraints
+specified by R and additional strict inequality constraints specified by S.
+The set S is supposed to be disjoint from both R and M->linset.   When it is not,
+the set S will be considered as S\(R U M->linset).
+
+This function returns a certificate of the answer in terms of the associated LP solutions.
+*/
+  dd_boolean answer=dd_FALSE;
+  dd_LPPtr lp=NULL;
+
+/*
+  printf("\n--- ERF ---\n");
+  printf("R = "); set_write(R); 
+  printf("S = "); set_write(S);
+*/
+  
+  lp=dd_Matrix2Feasibility2(M, R, S, err);
+
+  if (*err!=dd_NoError) goto _L99;
+ 
+/* Solve the LP by cdd LP solver. */
+  dd_LPSolve(lp, dd_DualSimplex, err);  /* Solve the LP */
+  if (*err!=dd_NoError) goto _L99;
+  if (lp->LPS==dd_Optimal && dd_Positive(lp->optvalue)) {
+    answer=dd_TRUE;
+  } 
+
+
+  (*lps)=dd_CopyLPSolution(lp);
+  dd_FreeLPData(lp);
+_L99:
+  return answer;
+}
+
+dd_boolean dd_FindRelativeInterior(dd_MatrixPtr M, dd_rowset *ImL, dd_rowset *Lbasis, dd_LPSolutionPtr *lps, dd_ErrorType *err) 
+/* 0.94 */
+{
+/* This function computes a point in the relative interior of the H-polyhedron given by M.
+Even the representation is V-representation, it simply interprete M as H-representation.
+lps returns the result of solving an LP whose solution is a relative interior point.
+ImL returns all row indices of M that are implicit linearities, i.e. their inqualities
+are satisfied by equality by all points in the polyhedron.  Lbasis returns a row basis
+of the submatrix of M consisting of all linearities and implicit linearities.  This means
+that the dimension of the polyhedron is M->colsize - set_card(Lbasis) -1.
+*/
+
+  dd_rowset S;
+  dd_colset T, Lbasiscols;
+  dd_boolean success=dd_FALSE;
+  dd_rowrange i;
+  dd_colrange rank;
+  
+
+  *ImL=dd_ImplicitLinearityRows(M, err);
+
+  if (*err!=dd_NoError) goto _L99;
+
+  set_initialize(&S, M->rowsize);   /* the empty set */
+  for (i=1; i <=M->rowsize; i++) {
+	if (!set_member(i, M->linset) && !set_member(i, *ImL)){
+	  set_addelem(S, i);  /* all nonlinearity rows go to S  */
+	}
+  }
+  if (dd_ExistsRestrictedFace2(M, *ImL, S, lps, err)){
+    /* printf("a relative interior point found\n"); */
+    success=dd_TRUE;
+  }
+  
+  set_initialize(&T,  M->colsize); /* empty set */
+  rank=dd_MatrixRank(M,S,T,Lbasis,&Lbasiscols); /* the rank of the linearity submatrix of M.  */
+
+  set_free(S);
+  set_free(T);
+  set_free(Lbasiscols);
+  
+_L99:
+  return success;
+}
+
 
 dd_rowrange dd_RayShooting(dd_MatrixPtr M, dd_Arow p, dd_Arow r)
 {
@@ -2526,7 +3554,7 @@ dd_rowrange dd_RayShooting(dd_MatrixPtr M, dd_Arow p, dd_Arow r)
 void dd_BasisStatusMaximize(dd_rowrange m_size,dd_colrange d_size,
     dd_Amatrix A,dd_Bmatrix T,dd_rowset equalityset,
     dd_rowrange objrow,dd_colrange rhscol,ddf_LPStatusType LPS,
-    mytype *optvalue,dd_Arow sol,dd_Arow dsol,ddf_colindex nbindex,
+    mytype *optvalue,dd_Arow sol,dd_Arow dsol,dd_rowset posset, ddf_colindex nbindex,
     ddf_rowrange re,ddf_colrange se,long *pivots, int *found, int *LPScorrect)
 /*  This is just to check whether the status LPS of the basis given by 
 nbindex with extra certificates se or re is correct.  It is done
@@ -2545,14 +3573,17 @@ arithmetics.
   dd_colrange s,j;
   static dd_rowindex bflag;
   static long mlast=0;
-  static dd_rowindex OrderVector;  /* the permutation vector to store a preordered row indeces */
+  static dd_rowindex OrderVector;  /* the permutation vector to store a preordered row indices */
   unsigned int rseed=1;
   mytype val;
   dd_colindex nbtemp;
   dd_LPStatusType ddlps;
   dd_boolean localdebug=dd_FALSE;
 
-
+  if (dd_debug) localdebug=dd_debug;
+  if (localdebug){
+     printf("\nEvaluating dd_BasisStatusMaximize:\n");
+  }
   dd_init(val);
   nbtemp=(long *) calloc(d_size+1,sizeof(long*));
   for (i=0; i<= 4; i++) pivots[i]=0;
@@ -2588,6 +3619,7 @@ arithmetics.
       objrow,rhscol,&s,found,&pivots0);
       
   pivots[4]=pivots0;  /*GMP postopt pivots */
+  dd_statBSpivots+=pivots0;
 
   if (!(*found)){
     if (localdebug) {
@@ -2600,8 +3632,8 @@ arithmetics.
 
   if (localdebug) {
     printf("dd_BasisStatusMaximize: a specified basis exists.\n");
-    if (m_size <=100 && d_size <=20)
-    dd_WriteTableau(stdout,m_size,d_size,A,T,nbindex,bflag);
+    if (m_size <=100 && d_size <=30)
+    dd_WriteSignTableau(stdout,m_size,d_size,A,T,nbindex,bflag);
   }
 
   /* Check whether a recomputed basis is of the type specified by LPS */
@@ -2665,7 +3697,7 @@ arithmetics.
   ddlps=LPSf2LPS(LPS);
 
   dd_SetSolutions(m_size,d_size,A,T,
-   objrow,rhscol,ddlps,optvalue,sol,dsol,nbindex,re,se);
+   objrow,rhscol,ddlps,optvalue,sol,dsol,posset,nbindex,re,se,bflag);
 
   
 _L99:
@@ -2676,14 +3708,14 @@ _L99:
 void dd_BasisStatusMinimize(dd_rowrange m_size,dd_colrange d_size,
     dd_Amatrix A,dd_Bmatrix T,dd_rowset equalityset,
     dd_rowrange objrow,dd_colrange rhscol,ddf_LPStatusType LPS,
-    mytype *optvalue,dd_Arow sol,dd_Arow dsol,ddf_colindex nbindex,
+    mytype *optvalue,dd_Arow sol,dd_Arow dsol, dd_rowset posset, ddf_colindex nbindex,
     ddf_rowrange re,ddf_colrange se,long *pivots, int *found, int *LPScorrect)
 {
    dd_colrange j;
    
    for (j=1; j<=d_size; j++) dd_neg(A[objrow-1][j-1],A[objrow-1][j-1]);
    dd_BasisStatusMaximize(m_size,d_size,A,T,equalityset, objrow,rhscol,
-     LPS,optvalue,sol,dsol,nbindex,re,se,pivots,found,LPScorrect);
+     LPS,optvalue,sol,dsol,posset,nbindex,re,se,pivots,found,LPScorrect);
    dd_neg(*optvalue,*optvalue);
    for (j=1; j<=d_size; j++){
      dd_neg(dsol[j-1],dsol[j-1]);

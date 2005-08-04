@@ -1,6 +1,6 @@
 /* cddlib.c: cdd library  (library version of cdd)
    written by Komei Fukuda, fukuda@ifor.math.ethz.ch
-   Version 0.93a, August 11, 2003
+   Version 0.94, Aug. 4, 2005
    Standard ftp site: ftp.ifor.math.ethz.ch, Directory: pub/fukuda/cdd
 */
 
@@ -42,11 +42,26 @@
 
 /* Global Variables */
 dd_boolean dd_debug               =dd_FALSE;
-/* GLOBAL CONSTANTS (to be set by dd_set_global_constants() */
+dd_boolean dd_log                 =dd_FALSE;
+/* GLOBAL CONSTANTS and STATICS VARIABLES (to be set by dd_set_global_constants() */
 mytype dd_zero;
 mytype dd_one;
 mytype dd_purezero;
 mytype dd_minuszero;
+mytype dd_minusone;
+
+time_t dd_statStartTime; /* cddlib starting time */
+long dd_statBApivots;  /* basis finding pivots */
+long dd_statCCpivots;  /* criss-cross pivots */
+long dd_statDS1pivots; /* phase 1 pivots */
+long dd_statDS2pivots; /* phase 2 pivots */
+long dd_statACpivots;  /* anticycling (cc) pivots */
+#ifdef GMPRATIONAL
+long dd_statBSpivots;  /* basis status checking pivots */
+#endif
+dd_LPSolverType dd_choiceLPSolverDefault;  /* Default LP solver Algorithm */
+dd_LPSolverType dd_choiceRedcheckAlgorithm;  /* Redundancy Checking Algorithm */
+dd_boolean dd_choiceLexicoPivotQ;    /* whether to use the lexicographic pivot */
 
 /* #include <profile.h>    THINK C PROFILER */
 /* #include <console.h>    THINK C PROFILER */
@@ -69,7 +84,7 @@ void dd_DDInit(dd_ConePtr cone)
 void dd_DDMain(dd_ConePtr cone)
 {
   dd_rowrange hh, itemp, otemp;
-  dd_boolean localdebug=dd_TRUE;
+  dd_boolean locallog=dd_log; /* if dd_log=dd_FALSE, no log will be written.  */
 
   if (cone->d<=0){
     cone->Iteration=cone->m;
@@ -77,7 +92,7 @@ void dd_DDMain(dd_ConePtr cone)
     cone->CompStatus=dd_AllFound;
     goto _L99;
   }
-  if (localdebug) {
+  if (locallog) {
      fprintf(stderr,"(Initially added rows ) = ");
      set_fwrite(stderr,cone->InitialHalfspaces);
   }
@@ -105,7 +120,7 @@ void dd_DDMain(dd_ConePtr cone)
       cone->OrderVector[itemp]=otemp;
         /* store the dynamic ordering in ordervec */
     }
-    if (localdebug){
+    if (locallog){
       fprintf(stderr,"(Iter, Row, #Total, #Curr, #Feas)= %5ld %5ld %9ld %6ld %6ld\n",
         cone->Iteration, hh, cone->TotalRayCount, cone->RayCount,
         cone->FeasibleRayCount);
@@ -188,12 +203,46 @@ void dd_InitialDataSetup(dd_ConePtr cone)
   set_free(ZSet);
 }
 
+dd_boolean dd_CheckEmptiness(dd_PolyhedraPtr poly, dd_ErrorType *err)
+{
+  dd_rowset R, S;
+  dd_MatrixPtr M=NULL;
+  dd_boolean answer=dd_FALSE;
+
+  *err=dd_NoError;
+
+  if (poly->representation==dd_Inequality){
+	M=dd_CopyInequalities(poly);
+	set_initialize(&R, M->rowsize);
+	set_initialize(&S, M->rowsize);
+	if (!dd_ExistsRestrictedFace(M, R, S, err)){
+	  poly->child->CompStatus=dd_AllFound;
+	  poly->IsEmpty=dd_TRUE;
+	  poly->n=0;
+	  answer=dd_TRUE;
+	}
+	set_free(R);
+	set_free(S);
+	dd_FreeMatrix(M);
+  } else if (poly->representation==dd_Generator && poly->m<=0){
+	*err=dd_EmptyVrepresentation;
+	poly->IsEmpty=dd_TRUE;
+	poly->child->CompStatus=dd_AllFound;
+	answer=dd_TRUE;
+	poly->child->Error=*err;  
+  }
+  
+  return answer;
+}
+
+
 dd_boolean dd_DoubleDescription(dd_PolyhedraPtr poly, dd_ErrorType *err)
 {
   dd_ConePtr cone=NULL;
   dd_boolean found=dd_FALSE;
 
   *err=dd_NoError;
+
   if (poly!=NULL && (poly->child==NULL || poly->child->CompStatus!=dd_AllFound)){
     cone=dd_ConeDataLoad(poly);
     /* create a cone associated with poly by homogenization */
@@ -202,15 +251,25 @@ dd_boolean dd_DoubleDescription(dd_PolyhedraPtr poly, dd_ErrorType *err)
     if (poly->representation==dd_Generator && poly->m<=0){
        *err=dd_EmptyVrepresentation;
        cone->Error=*err;
-    } else {
-      dd_FindInitialRays(cone, &found);
-      if (found) {
-        dd_InitialDataSetup(cone);
-        dd_DDMain(cone);
-      }
-    }
+	   goto _L99;
+	}
+	/* Check emptiness of the polyhedron */
+	dd_CheckEmptiness(poly,err);
+
+    if (cone->CompStatus!=dd_AllFound){
+	  dd_FindInitialRays(cone, &found);
+	  if (found) {
+	    dd_InitialDataSetup(cone);
+	    if (cone->CompStatus==dd_AllFound) goto _L99;
+	    dd_DDMain(cone);
+	    if (cone->FeasibleRayCount!=cone->RayCount) *err=dd_NumericallyInconsistent; /* cddlib-093d */
+	  }
+	}
     time(&cone->endtime);
   }
+    
+_L99: ;
+
   return found;
 }
 
@@ -220,24 +279,35 @@ dd_boolean dd_DoubleDescription2(dd_PolyhedraPtr poly, dd_RowOrderType horder, d
   dd_boolean found=dd_FALSE;
 
   *err=dd_NoError;
+
   if (poly!=NULL && (poly->child==NULL || poly->child->CompStatus!=dd_AllFound)){
     cone=dd_ConeDataLoad(poly);
     /* create a cone associated with poly by homogenization */
-    cone->HalfspaceOrder=horder;  /* set the row order */
+	cone->HalfspaceOrder=horder;  /* set the row order */
     time(&cone->starttime);
     dd_DDInit(cone);
     if (poly->representation==dd_Generator && poly->m<=0){
        *err=dd_EmptyVrepresentation;
        cone->Error=*err;
-    } else {
-      dd_FindInitialRays(cone, &found);
-      if (found) {
-        dd_InitialDataSetup(cone);
-        dd_DDMain(cone);
-      }
-    }
+	   goto _L99;
+	}
+	/* Check emptiness of the polyhedron */
+	dd_CheckEmptiness(poly,err);
+
+    if (cone->CompStatus!=dd_AllFound){
+	  dd_FindInitialRays(cone, &found);
+	  if (found) {
+	    dd_InitialDataSetup(cone);
+	    if (cone->CompStatus==dd_AllFound) goto _L99;
+	    dd_DDMain(cone);
+	    if (cone->FeasibleRayCount!=cone->RayCount) *err=dd_NumericallyInconsistent; /* cddlib-093d */
+	  }
+	}
     time(&cone->endtime);
   }
+    
+_L99: ;
+
   return found;
 }
 

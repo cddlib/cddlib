@@ -1,6 +1,6 @@
 /* cddio.c:  Basic Input and Output Procedures for cddlib
    written by Komei Fukuda, fukuda@ifor.math.ethz.ch
-   Version 0.93a, August 11, 2003
+   Version 0.94, Aug. 4, 2005
 */
 
 /* cddlib : C-library of the double description method for
@@ -169,6 +169,9 @@ void dd_ProcessCommandLine(FILE *f, dd_MatrixPtr M, char *line)
   }
   if (strncmp(line, "debug", 5)==0) {
     dd_debug = dd_TRUE;
+#ifdef GMPRATIONAL
+    ddf_debug = ddf_TRUE;
+#endif
   }
   if (strncmp(line, "partial_enum", 12)==0 ||
        strncmp(line, "equality", 8)==0  ||
@@ -241,6 +244,26 @@ dd_MatrixPtr dd_CopyMatrix(dd_MatrixPtr M)
   return dd_MatrixCopy(M);
 }
 
+dd_MatrixPtr dd_MatrixNormalizedCopy(dd_MatrixPtr M)
+{
+  dd_MatrixPtr Mcopy=NULL;
+  dd_rowrange m;
+  dd_colrange d;
+
+  m= M->rowsize;
+  d= M->colsize;
+  if (m >=0 && d >=0){
+    Mcopy=dd_CreateMatrix(m, d);
+    dd_CopyNormalizedAmatrix(Mcopy->matrix, M->matrix, m, d);
+    dd_CopyArow(Mcopy->rowvec, M->rowvec, d);
+    set_copy(Mcopy->linset,M->linset);
+    Mcopy->numbtype=M->numbtype;
+    Mcopy->representation=M->representation;
+    Mcopy->objective=M->objective;
+  }
+  return Mcopy;
+}
+
 
 dd_MatrixPtr dd_MatrixAppend(dd_MatrixPtr M1, dd_MatrixPtr M2)
 {
@@ -272,6 +295,170 @@ dd_MatrixPtr dd_MatrixAppend(dd_MatrixPtr M1, dd_MatrixPtr M2)
     M->numbtype=M1->numbtype;
   }
   return M;
+}
+
+dd_MatrixPtr dd_MatrixNormalizedSortedCopy(dd_MatrixPtr M,dd_rowindex *newpos)  /* 094 */
+{ 
+  /* Sort the rows of Amatrix lexicographically, and return a link to this sorted copy. 
+  The vector newpos is allocated, where newpos[i] returns the new row index
+  of the original row i (i=1,...,M->rowsize). */
+  dd_MatrixPtr Mcopy=NULL,Mnorm=NULL;
+  dd_rowrange m,i;
+  dd_colrange d;
+  dd_rowindex roworder;
+
+  /* if (newpos!=NULL) free(newpos); */
+  m= M->rowsize;
+  d= M->colsize;
+  roworder=(long *)calloc(m+1,sizeof(long*));
+  *newpos=(long *)calloc(m+1,sizeof(long*));
+  if (m >=0 && d >=0){
+    Mnorm=dd_MatrixNormalizedCopy(M);
+    Mcopy=dd_CreateMatrix(m, d);
+    for(i=1; i<=m; i++) roworder[i]=i;
+    
+    dd_RandomPermutation(roworder, m, 123);
+    dd_QuickSort(roworder,1,m,Mnorm->matrix,d);
+
+    dd_PermuteCopyAmatrix(Mcopy->matrix, Mnorm->matrix, m, d, roworder);
+    dd_CopyArow(Mcopy->rowvec, M->rowvec, d);
+    for(i=1; i<=m; i++) {
+      if (set_member(roworder[i],M->linset)) set_addelem(Mcopy->linset, i);
+      (*newpos)[roworder[i]]=i;
+    }
+    Mcopy->numbtype=M->numbtype;
+    Mcopy->representation=M->representation;
+    Mcopy->objective=M->objective;
+    dd_FreeMatrix(Mnorm);
+  }
+  free(roworder);
+  return Mcopy;
+}
+
+dd_MatrixPtr dd_MatrixUniqueCopy(dd_MatrixPtr M,dd_rowindex *newpos)
+{ 
+  /* Remove row duplicates, and return a link to this sorted copy. 
+     Linearity rows have priority over the other rows.
+     It is better to call this after sorting with dd_MatrixNormalizedSortedCopy.
+     The vector newpos is allocated, where *newpos[i] returns the new row index
+     of the original row i (i=1,...,M->rowsize).  *newpos[i] is negative if the original
+     row is dominated by -*newpos[i] and eliminated in the new copy.
+  */
+  dd_MatrixPtr Mcopy=NULL;
+  dd_rowrange m,i,uniqrows;
+  dd_rowset preferredrows;
+  dd_colrange d;
+  dd_rowindex roworder;
+
+  /* if (newpos!=NULL) free(newpos); */
+  m= M->rowsize;
+  d= M->colsize;
+  preferredrows=M->linset;
+  roworder=(long *)calloc(m+1,sizeof(long*));
+  if (m >=0 && d >=0){
+    for(i=1; i<=m; i++) roworder[i]=i;
+    dd_UniqueRows(roworder, 1, m, M->matrix, d,preferredrows, &uniqrows);
+
+    Mcopy=dd_CreateMatrix(uniqrows, d);
+    dd_PermutePartialCopyAmatrix(Mcopy->matrix, M->matrix, m, d, roworder,1,m);
+    dd_CopyArow(Mcopy->rowvec, M->rowvec, d);
+    for(i=1; i<=m; i++) {
+      if (roworder[i]>0 && set_member(i,M->linset)) set_addelem(Mcopy->linset, roworder[i]);
+    }
+    Mcopy->numbtype=M->numbtype;
+    Mcopy->representation=M->representation;
+    Mcopy->objective=M->objective;
+  }
+  *newpos=roworder;
+  return Mcopy;
+}
+
+
+dd_MatrixPtr dd_MatrixNormalizedSortedUniqueCopy(dd_MatrixPtr M,dd_rowindex *newpos) /* 094 */
+{ 
+  /* Sort and remove row duplicates, and return a link to this sorted copy. 
+     Linearity rows have priority over the other rows.
+     It is better to call this after sorting with dd_MatrixNormalizedSortedCopy.
+     The vector newpos is allocated, where *newpos[i] returns the new row index
+     of the original row i (i=1,...,M->rowsize).  *newpos[i] is negative if the original
+     row is dominated by -*newpos[i] and eliminated in the new copy.
+  */
+  dd_MatrixPtr M1=NULL,M2=NULL;
+  dd_rowrange m,i;
+  dd_colrange d;
+  dd_rowindex newpos1=NULL,newpos1r=NULL,newpos2=NULL;
+
+  /* if (newpos!=NULL) free(newpos); */
+  m= M->rowsize;
+  d= M->colsize;
+  *newpos=(long *)calloc(m+1,sizeof(long*));  
+  newpos1r=(long *)calloc(m+1,sizeof(long*));  
+  if (m>=0 && d>=0){
+    M1=dd_MatrixNormalizedSortedCopy(M,&newpos1);
+    for (i=1; i<=m;i++) newpos1r[newpos1[i]]=i;  /* reverse of newpos1 */
+    M2=dd_MatrixUniqueCopy(M1,&newpos2);
+    set_emptyset(M2->linset);
+    for(i=1; i<=m; i++) {
+      if (newpos2[newpos1[i]]>0){
+         printf("newpos1[%ld]=%ld, newpos2[newpos1[%ld]]=%ld\n",i,newpos1[i], i,newpos2[newpos1[i]]);
+         if (set_member(i,M->linset)) set_addelem(M2->linset, newpos2[newpos1[i]]);
+         (*newpos)[i]=newpos2[newpos1[i]];
+      } else {
+         (*newpos)[i]=-newpos1r[-newpos2[newpos1[i]]];
+      }
+    }
+  dd_FreeMatrix(M1);free(newpos1);free(newpos2);free(newpos1r);
+  }
+  
+  return M2;
+}
+
+dd_MatrixPtr dd_MatrixSortedUniqueCopy(dd_MatrixPtr M,dd_rowindex *newpos)  /* 094 */
+{ 
+  /* Same as dd_MatrixNormalizedSortedUniqueCopy except that it returns a unnormalized origial data
+     with original ordering.
+  */
+  dd_MatrixPtr M1=NULL,M2=NULL;
+  dd_rowrange m,i,k,ii;
+  dd_colrange d;
+  dd_rowindex newpos1=NULL,newpos1r=NULL,newpos2=NULL;
+
+  /* if (newpos!=NULL) free(newpos); */
+  m= M->rowsize;
+  d= M->colsize;
+  *newpos=(long *)calloc(m+1,sizeof(long*));  
+  newpos1r=(long *)calloc(m+1,sizeof(long*));  
+  if (m>=0 && d>=0){
+    M1=dd_MatrixNormalizedSortedCopy(M,&newpos1);
+    for (i=1; i<=m;i++) newpos1r[newpos1[i]]=i;  /* reverse of newpos1 */
+    M2=dd_MatrixUniqueCopy(M1,&newpos2);
+    dd_FreeMatrix(M1);
+    set_emptyset(M2->linset);
+    for(i=1; i<=m; i++) {
+      if (newpos2[newpos1[i]]>0){
+         if (set_member(i,M->linset)) set_addelem(M2->linset, newpos2[newpos1[i]]);
+         (*newpos)[i]=newpos2[newpos1[i]];
+      } else {
+         (*newpos)[i]=-newpos1r[-newpos2[newpos1[i]]];
+      }
+    }
+
+    ii=0;
+    set_emptyset(M2->linset);
+    for (i = 1; i<=m ; i++) {
+      k=(*newpos)[i];
+      if (k>0) {
+        ii+=1;
+        (*newpos)[i]=ii;
+        dd_CopyArow(M2->matrix[ii-1],M->matrix[i-1],d);
+        if (set_member(i,M->linset)) set_addelem(M2->linset, ii);
+      }
+    }
+
+    free(newpos1);free(newpos2);free(newpos1r);
+  }
+  
+  return M2;
 }
 
 dd_MatrixPtr dd_AppendMatrix(dd_MatrixPtr M1, dd_MatrixPtr M2)
@@ -341,25 +528,56 @@ int dd_MatrixRowRemove(dd_MatrixPtr *M, dd_rowrange r) /* 092 */
   return success;
 }
 
+int dd_MatrixRowRemove2(dd_MatrixPtr *M, dd_rowrange r, dd_rowindex *newpos) /* 094 */
+{
+  dd_rowrange i,m;
+  dd_colrange d;
+  dd_boolean success=0;
+  dd_rowindex roworder;
+  
+  m=(*M)->rowsize;
+  d=(*M)->colsize;
+
+  if (r >= 1 && r <=m){
+    roworder=(long *)calloc(m+1,sizeof(long*));
+    (*M)->rowsize=m-1;
+    dd_FreeArow(d, (*M)->matrix[r-1]);
+    set_delelem((*M)->linset,r);
+    /* slide the row headers */
+    for (i=1; i<r; i++) roworder[i]=i;
+    roworder[r]=0; /* meaning it is removed */
+    for (i=r; i<m; i++){
+      (*M)->matrix[i-1]=(*M)->matrix[i];
+      roworder[i+1]=i;
+      if (set_member(i+1, (*M)->linset)){
+        set_delelem((*M)->linset,i+1);
+        set_addelem((*M)->linset,i);
+      }
+    }
+    success=1;
+  }
+  return success;
+}
+
 dd_MatrixPtr dd_MatrixSubmatrix(dd_MatrixPtr M, dd_rowset delset) /* 092 */
 {
   dd_MatrixPtr Msub=NULL;
-  dd_rowrange i,isub, ishift=0, m,msub;
+  dd_rowrange i,isub=1, m,msub;
   dd_colrange d;
-
+ 
   m= M->rowsize;
   d= M->colsize;
-  msub=m - set_card(delset);
-  isub=1;
+  msub=m;
   if (m >=0 && d >=0){
+    for (i=1; i<=m; i++) {
+       if (set_member(i,delset)) msub-=1;
+    }
     Msub=dd_CreateMatrix(msub, d);
     for (i=1; i<=m; i++){
-      if (set_member(i,delset)){
-        ishift++;
-      } else {
+      if (!set_member(i,delset)){
         dd_CopyArow(Msub->matrix[isub-1], M->matrix[i-1], d);
         if (set_member(i, M->linset)){
-          set_addelem(Msub->linset,i-ishift);
+          set_addelem(Msub->linset,isub);
         }
         isub++;
       }
@@ -372,6 +590,132 @@ dd_MatrixPtr dd_MatrixSubmatrix(dd_MatrixPtr M, dd_rowset delset) /* 092 */
   return Msub;
 }
 
+dd_MatrixPtr dd_MatrixSubmatrix2(dd_MatrixPtr M, dd_rowset delset,dd_rowindex *newpos) /* 092 */
+{ /* returns a pointer to a new matrix which is a submatrix of M with rows in delset
+  removed.  *newpos[i] returns the position of the original row i in the new matrix.
+  It is -1 if and only if it is deleted.
+  */
+  
+  dd_MatrixPtr Msub=NULL;
+  dd_rowrange i,isub=1, m,msub;
+  dd_colrange d;
+  dd_rowindex roworder;
+
+  m= M->rowsize;
+  d= M->colsize;
+  msub=m;
+  if (m >=0 && d >=0){
+    roworder=(long *)calloc(m+1,sizeof(long*));
+    for (i=1; i<=m; i++) {
+       if (set_member(i,delset)) msub-=1;
+    }
+    Msub=dd_CreateMatrix(msub, d);
+    for (i=1; i<=m; i++){
+      if (set_member(i,delset)){
+        roworder[i]=0; /* zero means the row i is removed */
+      } else {
+        dd_CopyArow(Msub->matrix[isub-1], M->matrix[i-1], d);
+        if (set_member(i, M->linset)){
+          set_addelem(Msub->linset,isub);
+        }
+        roworder[i]=isub;
+        isub++;
+      }
+    }
+    *newpos=roworder;
+    dd_CopyArow(Msub->rowvec, M->rowvec, d);
+    Msub->numbtype=M->numbtype;
+    Msub->representation=M->representation;
+    Msub->objective=M->objective;
+  }
+  return Msub;
+}
+
+
+dd_MatrixPtr dd_MatrixSubmatrix2L(dd_MatrixPtr M, dd_rowset delset,dd_rowindex *newpos) /* 094 */
+{ /* This is same as dd_MatrixSubmatrix2 except that the linearity rows will be shifted up
+     so that they are at the top of the matrix.
+  */
+  dd_MatrixPtr Msub=NULL;
+  dd_rowrange i,iL, iI, m,msub;
+  dd_colrange d;
+  dd_rowindex roworder;
+
+  m= M->rowsize;
+  d= M->colsize;
+  msub=m;
+  if (m >=0 && d >=0){
+    roworder=(long *)calloc(m+1,sizeof(long*));
+    for (i=1; i<=m; i++) {
+       if (set_member(i,delset)) msub-=1;
+    }
+    Msub=dd_CreateMatrix(msub, d);
+    iL=1; iI=set_card(M->linset)+1;  /* starting positions */
+    for (i=1; i<=m; i++){
+      if (set_member(i,delset)){
+        roworder[i]=0; /* zero means the row i is removed */
+      } else {
+        if (set_member(i,M->linset)){
+          dd_CopyArow(Msub->matrix[iL-1], M->matrix[i-1], d);
+          set_delelem(Msub->linset,i);
+          set_addelem(Msub->linset,iL);
+          roworder[i]=iL;
+          iL+=1;
+        } else {
+          dd_CopyArow(Msub->matrix[iI-1], M->matrix[i-1], d);
+          roworder[i]=iI;
+          iI+=1;
+        }
+       }
+    }
+    *newpos=roworder;
+    dd_CopyArow(Msub->rowvec, M->rowvec, d);
+    Msub->numbtype=M->numbtype;
+    Msub->representation=M->representation;
+    Msub->objective=M->objective;
+  }
+  return Msub;
+}
+
+int dd_MatrixRowsRemove(dd_MatrixPtr *M, dd_rowset delset) /* 094 */
+{
+  dd_MatrixPtr Msub=NULL;
+  int success;
+  
+  Msub=dd_MatrixSubmatrix(*M, delset);
+  dd_FreeMatrix(*M);
+  *M=Msub;
+  success=1;
+  return success;
+}
+
+int dd_MatrixRowsRemove2(dd_MatrixPtr *M, dd_rowset delset,dd_rowindex *newpos) /* 094 */
+{
+  dd_MatrixPtr Msub=NULL;
+  int success;
+  
+  Msub=dd_MatrixSubmatrix2(*M, delset,newpos);
+  dd_FreeMatrix(*M);
+  *M=Msub;
+  success=1;
+  return success;
+}
+
+int dd_MatrixShiftupLinearity(dd_MatrixPtr *M,dd_rowindex *newpos) /* 094 */
+{
+  dd_MatrixPtr Msub=NULL;
+  int success;
+  dd_rowset delset;
+  
+  set_initialize(&delset,(*M)->rowsize);  /* emptyset */
+  Msub=dd_MatrixSubmatrix2L(*M, delset,newpos);
+  dd_FreeMatrix(*M);
+  *M=Msub;
+  
+  set_free(delset);
+  success=1;
+  return success;
+}
 
 dd_PolyhedraPtr dd_CreatePolyhedraData(dd_rowrange m, dd_colrange d)
 {
@@ -397,6 +741,8 @@ dd_PolyhedraPtr dd_CreatePolyhedraData(dd_rowrange m, dd_colrange d)
     /* ith component is 1 if it is equality, -1 if it is strict inequality, 0 otherwise. */
   for (i = 0; i <= m+1; i++) poly->EqualityIndex[i]=0;
 
+  poly->IsEmpty                 = -1;  /* initially set to -1, neither TRUE nor FALSE, meaning unknown */
+  
   poly->NondegAssumed           = dd_FALSE;
   poly->InitBasisAtBottom       = dd_FALSE;
   poly->RestrictedEnumeration   = dd_FALSE;
@@ -1168,10 +1514,10 @@ void dd_WriteTimes(FILE *f, time_t starttime, time_t endtime)
   ptime_hour=ptime/3600;
   ptime_minu=(ptime-ptime_hour*3600)/60;
   ptime_sec=ptime%60;
-  fprintf(f,"*Computation starts     at %s",asctime(localtime(&starttime)));
-  fprintf(f,"*            terminates at %s",asctime(localtime(&endtime)));
-  fprintf(f,"*Total processor time = %ld seconds\n",ptime);
-  fprintf(f,"*                     = %ld h %ld m %ld s\n",ptime_hour, ptime_minu, ptime_sec);
+  fprintf(f,"* Computation started at %s",asctime(localtime(&starttime)));
+  fprintf(f,"*             ended   at %s",asctime(localtime(&endtime)));
+  fprintf(f,"* Total processor time = %ld seconds\n",ptime);
+  fprintf(f,"*                      = %ld h %ld m %ld s\n",ptime_hour, ptime_minu, ptime_sec);
 }
 
 void dd_WriteDDTimes(FILE *f, dd_PolyhedraPtr poly)
@@ -1183,6 +1529,67 @@ void dd_WriteLPTimes(FILE *f, dd_LPPtr lp)
 {
   dd_WriteTimes(f,lp->starttime,lp->endtime);
 }
+
+void dd_WriteLPStats(FILE *f)
+{
+  time_t currenttime;
+  
+  time(&currenttime);
+  
+  fprintf(f, "\n*--- Statistics of pivots ---\n");
+#if defined GMPRATIONAL
+  fprintf(f, "* f0 = %ld (float basis finding pivots)\n",ddf_statBApivots);
+  fprintf(f, "* fc = %ld (float CC pivots)\n",ddf_statCCpivots);
+  fprintf(f, "* f1 = %ld (float dual simplex phase I pivots)\n",ddf_statDS1pivots);
+  fprintf(f, "* f2 = %ld (float dual simplex phase II pivots)\n",ddf_statDS2pivots);
+  fprintf(f, "* f3 = %ld (float anticycling CC pivots)\n",ddf_statACpivots);
+  fprintf(f, "* e0 = %ld (exact basis finding pivots)\n",dd_statBApivots);
+  fprintf(f, "* ec = %ld (exact CC pivots)\n",dd_statCCpivots);
+  fprintf(f, "* e1 = %ld (exact dual simplex phase I pivots)\n",dd_statDS1pivots);
+  fprintf(f, "* e2 = %ld (exact dual simplex phase II pivots)\n",dd_statDS2pivots);
+  fprintf(f, "* e3 = %ld (exact anticycling CC pivots)\n",dd_statACpivots);
+  fprintf(f, "* e4 = %ld (exact basis verification pivots)\n",dd_statBSpivots);
+#else
+  fprintf(f, "f0 = %ld (float basis finding pivots)\n",dd_statBApivots);
+  fprintf(f, "fc = %ld (float CC pivots)\n",dd_statCCpivots);
+  fprintf(f, "f1 = %ld (float dual simplex phase I pivots)\n",dd_statDS1pivots);
+  fprintf(f, "f2 = %ld (float dual simplex phase II pivots)\n",dd_statDS2pivots);
+  fprintf(f, "f3 = %ld (float anticycling CC pivots)\n",dd_statACpivots);
+#endif
+ dd_WriteLPMode(f);
+  dd_WriteTimes(f,dd_statStartTime, currenttime);
+}
+
+void dd_WriteLPMode(FILE *f)
+{
+  fprintf(f, "\n* LP solver: ");
+  switch (dd_choiceLPSolverDefault) {
+    case dd_DualSimplex:
+      fprintf(f, "DualSimplex\n");
+      break;
+    case dd_CrissCross:
+      fprintf(f, "Criss-Cross\n");
+      break;
+    default: break;
+  }
+  
+  fprintf(f, "* Redundancy cheking solver: ");
+  switch (dd_choiceRedcheckAlgorithm) {
+    case dd_DualSimplex:
+      fprintf(f, "DualSimplex\n");
+      break;
+    case dd_CrissCross:
+      fprintf(f, "Criss-Cross\n");
+      break;
+    default: break;
+  }
+  
+  fprintf(f, "* Lexicographic pivot: ");
+  if (dd_choiceLexicoPivotQ)  fprintf(f, " on\n"); 
+  else fprintf(f, " off\n"); 
+
+}
+
 
 void dd_WriteRunningMode(FILE *f, dd_PolyhedraPtr poly)
 {
@@ -1320,7 +1727,11 @@ void dd_WriteErrorMessages(FILE *f, dd_ErrorType Error)
  case dd_LPCycling:
     fprintf(f, "*Error: Possibly an LP cycling occurs.  Use the Criss-Cross method.\n");
     break;
-
+    
+ case dd_NumericallyInconsistent:
+    fprintf(f, "*Error: Numerical inconsistency is found.  Use the GMP exact arithmetic.\n");
+    break;
+    
   case dd_NoError:
     fprintf(f,"*No Error found.\n");
     break;
@@ -1375,6 +1786,7 @@ dd_SetFamilyPtr dd_CopyAdjacency(dd_PolyhedraPtr poly)
   set_initialize(&allset, n);
   if (poly->child==NULL || poly->child->CompStatus!=dd_AllFound) goto _L99;
   F=dd_CreateSetFamily(n, n);
+  if (n<=0) goto _L99;
   poly->child->LastRay->Next=NULL;
   for (RayPtr1=poly->child->FirstRay, pos1=1;RayPtr1 != NULL; 
 				RayPtr1 = RayPtr1->Next, pos1++){
@@ -1434,6 +1846,7 @@ dd_MatrixPtr dd_CopyOutput(dd_PolyhedraPtr poly)
 
   dd_init(b);
   total=poly->child->LinearityDim + poly->child->FeasibleRayCount;
+  
   if (poly->child->d<=0 || poly->child->newcol[1]==0) total=total-1;
   if (poly->representation==dd_Inequality) outputrep=dd_Generator;
   if (total==0 && poly->homogeneous && poly->representation==dd_Inequality){

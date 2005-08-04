@@ -52,6 +52,8 @@ m4trace:configure.in:2: -1- AC_SUBST([ECHO_C])
 m4trace:configure.in:2: -1- AC_SUBST([ECHO_N])
 m4trace:configure.in:2: -1- AC_SUBST([ECHO_T])
 m4trace:configure.in:2: -1- AC_SUBST([LIBS])
+m4trace:configure.in:5: -1- AM_INIT_AUTOMAKE([cddlib], [0.93])
+m4trace:configure.in:5: -1- AM_AUTOMAKE_VERSION([1.6.3])
 m4trace:configure.in:5: -1- AC_PROG_INSTALL
 m4trace:configure.in:5: -1- AC_SUBST([INSTALL_PROGRAM])
 m4trace:configure.in:5: -1- AC_SUBST([INSTALL_SCRIPT])
@@ -116,7 +118,7 @@ m4trace:configure.in:11: -1- AC_PROG_RANLIB
 m4trace:configure.in:11: -1- AC_SUBST([RANLIB])
 m4trace:configure.in:11: -1- AC_SUBST([ac_ct_RANLIB])
 m4trace:configure.in:19: -1- AC_CHECK_LIB([gmp], [main])
-m4trace:configure.in:19: -1- AH_OUTPUT([HAVE_LIBGMP], [/* Define to 1 if you have the \`gmp' library (-lgmp). */
+m4trace:configure.in:19: -1- AH_OUTPUT([HAVE_LIBGMP], [/* Define to 1 if you have the `gmp\' library (-lgmp). */
 #undef HAVE_LIBGMP])
 m4trace:configure.in:19: -1- AC_DEFINE_TRACE_LITERAL([HAVE_LIBGMP])
 m4trace:configure.in:22: -1- AC_HEADER_STDC
@@ -130,8 +132,14 @@ m4trace:configure.in:22: -1- AH_OUTPUT([STDC_HEADERS], [/* Define to 1 if you ha
 #undef STDC_HEADERS])
 m4trace:configure.in:25: -1- AC_C_CONST
 m4trace:configure.in:25: -1- AC_DEFINE_TRACE_LITERAL([const])
-m4trace:configure.in:25: -1- AH_OUTPUT([const], [/* Define to empty if \`const' does not conform to ANSI C. */
+m4trace:configure.in:25: -1- AH_OUTPUT([const], [/* Define to empty if `const\' does not conform to ANSI C. */
 #undef const])
 m4trace:configure.in:29: -1- AC_CONFIG_FILES([lib-src/Makefile src/Makefile lib-src-gmp/Makefile src-gmp/Makefile Makefile])
+m4trace:configure.in:29: -1- _m4_warn([obsolete], [AC_OUTPUT should be used without arguments.
+You should run autoupdate.], [])
 m4trace:configure.in:29: -1- AC_SUBST([LIB@&t@OBJS], [$ac_libobjs])
 m4trace:configure.in:29: -1- AC_SUBST([LTLIBOBJS], [$ac_ltlibobjs])
+m4trace:configure.in:29: -1- _m4_warn([obsolete], [back quotes and double quotes must not be escaped in: $as_me:$LINENO: error: conditional \"AMDEP\" was never defined.
+Usually this means the macro was only invoked conditionally.], [])
+m4trace:configure.in:29: -1- _m4_warn([obsolete], [back quotes and double quotes must not be escaped in: $as_me: error: conditional \"AMDEP\" was never defined.
+Usually this means the macro was only invoked conditionally.], [])

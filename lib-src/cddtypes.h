@@ -1,6 +1,6 @@
 /* cddtypes.h: Header file for cddlib.c 
    written by Komei Fukuda, fukuda@ifor.math.ethz.ch
-   Version 0.93a, August 11, 2003
+   Version 0.94, Aug. 4, 2005
 */
 
 /* cddlib.c : C-Implementation of the double description method for
@@ -14,8 +14,8 @@
 #define  __CDDTYPES_H
 #endif  /* __CDDTYPES_H */
 
-#define dd_COPYRIGHT   "Copyright (C) 1996, Komei Fukuda, fukuda@ifor.math.ethz.ch"
-#define dd_DDVERSION   "Version 0.93a (August 11, 2003)"
+#define dd_COPYRIGHT   "Copyright (C) 2005, Komei Fukuda, fukuda@ifor.math.ethz.ch"
+#define dd_DDVERSION   "Version 0.94 (August 4, 2005)"
 #include <time.h>
 
 #define dd_wordlenmax     127
@@ -105,7 +105,7 @@ typedef enum {
   dd_IFileNotFound, dd_OFileNotOpen, dd_NoLPObjective, dd_NoRealNumberSupport,
   dd_NotAvailForH, dd_NotAvailForV, dd_CannotHandleLinearity,
   dd_RowIndexOutOfRange, dd_ColIndexOutOfRange,
-  dd_LPCycling,
+  dd_LPCycling, dd_NumericallyInconsistent,
   dd_NoError
 } dd_ErrorType;
 
@@ -168,6 +168,14 @@ typedef struct dd_lpdata {
   dd_NumberType numbtype;
   dd_rowrange eqnumber;  /* the number of equalities */
   dd_rowset equalityset;  
+
+  dd_boolean redcheck_extensive;  /* Apply the extensive redundancy check. */
+  dd_rowrange ired; /* the row index for the redundancy checking */
+  dd_rowset redset_extra;  /* a set of rows that are newly recognized redundan by the extensive search. */
+  dd_rowset redset_accum;  /* the accumulated set of rows that are recognized redundant */
+  dd_rowset posset_extra;  /* a set of rows that are recognized non-linearity */
+
+  dd_boolean lexicopivot;  /* flag to use the lexicogrphic pivot rule (symbolic perturbation). */
 
   dd_LPStatusType LPS;  /* the current solution status */
   dd_rowrange m_alloc; /* the allocated row size of matrix A */
@@ -243,6 +251,8 @@ typedef struct dd_polyhedradata {
   dd_rowflag EqualityIndex;  
     /* ith component is 1 if it is equality, -1 if it is strict inequality, 0 otherwise. */
 
+  dd_boolean IsEmpty;  /* This is to tell whether the set is empty or not */
+  
   dd_boolean NondegAssumed;
   dd_boolean InitBasisAtBottom;
   dd_boolean RestrictedEnumeration;
@@ -316,5 +326,6 @@ typedef struct dd_conedata {
 
 /* Global Variables */
 extern dd_boolean dd_debug;
+extern dd_boolean dd_log;
 
 /* end of cddtypes.h */

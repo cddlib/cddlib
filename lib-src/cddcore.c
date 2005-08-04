@@ -1,6 +1,6 @@
 /* cddcore.c:  Core Procedures for cddlib
    written by Komei Fukuda, fukuda@ifor.math.ethz.ch
-   Version 0.93a, August 11, 2003
+   Version 0.94, Aug. 4, 2005
 */
 
 /* cddlib : C-library of the double description method for
@@ -644,12 +644,47 @@ void dd_CopyArow(mytype *acopy, mytype *a, dd_colrange d)
   }
 }
 
+void dd_CopyNormalizedArow(mytype *acopy, mytype *a, dd_colrange d)
+{
+  dd_CopyArow(acopy, a, d);
+  dd_Normalize(d,acopy);
+}
+
 void dd_CopyAmatrix(mytype **Acopy, mytype **A, dd_rowrange m, dd_colrange d)
 {
   dd_rowrange i;
 
   for (i = 0; i< m; i++) {
     dd_CopyArow(Acopy[i],A[i],d);
+  }
+}
+
+void dd_CopyNormalizedAmatrix(mytype **Acopy, mytype **A, dd_rowrange m, dd_colrange d)
+{
+  dd_rowrange i;
+
+  for (i = 0; i< m; i++) {
+    dd_CopyNormalizedArow(Acopy[i],A[i],d);
+  }
+}
+
+void dd_PermuteCopyAmatrix(mytype **Acopy, mytype **A, dd_rowrange m, dd_colrange d, dd_rowindex roworder)
+{
+  dd_rowrange i;
+
+  for (i = 1; i<= m; i++) {
+    dd_CopyArow(Acopy[i-1],A[roworder[i]-1],d);
+  }
+}
+
+void dd_PermutePartialCopyAmatrix(mytype **Acopy, mytype **A, dd_rowrange m, dd_colrange d, dd_rowindex roworder,dd_rowrange p, dd_rowrange q)
+{
+ /* copy the rows of A whose roworder is positive.  roworder[i] is the row index of the copied row. */
+  dd_rowrange i,k;
+
+  k=0;
+  for (i = 1; i<= m; i++) {
+    if (roworder[i]>0) dd_CopyArow(Acopy[roworder[i]-1],A[i-1],d);
   }
 }
 
@@ -767,9 +802,9 @@ void dd_FreeSetFamily(dd_SetFamilyPtr F)
 {
   dd_bigrange i,f1;
 
-  if (F->famsize<=0) f1=1; else f1=F->famsize; 
-    /* the smallest created size is one */
   if (F!=NULL){
+    if (F->famsize<=0) f1=1; else f1=F->famsize; 
+      /* the smallest created size is one */
     for (i=0; i<f1; i++) {
       set_free(F->set[i]);
     }
@@ -1401,6 +1436,25 @@ dd_boolean dd_LexLarger(mytype *v1, mytype *v2, long dmax)
   return dd_LexSmaller(v2, v1, dmax);
 }
 
+dd_boolean dd_LexEqual(mytype *v1, mytype *v2, long dmax)
+{ /* dmax is the size of vectors v1,v2 */
+  dd_boolean determined, equal;
+  dd_colrange j;
+
+  equal = dd_TRUE;
+  determined = dd_FALSE;
+  j = 1;
+  do {
+    if (!dd_Equal(v1[j - 1],v2[j - 1])) {  /* 093c */
+	equal = dd_FALSE;
+        determined = dd_TRUE;
+    } else {
+      j++;
+    }
+  } while (!(determined) && (j <= dmax));
+  return equal;
+}
+
 void dd_AddNewHalfspace1(dd_ConePtr cone, dd_rowrange hnew)
 /* This procedure 1 must be used with PreorderedRun=dd_FALSE 
    This procedure is the most elementary implementation of
@@ -1706,6 +1760,54 @@ void dd_SelectNextHalfspace6(dd_ConePtr cone, dd_rowset excluded, dd_rowrange *h
     }
   }
   *hnext = maxindex;
+}
+
+void dd_UniqueRows(dd_rowindex OV, long p, long r, dd_Amatrix A, long dmax, dd_rowset preferred, long *uniqrows)
+{
+ /* Select a subset of rows of A (with range [p, q] up to dimension dmax) by removing duplicates.
+    When a row subset preferred is nonempty, those row indices in the set have priority.  If
+    two priority rows define the same row vector, one is chosen.
+    For a selected unique row i, OV[i] returns a new position of the unique row i. 
+    For other nonuniqu row i, OV[i] returns a negative of the original row j dominating i.
+    Thus the original contents of OV[p..r] will be rewritten.  Other components remain the same.
+    *uniqrows returns the number of unique rows.
+*/
+  long i,iuniq,j;
+  mytype *x;
+  dd_boolean localdebug=dd_FALSE;
+  
+  if (p<=0 || p > r) goto _L99;
+  iuniq=p; j=1;  /* the first unique row candidate */
+  x=A[p-1];
+  OV[p]=j;  /* tentative row index of the candidate */
+  for (i=p+1;i<=r; i++){
+    if (!dd_LexEqual(x,A[i-1],dmax)) {
+      /* a new row vector found. */
+      iuniq=i;
+      j=j+1;
+      OV[i]=j;    /* Tentatively register the row i.  */
+      x=A[i-1];
+    } else {
+      /* rows are equal */
+      if (set_member(i, preferred) && !set_member(iuniq, preferred)){
+        OV[iuniq]=-i;  /* the row iuniq is dominated by the row i */
+        iuniq=i;  /* the row i is preferred.  Change the candidate. */
+        OV[i]=j;  /* the row i is tentatively registered. */
+        x=A[i-1];
+      } else {
+        OV[i]=-iuniq;  /* the row iuniq is dominated by the row i */
+      }
+    }
+  }
+  *uniqrows=j;
+  if (localdebug){
+    printf("The number of unique rows are %ld\n with order vector",*uniqrows);
+    for (i=p;i<=r; i++){
+      printf(" %ld:%ld ",i,OV[i]);
+    }
+    printf("\n");
+  }
+  _L99:;
 }
 
 long dd_Partition(dd_rowindex OV, long p, long r, dd_Amatrix A, long dmax)

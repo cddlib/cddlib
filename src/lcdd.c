@@ -1,7 +1,7 @@
 /* lcdd.c: Main test program to call the cdd library cddlib
    written by Komei Fukuda, fukuda@ifor.math.ethz.ch
    and  David Avis, avis@mutt.cs.mcgill.ca
-   Version 0.91, July 15, 2000
+   Version 0.94, August 4, 2005
    Standard ftp site: ftp.ifor.math.ethz.ch, Directory: pub/fukuda/cdd
 */
 
@@ -45,6 +45,7 @@ int main(int argc, char *argv[])
   dd_ErrorType err;
 
   dd_set_global_constants();  /* First, this must be called. */
+  dd_log=dd_TRUE; /* Output log */
 
   if (argc > 2)  
     dd_DDFile2File(argv[1],argv[2],&err);

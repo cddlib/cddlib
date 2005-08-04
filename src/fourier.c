@@ -1,6 +1,6 @@
 /* fourier.c: Test program to call the cdd library cddlib
    written by Komei Fukuda, fukuda@ifor.math.ethz.ch
-   Version 0.93, July 18, 2003
+   Version 0.94, August 4, 2005
    Standard ftp site: ftp.ifor.math.ethz.ch, Directory: pub/fukuda/cdd
 */
 
@@ -62,7 +62,8 @@ int main(int argc, char *argv[])
   dd_MatrixPtr M=NULL,M1=NULL,M2=NULL;
   dd_colrange j,s,d;
   dd_ErrorType err=dd_NoError;
-  dd_rowset redrows,linrows;
+  dd_rowset redset,impl_linset;
+  dd_rowindex newpos;
   mytype val;
   dd_DataFileType inputfile;
   FILE *reading=NULL;
@@ -95,37 +96,30 @@ int main(int argc, char *argv[])
   if (s>0 && s < d){
     for (j=1; j<=s; j++){
       M1=dd_FourierElimination(M2, &err);
+      printf("\nRemove the variable %ld.  The resulting redundant system.\n",j);
+      dd_WriteMatrix(stdout, M1);
 
-      fprintf(stdout, "redundant rows: ");
-      redrows=dd_RedundantRows(M1, &err);
-      set_fwrite(stdout, redrows);
+      dd_MatrixCanonicalize(&M1, &impl_linset, &redset, &newpos, &err);
+      if (err!=dd_NoError) goto _L99;
+
+      fprintf(stdout, "\nRedundant rows: ");
+      set_fwrite(stdout, redset);
 
       dd_FreeMatrix(M2);
-      M2=dd_MatrixSubmatrix(M1, redrows);
-      dd_FreeMatrix(M1);
-      set_free(redrows);
+      M2=M1;
+      set_free(redset);
+      set_free(impl_linset);
+      free(newpos);
     }
 
-    fprintf(stdout, "Implicit linearity (after removal of redundant rows): ");
-    linrows=dd_ImplicitLinearityRows(M2, &err);
-
-    if (M->representation==dd_Generator)
-      fprintf(stdout," %ld  ", set_card(linrows));
-    else 
-      fprintf(stdout," %ld  ", set_card(linrows));
-    set_fwrite(stdout,linrows);
-    set_uni(M2->linset, M2->linset, linrows); 
-      /* add the implicit linrows to the given linearity rows */
-
-    printf("\nNonredundant representation (except for the linearity part):\n");
-    dd_WriteMatrix(stdout, M2);
-    set_free(linrows);
+    printf("\nNonredundant representation:\n");
+    dd_WriteMatrix(stdout, M1);
   } else {
     printf("Value out of range\n");
   }
 
   dd_FreeMatrix(M);
-  dd_FreeMatrix(M2);
+  dd_FreeMatrix(M1);
   dd_clear(val);
 
 _L99:;
