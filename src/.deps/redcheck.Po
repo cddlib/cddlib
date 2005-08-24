@@ -1,91 +1,37 @@
 redcheck.o: redcheck.c ../lib-src/setoper.h /usr/include/stdio.h \
-  /usr/include/features.h /usr/include/sys/cdefs.h \
-  /usr/include/gnu/stubs.h \
-  /hg/s/linux/9/app/gcc/3.4.3/bin/../lib/gcc/i686-pc-linux-gnu/3.4.3/include/stddef.h \
-  /usr/include/bits/types.h /usr/include/bits/wordsize.h \
-  /usr/include/bits/typesizes.h /usr/include/libio.h \
-  /usr/include/_G_config.h /usr/include/wchar.h /usr/include/bits/wchar.h \
-  /usr/include/gconv.h \
-  /hg/s/linux/9/app/gcc/3.4.3/bin/../lib/gcc/i686-pc-linux-gnu/3.4.3/include/stdarg.h \
-  /usr/include/bits/stdio_lim.h /usr/include/bits/sys_errlist.h \
-  /usr/include/bits/stdio.h /usr/include/stdlib.h \
-  /usr/include/bits/waitflags.h /usr/include/bits/waitstatus.h \
-  /usr/include/endian.h /usr/include/bits/endian.h /usr/include/xlocale.h \
-  /usr/include/sys/types.h /usr/include/time.h /usr/include/sys/select.h \
-  /usr/include/bits/select.h /usr/include/bits/sigset.h \
-  /usr/include/bits/time.h /usr/include/sys/sysmacros.h \
-  /usr/include/bits/pthreadtypes.h /usr/include/bits/sched.h \
-  /usr/include/alloca.h ../lib-src/cdd.h ../lib-src/cddmp.h \
-  ../lib-src/cddtypes.h /usr/include/math.h /usr/include/bits/huge_val.h \
-  /usr/include/bits/nan.h /usr/include/bits/mathdef.h \
-  /usr/include/bits/mathcalls.h /usr/include/bits/mathinline.h \
-  /usr/include/string.h
+  /usr/include/sys/types.h /usr/include/sys/appleapiopts.h \
+  /usr/include/sys/cdefs.h /usr/include/machine/types.h \
+  /usr/include/ppc/types.h /usr/include/machine/ansi.h \
+  /usr/include/ppc/ansi.h /usr/include/machine/endian.h \
+  /usr/include/ppc/endian.h /usr/include/stdlib.h /usr/include/alloca.h \
+  ../lib-src/cdd.h ../lib-src/cddmp.h ../lib-src/cddtypes.h \
+  /usr/include/time.h /usr/include/gcc/darwin/3.3/machine/limits.h \
+  /usr/include/ppc/limits.h /usr/include/math.h \
+  /usr/include/architecture/ppc/math.h /usr/include/string.h
 
 ../lib-src/setoper.h:
 
 /usr/include/stdio.h:
 
-/usr/include/features.h:
+/usr/include/sys/types.h:
+
+/usr/include/sys/appleapiopts.h:
 
 /usr/include/sys/cdefs.h:
 
-/usr/include/gnu/stubs.h:
+/usr/include/machine/types.h:
 
-/hg/s/linux/9/app/gcc/3.4.3/bin/../lib/gcc/i686-pc-linux-gnu/3.4.3/include/stddef.h:
+/usr/include/ppc/types.h:
 
-/usr/include/bits/types.h:
+/usr/include/machine/ansi.h:
 
-/usr/include/bits/wordsize.h:
+/usr/include/ppc/ansi.h:
 
-/usr/include/bits/typesizes.h:
+/usr/include/machine/endian.h:
 
-/usr/include/libio.h:
-
-/usr/include/_G_config.h:
-
-/usr/include/wchar.h:
-
-/usr/include/bits/wchar.h:
-
-/usr/include/gconv.h:
-
-/hg/s/linux/9/app/gcc/3.4.3/bin/../lib/gcc/i686-pc-linux-gnu/3.4.3/include/stdarg.h:
-
-/usr/include/bits/stdio_lim.h:
-
-/usr/include/bits/sys_errlist.h:
-
-/usr/include/bits/stdio.h:
+/usr/include/ppc/endian.h:
 
 /usr/include/stdlib.h:
-
-/usr/include/bits/waitflags.h:
-
-/usr/include/bits/waitstatus.h:
-
-/usr/include/endian.h:
-
-/usr/include/bits/endian.h:
-
-/usr/include/xlocale.h:
-
-/usr/include/sys/types.h:
-
-/usr/include/time.h:
-
-/usr/include/sys/select.h:
-
-/usr/include/bits/select.h:
-
-/usr/include/bits/sigset.h:
-
-/usr/include/bits/time.h:
-
-/usr/include/sys/sysmacros.h:
-
-/usr/include/bits/pthreadtypes.h:
-
-/usr/include/bits/sched.h:
 
 /usr/include/alloca.h:
 
@@ -95,16 +41,14 @@ redcheck.o: redcheck.c ../lib-src/setoper.h /usr/include/stdio.h \
 
 ../lib-src/cddtypes.h:
 
+/usr/include/time.h:
+
+/usr/include/gcc/darwin/3.3/machine/limits.h:
+
+/usr/include/ppc/limits.h:
+
 /usr/include/math.h:
 
-/usr/include/bits/huge_val.h:
-
-/usr/include/bits/nan.h:
-
-/usr/include/bits/mathdef.h:
-
-/usr/include/bits/mathcalls.h:
-
-/usr/include/bits/mathinline.h:
+/usr/include/architecture/ppc/math.h:
 
 /usr/include/string.h:

@@ -1,4 +1,4 @@
-This is TeX, Version 3.14159 (Web2C 7.4.5) (format=latex 2004.8.26)  3 AUG 2005 20:46
+This is TeX, Version 3.14159 (Web2C 7.4.5) (format=latex 2004.8.26)  24 AUG 2005 15:31
 **cddlibman.tex
 (./cddlibman.tex
 LaTeX2e <2001/06/01>
@@ -143,20 +143,20 @@ ase of dual inconsistency */[]
  []
 
 [7] [8] [9]
-Overfull \hbox (0.39783pt too wide) in paragraph at lines 646--653
+Overfull \hbox (0.39783pt too wide) in paragraph at lines 654--661
 \OT1/cmr/m/n/10.95 Fourier's Elim-i-na-tion. If the in-put ma-trix is V-represe
 ntation, \OT1/cmtt/m/n/10.95 *err \OT1/cmr/m/n/10.95 re-turns \OT1/cmtt/m/n/10.
 95 dd[]NotAvailForV\OT1/cmr/m/n/10.95 .
  []
 
-[10] [11]
-Overfull \hbox (7.43246pt too wide) in paragraph at lines 814--819
+[10] [11] [12]
+Overfull \hbox (7.43246pt too wide) in paragraph at lines 822--827
 \OT1/cmr/m/n/10.95 Copy the in-ci-dence rep-re-sen-ta-tion of the com-puted rep
 -re-sen-ta-tion pointed by poly to \OT1/cmtt/m/n/10.95 setfamily
  []
 
-[12]
-Overfull \hbox (10.47415pt too wide) in paragraph at lines 820--825
+
+Overfull \hbox (10.47415pt too wide) in paragraph at lines 828--833
 \OT1/cmr/m/n/10.95 Copy the ad-ja-cency rep-re-sen-ta-tion of the com-puted rep
 -re-sen-ta-tion pointed by poly to \OT1/cmtt/m/n/10.95 setfamily
  []
@@ -164,7 +164,7 @@ Overfull \hbox (10.47415pt too wide) in paragraph at lines 820--825
 [13] [14] [15] [16]
 
 Package amsfonts Warning: Obsolete command \Bbb; \mathbb should be used instead
- on input line 1132.
+ on input line 1140.
 
 (./cddlibman.bbl
 Overfull \hbox (2.6514pt too wide) in paragraph at lines 4--9
@@ -188,4 +188,4 @@ Here is how much of TeX's memory you used:
  14 hyphenation exceptions out of 1000
  27i,9n,24p,239b,315s stack positions out of 1500i,500n,5000p,200000b,5000s
 
-Output written on cddlibman.dvi (19 pages, 70844 bytes).
+Output written on cddlibman.dvi (19 pages, 71364 bytes).

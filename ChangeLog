@@ -1,6 +1,11 @@
-libcdd, cdd & cdd+ HISTORY file    (as of August 4, 2005)
+libcdd, cdd & cdd+ HISTORY file    (as of August 24, 2005)
 
 *** libcdd version (date) / changes ***
+
+Version 094a (August 24, 2005) /
+ - A bug of dd_LPSolve is fixed.  This bug, reported by
+   Dima Pasechnik, due to a mishandling of cycling of LP
+   algorithms, is fixed.
 
 Version 094 (August 4, 2005) /
  - dd_MatrixCanonicalize has been added.  This reduces

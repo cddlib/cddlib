@@ -1,122 +1,90 @@
 simplecdd.o: simplecdd.c ../lib-src-gmp/setoper.h /usr/include/stdio.h \
-  /usr/include/features.h /usr/include/sys/cdefs.h \
-  /usr/include/gnu/stubs.h \
-  /hg/s/linux/9/app/gcc/3.4.3/bin/../lib/gcc/i686-pc-linux-gnu/3.4.3/include/stddef.h \
-  /usr/include/bits/types.h /usr/include/bits/wordsize.h \
-  /usr/include/bits/typesizes.h /usr/include/libio.h \
-  /usr/include/_G_config.h /usr/include/wchar.h /usr/include/bits/wchar.h \
-  /usr/include/gconv.h \
-  /hg/s/linux/9/app/gcc/3.4.3/bin/../lib/gcc/i686-pc-linux-gnu/3.4.3/include/stdarg.h \
-  /usr/include/bits/stdio_lim.h /usr/include/bits/sys_errlist.h \
-  /usr/include/bits/stdio.h /usr/include/stdlib.h \
-  /usr/include/bits/waitflags.h /usr/include/bits/waitstatus.h \
-  /usr/include/endian.h /usr/include/bits/endian.h /usr/include/xlocale.h \
-  /usr/include/sys/types.h /usr/include/time.h /usr/include/sys/select.h \
-  /usr/include/bits/select.h /usr/include/bits/sigset.h \
-  /usr/include/bits/time.h /usr/include/sys/sysmacros.h \
-  /usr/include/bits/pthreadtypes.h /usr/include/bits/sched.h \
-  /usr/include/alloca.h ../lib-src-gmp/cdd.h ../lib-src-gmp/cddmp.h \
-  /usr/include/gmp.h \
-  /hg/s/linux/9/app/gcc/3.4.3/bin/../lib/gcc/i686-pc-linux-gnu/3.4.3/../../../../include/c++/3.4.3/iosfwd \
-  /hg/s/linux/9/app/gcc/3.4.3/bin/../lib/gcc/i686-pc-linux-gnu/3.4.3/../../../../include/c++/3.4.3/i686-pc-linux-gnu/bits/c++config.h \
-  /hg/s/linux/9/app/gcc/3.4.3/bin/../lib/gcc/i686-pc-linux-gnu/3.4.3/../../../../include/c++/3.4.3/i686-pc-linux-gnu/bits/os_defines.h \
-  /hg/s/linux/9/app/gcc/3.4.3/bin/../lib/gcc/i686-pc-linux-gnu/3.4.3/../../../../include/c++/3.4.3/i686-pc-linux-gnu/bits/c++locale.h \
-  /hg/s/linux/9/app/gcc/3.4.3/bin/../lib/gcc/i686-pc-linux-gnu/3.4.3/../../../../include/c++/3.4.3/cstring \
-  /hg/s/linux/9/app/gcc/3.4.3/bin/../lib/gcc/i686-pc-linux-gnu/3.4.3/../../../../include/c++/3.4.3/cstddef \
-  /usr/include/string.h \
-  /hg/s/linux/9/app/gcc/3.4.3/bin/../lib/gcc/i686-pc-linux-gnu/3.4.3/../../../../include/c++/3.4.3/cstdio \
-  /hg/s/linux/9/app/gcc/3.4.3/bin/../lib/gcc/i686-pc-linux-gnu/3.4.3/../../../../include/c++/3.4.3/clocale \
-  /usr/include/locale.h /usr/include/bits/locale.h \
-  /usr/include/langinfo.h /usr/include/nl_types.h /usr/include/iconv.h \
-  /usr/include/libintl.h \
-  /hg/s/linux/9/app/gcc/3.4.3/bin/../lib/gcc/i686-pc-linux-gnu/3.4.3/../../../../include/c++/3.4.3/i686-pc-linux-gnu/bits/c++io.h \
-  /hg/s/linux/9/app/gcc/3.4.3/bin/../lib/gcc/i686-pc-linux-gnu/3.4.3/../../../../include/c++/3.4.3/i686-pc-linux-gnu/bits/gthr.h \
-  /hg/s/linux/9/app/gcc/3.4.3/bin/../lib/gcc/i686-pc-linux-gnu/3.4.3/../../../../include/c++/3.4.3/i686-pc-linux-gnu/bits/gthr-default.h \
-  /usr/include/pthread.h /usr/include/sched.h /usr/include/signal.h \
-  /usr/include/bits/initspin.h /usr/include/bits/sigthread.h \
-  /usr/include/unistd.h /usr/include/bits/posix_opt.h \
-  /usr/include/bits/environments.h /usr/include/bits/confname.h \
-  /usr/include/getopt.h \
-  /hg/s/linux/9/app/gcc/3.4.3/bin/../lib/gcc/i686-pc-linux-gnu/3.4.3/../../../../include/c++/3.4.3/cctype \
-  /usr/include/ctype.h \
-  /hg/s/linux/9/app/gcc/3.4.3/bin/../lib/gcc/i686-pc-linux-gnu/3.4.3/../../../../include/c++/3.4.3/bits/stringfwd.h \
-  /hg/s/linux/9/app/gcc/3.4.3/bin/../lib/gcc/i686-pc-linux-gnu/3.4.3/../../../../include/c++/3.4.3/bits/postypes.h \
-  /hg/s/linux/9/app/gcc/3.4.3/bin/../lib/gcc/i686-pc-linux-gnu/3.4.3/../../../../include/c++/3.4.3/cwchar \
-  /hg/s/linux/9/app/gcc/3.4.3/bin/../lib/gcc/i686-pc-linux-gnu/3.4.3/../../../../include/c++/3.4.3/ctime \
-  /usr/include/stdint.h \
-  /hg/s/linux/9/app/gcc/3.4.3/bin/../lib/gcc/i686-pc-linux-gnu/3.4.3/../../../../include/c++/3.4.3/bits/functexcept.h \
-  /hg/s/linux/9/app/gcc/3.4.3/bin/../lib/gcc/i686-pc-linux-gnu/3.4.3/../../../../include/c++/3.4.3/exception_defines.h \
+  /usr/include/sys/types.h /usr/include/sys/appleapiopts.h \
+  /usr/include/sys/cdefs.h /usr/include/machine/types.h \
+  /usr/include/ppc/types.h /usr/include/machine/ansi.h \
+  /usr/include/ppc/ansi.h /usr/include/machine/endian.h \
+  /usr/include/ppc/endian.h /usr/include/stdlib.h /usr/include/alloca.h \
+  ../lib-src-gmp/cdd.h ../lib-src-gmp/cddmp.h /usr/local/include/gmp.h \
+  /usr/include/gcc/darwin/3.3/c++/iosfwd \
+  /usr/include/gcc/darwin/3.3/c++/ppc-darwin/bits/c++config.h \
+  /usr/include/gcc/darwin/3.3/c++/ppc-darwin/bits/os_defines.h \
+  /usr/include/gcc/darwin/3.3/c++/ppc-darwin/bits/c++locale.h \
+  /usr/include/gcc/darwin/3.3/c++/clocale /usr/include/locale.h \
+  /usr/include/gcc/darwin/3.3/c++/cctype /usr/include/ctype.h \
+  /usr/include/runetype.h \
+  /usr/include/gcc/darwin/3.3/c++/bits/stringfwd.h \
+  /usr/include/gcc/darwin/3.3/c++/bits/fpos.h \
+  /usr/include/gcc/darwin/3.3/c++/ppc-darwin/bits/c++io.h \
+  /usr/include/gcc/darwin/3.3/c++/cstdio \
+  /usr/include/gcc/darwin/3.3/c++/cstddef /usr/include/stddef.h \
+  /usr/include/gcc/darwin/3.3/c++/ppc-darwin/bits/gthr.h \
+  /usr/include/gcc/darwin/3.3/c++/ppc-darwin/bits/gthr-default.h \
+  /usr/include/pthread.h /usr/include/pthread_impl.h /usr/include/errno.h \
+  /usr/include/sys/errno.h /usr/include/sched.h /usr/include/time.h \
+  /usr/include/gcc/darwin/3.3/machine/limits.h /usr/include/ppc/limits.h \
+  /usr/include/unistd.h /usr/include/sys/unistd.h /usr/include/signal.h \
+  /usr/include/sys/signal.h /usr/include/machine/signal.h \
+  /usr/include/ppc/signal.h /usr/include/limits.h \
+  /usr/include/sys/syslimits.h /usr/include/mach/mach_types.h \
+  /usr/include/gcc/darwin/3.3/stdint.h /usr/include/mach/host_info.h \
+  /usr/include/mach/vm_statistics.h /usr/include/mach/machine/vm_types.h \
+  /usr/include/mach/ppc/vm_types.h /usr/include/mach/machine.h \
+  /usr/include/mach/boolean.h /usr/include/mach/machine/boolean.h \
+  /usr/include/mach/ppc/boolean.h /usr/include/mach/time_value.h \
+  /usr/include/mach/host_notify.h /usr/include/mach/host_special_ports.h \
+  /usr/include/mach/memory_object_types.h /usr/include/mach/port.h \
+  /usr/include/mach/vm_types.h /usr/include/mach/exception_types.h \
+  /usr/include/mach/machine/exception.h /usr/include/mach/ppc/exception.h \
+  /usr/include/mach/thread_status.h \
+  /usr/include/mach/machine/thread_status.h \
+  /usr/include/mach/ppc/thread_status.h \
+  /usr/include/mach/machine/thread_state.h \
+  /usr/include/mach/ppc/thread_state.h /usr/include/mach/processor_info.h \
+  /usr/include/mach/machine/processor_info.h \
+  /usr/include/mach/ppc/processor_info.h /usr/include/mach/task_info.h \
+  /usr/include/mach/policy.h /usr/include/mach/task_policy.h \
+  /usr/include/mach/task_special_ports.h /usr/include/mach/thread_info.h \
+  /usr/include/mach/thread_policy.h \
+  /usr/include/mach/thread_special_ports.h \
+  /usr/include/mach/clock_types.h /usr/include/mach/vm_attributes.h \
+  /usr/include/mach/vm_inherit.h /usr/include/mach/vm_behavior.h \
+  /usr/include/mach/vm_prot.h /usr/include/mach/vm_sync.h \
+  /usr/include/mach/vm_region.h /usr/include/mach/kmod.h \
+  /usr/include/mach/kern_return.h /usr/include/mach/machine/kern_return.h \
+  /usr/include/mach/ppc/kern_return.h /usr/include/mach/std_types.h \
+  /usr/include/sys/time.h /usr/include/gcc/darwin/3.3/c++/cwchar \
+  /usr/include/gcc/darwin/3.3/c++/ctime /usr/include/wchar.h \
+  /usr/include/gcc/darwin/3.3/stdarg.h \
+  /usr/include/gcc/darwin/3.3/c++/bits/functexcept.h \
+  /usr/include/gcc/darwin/3.3/c++/exception_defines.h \
   ../lib-src-gmp/cddtypes.h ../lib-src-gmp/cdd_f.h \
   ../lib-src-gmp/cddmp_f.h ../lib-src-gmp/cddtypes_f.h \
-  /usr/include/math.h /usr/include/bits/huge_val.h \
-  /usr/include/bits/nan.h /usr/include/bits/mathdef.h \
-  /usr/include/bits/mathcalls.h /usr/include/bits/mathinline.h
+  /usr/include/math.h /usr/include/architecture/ppc/math.h \
+  /usr/include/string.h
 
 ../lib-src-gmp/setoper.h:
 
 /usr/include/stdio.h:
 
-/usr/include/features.h:
+/usr/include/sys/types.h:
+
+/usr/include/sys/appleapiopts.h:
 
 /usr/include/sys/cdefs.h:
 
-/usr/include/gnu/stubs.h:
+/usr/include/machine/types.h:
 
-/hg/s/linux/9/app/gcc/3.4.3/bin/../lib/gcc/i686-pc-linux-gnu/3.4.3/include/stddef.h:
+/usr/include/ppc/types.h:
 
-/usr/include/bits/types.h:
+/usr/include/machine/ansi.h:
 
-/usr/include/bits/wordsize.h:
+/usr/include/ppc/ansi.h:
 
-/usr/include/bits/typesizes.h:
+/usr/include/machine/endian.h:
 
-/usr/include/libio.h:
-
-/usr/include/_G_config.h:
-
-/usr/include/wchar.h:
-
-/usr/include/bits/wchar.h:
-
-/usr/include/gconv.h:
-
-/hg/s/linux/9/app/gcc/3.4.3/bin/../lib/gcc/i686-pc-linux-gnu/3.4.3/include/stdarg.h:
-
-/usr/include/bits/stdio_lim.h:
-
-/usr/include/bits/sys_errlist.h:
-
-/usr/include/bits/stdio.h:
+/usr/include/ppc/endian.h:
 
 /usr/include/stdlib.h:
-
-/usr/include/bits/waitflags.h:
-
-/usr/include/bits/waitstatus.h:
-
-/usr/include/endian.h:
-
-/usr/include/bits/endian.h:
-
-/usr/include/xlocale.h:
-
-/usr/include/sys/types.h:
-
-/usr/include/time.h:
-
-/usr/include/sys/select.h:
-
-/usr/include/bits/select.h:
-
-/usr/include/bits/sigset.h:
-
-/usr/include/bits/time.h:
-
-/usr/include/sys/sysmacros.h:
-
-/usr/include/bits/pthreadtypes.h:
-
-/usr/include/bits/sched.h:
 
 /usr/include/alloca.h:
 
@@ -124,81 +92,179 @@ simplecdd.o: simplecdd.c ../lib-src-gmp/setoper.h /usr/include/stdio.h \
 
 ../lib-src-gmp/cddmp.h:
 
-/usr/include/gmp.h:
+/usr/local/include/gmp.h:
 
-/hg/s/linux/9/app/gcc/3.4.3/bin/../lib/gcc/i686-pc-linux-gnu/3.4.3/../../../../include/c++/3.4.3/iosfwd:
+/usr/include/gcc/darwin/3.3/c++/iosfwd:
 
-/hg/s/linux/9/app/gcc/3.4.3/bin/../lib/gcc/i686-pc-linux-gnu/3.4.3/../../../../include/c++/3.4.3/i686-pc-linux-gnu/bits/c++config.h:
+/usr/include/gcc/darwin/3.3/c++/ppc-darwin/bits/c++config.h:
 
-/hg/s/linux/9/app/gcc/3.4.3/bin/../lib/gcc/i686-pc-linux-gnu/3.4.3/../../../../include/c++/3.4.3/i686-pc-linux-gnu/bits/os_defines.h:
+/usr/include/gcc/darwin/3.3/c++/ppc-darwin/bits/os_defines.h:
 
-/hg/s/linux/9/app/gcc/3.4.3/bin/../lib/gcc/i686-pc-linux-gnu/3.4.3/../../../../include/c++/3.4.3/i686-pc-linux-gnu/bits/c++locale.h:
+/usr/include/gcc/darwin/3.3/c++/ppc-darwin/bits/c++locale.h:
 
-/hg/s/linux/9/app/gcc/3.4.3/bin/../lib/gcc/i686-pc-linux-gnu/3.4.3/../../../../include/c++/3.4.3/cstring:
-
-/hg/s/linux/9/app/gcc/3.4.3/bin/../lib/gcc/i686-pc-linux-gnu/3.4.3/../../../../include/c++/3.4.3/cstddef:
-
-/usr/include/string.h:
-
-/hg/s/linux/9/app/gcc/3.4.3/bin/../lib/gcc/i686-pc-linux-gnu/3.4.3/../../../../include/c++/3.4.3/cstdio:
-
-/hg/s/linux/9/app/gcc/3.4.3/bin/../lib/gcc/i686-pc-linux-gnu/3.4.3/../../../../include/c++/3.4.3/clocale:
+/usr/include/gcc/darwin/3.3/c++/clocale:
 
 /usr/include/locale.h:
 
-/usr/include/bits/locale.h:
-
-/usr/include/langinfo.h:
-
-/usr/include/nl_types.h:
-
-/usr/include/iconv.h:
-
-/usr/include/libintl.h:
-
-/hg/s/linux/9/app/gcc/3.4.3/bin/../lib/gcc/i686-pc-linux-gnu/3.4.3/../../../../include/c++/3.4.3/i686-pc-linux-gnu/bits/c++io.h:
-
-/hg/s/linux/9/app/gcc/3.4.3/bin/../lib/gcc/i686-pc-linux-gnu/3.4.3/../../../../include/c++/3.4.3/i686-pc-linux-gnu/bits/gthr.h:
-
-/hg/s/linux/9/app/gcc/3.4.3/bin/../lib/gcc/i686-pc-linux-gnu/3.4.3/../../../../include/c++/3.4.3/i686-pc-linux-gnu/bits/gthr-default.h:
-
-/usr/include/pthread.h:
-
-/usr/include/sched.h:
-
-/usr/include/signal.h:
-
-/usr/include/bits/initspin.h:
-
-/usr/include/bits/sigthread.h:
-
-/usr/include/unistd.h:
-
-/usr/include/bits/posix_opt.h:
-
-/usr/include/bits/environments.h:
-
-/usr/include/bits/confname.h:
-
-/usr/include/getopt.h:
-
-/hg/s/linux/9/app/gcc/3.4.3/bin/../lib/gcc/i686-pc-linux-gnu/3.4.3/../../../../include/c++/3.4.3/cctype:
+/usr/include/gcc/darwin/3.3/c++/cctype:
 
 /usr/include/ctype.h:
 
-/hg/s/linux/9/app/gcc/3.4.3/bin/../lib/gcc/i686-pc-linux-gnu/3.4.3/../../../../include/c++/3.4.3/bits/stringfwd.h:
+/usr/include/runetype.h:
 
-/hg/s/linux/9/app/gcc/3.4.3/bin/../lib/gcc/i686-pc-linux-gnu/3.4.3/../../../../include/c++/3.4.3/bits/postypes.h:
+/usr/include/gcc/darwin/3.3/c++/bits/stringfwd.h:
 
-/hg/s/linux/9/app/gcc/3.4.3/bin/../lib/gcc/i686-pc-linux-gnu/3.4.3/../../../../include/c++/3.4.3/cwchar:
+/usr/include/gcc/darwin/3.3/c++/bits/fpos.h:
 
-/hg/s/linux/9/app/gcc/3.4.3/bin/../lib/gcc/i686-pc-linux-gnu/3.4.3/../../../../include/c++/3.4.3/ctime:
+/usr/include/gcc/darwin/3.3/c++/ppc-darwin/bits/c++io.h:
 
-/usr/include/stdint.h:
+/usr/include/gcc/darwin/3.3/c++/cstdio:
 
-/hg/s/linux/9/app/gcc/3.4.3/bin/../lib/gcc/i686-pc-linux-gnu/3.4.3/../../../../include/c++/3.4.3/bits/functexcept.h:
+/usr/include/gcc/darwin/3.3/c++/cstddef:
 
-/hg/s/linux/9/app/gcc/3.4.3/bin/../lib/gcc/i686-pc-linux-gnu/3.4.3/../../../../include/c++/3.4.3/exception_defines.h:
+/usr/include/stddef.h:
+
+/usr/include/gcc/darwin/3.3/c++/ppc-darwin/bits/gthr.h:
+
+/usr/include/gcc/darwin/3.3/c++/ppc-darwin/bits/gthr-default.h:
+
+/usr/include/pthread.h:
+
+/usr/include/pthread_impl.h:
+
+/usr/include/errno.h:
+
+/usr/include/sys/errno.h:
+
+/usr/include/sched.h:
+
+/usr/include/time.h:
+
+/usr/include/gcc/darwin/3.3/machine/limits.h:
+
+/usr/include/ppc/limits.h:
+
+/usr/include/unistd.h:
+
+/usr/include/sys/unistd.h:
+
+/usr/include/signal.h:
+
+/usr/include/sys/signal.h:
+
+/usr/include/machine/signal.h:
+
+/usr/include/ppc/signal.h:
+
+/usr/include/limits.h:
+
+/usr/include/sys/syslimits.h:
+
+/usr/include/mach/mach_types.h:
+
+/usr/include/gcc/darwin/3.3/stdint.h:
+
+/usr/include/mach/host_info.h:
+
+/usr/include/mach/vm_statistics.h:
+
+/usr/include/mach/machine/vm_types.h:
+
+/usr/include/mach/ppc/vm_types.h:
+
+/usr/include/mach/machine.h:
+
+/usr/include/mach/boolean.h:
+
+/usr/include/mach/machine/boolean.h:
+
+/usr/include/mach/ppc/boolean.h:
+
+/usr/include/mach/time_value.h:
+
+/usr/include/mach/host_notify.h:
+
+/usr/include/mach/host_special_ports.h:
+
+/usr/include/mach/memory_object_types.h:
+
+/usr/include/mach/port.h:
+
+/usr/include/mach/vm_types.h:
+
+/usr/include/mach/exception_types.h:
+
+/usr/include/mach/machine/exception.h:
+
+/usr/include/mach/ppc/exception.h:
+
+/usr/include/mach/thread_status.h:
+
+/usr/include/mach/machine/thread_status.h:
+
+/usr/include/mach/ppc/thread_status.h:
+
+/usr/include/mach/machine/thread_state.h:
+
+/usr/include/mach/ppc/thread_state.h:
+
+/usr/include/mach/processor_info.h:
+
+/usr/include/mach/machine/processor_info.h:
+
+/usr/include/mach/ppc/processor_info.h:
+
+/usr/include/mach/task_info.h:
+
+/usr/include/mach/policy.h:
+
+/usr/include/mach/task_policy.h:
+
+/usr/include/mach/task_special_ports.h:
+
+/usr/include/mach/thread_info.h:
+
+/usr/include/mach/thread_policy.h:
+
+/usr/include/mach/thread_special_ports.h:
+
+/usr/include/mach/clock_types.h:
+
+/usr/include/mach/vm_attributes.h:
+
+/usr/include/mach/vm_inherit.h:
+
+/usr/include/mach/vm_behavior.h:
+
+/usr/include/mach/vm_prot.h:
+
+/usr/include/mach/vm_sync.h:
+
+/usr/include/mach/vm_region.h:
+
+/usr/include/mach/kmod.h:
+
+/usr/include/mach/kern_return.h:
+
+/usr/include/mach/machine/kern_return.h:
+
+/usr/include/mach/ppc/kern_return.h:
+
+/usr/include/mach/std_types.h:
+
+/usr/include/sys/time.h:
+
+/usr/include/gcc/darwin/3.3/c++/cwchar:
+
+/usr/include/gcc/darwin/3.3/c++/ctime:
+
+/usr/include/wchar.h:
+
+/usr/include/gcc/darwin/3.3/stdarg.h:
+
+/usr/include/gcc/darwin/3.3/c++/bits/functexcept.h:
+
+/usr/include/gcc/darwin/3.3/c++/exception_defines.h:
 
 ../lib-src-gmp/cddtypes.h:
 
@@ -210,12 +276,6 @@ simplecdd.o: simplecdd.c ../lib-src-gmp/setoper.h /usr/include/stdio.h \
 
 /usr/include/math.h:
 
-/usr/include/bits/huge_val.h:
+/usr/include/architecture/ppc/math.h:
 
-/usr/include/bits/nan.h:
-
-/usr/include/bits/mathdef.h:
-
-/usr/include/bits/mathcalls.h:
-
-/usr/include/bits/mathinline.h:
+/usr/include/string.h:

@@ -1,6 +1,6 @@
 /* cddlp.c:  dual simplex method c-code
    written by Komei Fukuda, fukuda@ifor.math.ethz.ch
-   Version 0.94, Aug. 4, 2005
+   Version 0.94a, Aug. 24, 2005
 */
 
 /* cddlp.c : C-Implementation of the dual simplex method for
@@ -23,7 +23,7 @@
 #include "cdd_f.h"
 #endif
 
-#define dd_CDDLPVERSION  "Version 0.94 (August 4, 2005)"
+#define dd_CDDLPVERSION  "Version 0.94a (August 24, 2005)"
 
 #define dd_FALSE 0
 #define dd_TRUE 1
@@ -1885,8 +1885,10 @@ When LP is dual-inconsistent then *se returns the evidence column.
   lpf=dd_LPgmp2LPf(lp);
   switch (lp->solver) {
     case dd_CrissCross:
-      ddf_CrissCrossSolve(lpf,&errf);                /* First, run with double float. */
-      dd_BasisStatus(lpf,lp, &LPScorrect);    /* Check the basis. */
+      ddf_CrissCrossSolve(lpf,&errf);    /* First, run with double float. */
+	  if (errf==ddf_NoError){   /* 094a:  fix for a bug reported by Dima Pasechnik */
+        dd_BasisStatus(lpf,lp, &LPScorrect);    /* Check the basis. */
+	  } else {LPScorrect=dd_FALSE;}
       if (!LPScorrect) {
          if (localdebug) printf("BasisStatus: the current basis is NOT verified with GMP. Rerun with GMP.\n");
          dd_CrissCrossSolve(lp,err);  /* Rerun with GMP if fails. */
@@ -1895,8 +1897,10 @@ When LP is dual-inconsistent then *se returns the evidence column.
       }
       break;
     case dd_DualSimplex:
-      ddf_DualSimplexSolve(lpf,&errf);                /* First, run with double float. */
-      dd_BasisStatus(lpf,lp, &LPScorrect);    /* Check the basis. */
+      ddf_DualSimplexSolve(lpf,&errf);    /* First, run with double float. */
+	  if (errf==ddf_NoError){   /* 094a:  fix for a bug reported by Dima Pasechnik */
+        dd_BasisStatus(lpf,lp, &LPScorrect);    /* Check the basis. */
+	  } else {LPScorrect=dd_FALSE;}
       if (!LPScorrect){
          if (localdebug) printf("BasisStatus: the current basis is NOT verified with GMP. Rerun with GMP.\n");
          dd_DualSimplexSolve(lp,err);  /* Rerun with GMP if fails. */

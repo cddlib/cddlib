@@ -1,7 +1,7 @@
 % The name of this file: cddlibman.tex
 % written by by Komei Fukuda
 % created March 15, 1999
-% modified August 3, 2005
+% modified August 24, 2005
 %
 \documentclass[11pt]{article}
 \usepackage{html,amsmath,amssymb}
@@ -29,7 +29,7 @@ Mathematics Institute / ROSO\\
 EPFL, CH-1015 Lausanne, Switzerland\\
 email: fukuda@ifor.math.ethz.ch\\
 }
-\date{ (cddlib ver. 0.94, manual ver. August 3, 2005)}
+\date{ (cddlib ver. 0.94, manual ver. August 24, 2005)}
 
 \maketitle
 
@@ -601,6 +601,10 @@ Both {\tt R} and {\tt S} are of {\tt dd\_rowset} type.  The set $S$ is
 supposed to be disjoint from both $R$ and $L$.
 If it is not the case, the set $S$ will be considered as $S \setminus (R \cup L)$.
 
+This function ignores {\tt matrix->representation}, and thus even if it is
+set to {\tt dd\_Generator} or {\tt dd\_Unspecified}, it treats the matrix
+as if it were inequality representation.
+
 \item[{\tt dd\_boolean dd\_ExistsRestrictedFace2(matrix, R, S, lps, err)}]:\\
 It is the same as the function {\tt dd\_ExistsRestrictedFace} except that
 it returns also a certificate for the answer.  The certificate is a solution
@@ -619,6 +623,10 @@ The answer for the decision problem is YES if and only if the LP attains
 an optimal and the optimal value is positive.  The dual solution (either
 an optimal solution or a dual unbounded direction) can be considered
 as a certificate for the NO answer, if the answer is NO.
+
+This function ignores {\tt matrix->representation}, and thus even if it is
+set to {\tt dd\_Generator} or {\tt dd\_Unspecified}, it treats the matrix
+as if it were inequality representation.
 
 \item[{\tt dd\_SetFamilyPtr dd\_Matrix2Adjacency(matrix, err)}]:\\
 Computes the adjacency list of input rows using
@@ -1158,7 +1166,7 @@ this program would not have existed.
 There are many other people who helped me to improve cdd, in particular,
 I am indebted to  David Avis, 
 Alexander Bockmayr, David Bremner, Henry Crapo, Istvan Csabai, 
-Francois Margot, Marc Pfetsch, Alain Prodon, J\"org Rambau,
+Francois Margot, Marc Pfetsch, Alain Prodon, J\"org Rambau, Dima Pasechnik,
 Shawn Rusaw, Matthew Saltzman, Masanori Sato, Anders Jensen,
 Ruriko Yoshida, Charles Geyer (listed in arbitrary order) and those listed
 in the HISTORY file.
