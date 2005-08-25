@@ -23,7 +23,7 @@
 #include "cdd_f.h"
 #endif
 
-#define dd_CDDLPVERSION  "Version 0.94a (August 24, 2005)"
+#define dd_CDDLPVERSION  "Version 0.94b (August 25, 2005)"
 
 #define dd_FALSE 0
 #define dd_TRUE 1
@@ -1870,6 +1870,7 @@ When LP is dual-inconsistent then *se returns the evidence column.
 
   *err=dd_NoError;
   lp->solver=solver;
+  
    time(&lp->starttime);
 
 #ifndef GMPRATIONAL

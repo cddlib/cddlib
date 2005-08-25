@@ -1,6 +1,6 @@
 /* cddlib.c: cdd library  (library version of cdd)
    written by Komei Fukuda, fukuda@ifor.math.ethz.ch
-   Version 0.94, Aug. 4, 2005
+   Version 0.94b, Aug. 25, 2005
    Standard ftp site: ftp.ifor.math.ethz.ch, Directory: pub/fukuda/cdd
 */
 
@@ -199,7 +199,7 @@ void dd_InitialDataSetup(dd_ConePtr cone)
   }
   dd_CreateInitialEdges(cone);
   cone->Iteration = cone->d + 1;
-  if (cone->Iteration >= cone->m) cone->CompStatus=dd_AllFound;
+  if (cone->Iteration > cone->m) cone->CompStatus=dd_AllFound; /* 0.94b  */
   set_free(ZSet);
 }
 
