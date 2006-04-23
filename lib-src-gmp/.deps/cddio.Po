@@ -1,89 +1,82 @@
-cddio.o: cddio.c setoper.h /usr/include/stdio.h /usr/include/sys/types.h \
-  /usr/include/sys/appleapiopts.h /usr/include/sys/cdefs.h \
-  /usr/include/machine/types.h /usr/include/ppc/types.h \
-  /usr/include/machine/ansi.h /usr/include/ppc/ansi.h \
+cddio.o: cddio.c setoper.h /usr/include/stdio.h /usr/include/_types.h \
+  /usr/include/sys/_types.h /usr/include/sys/cdefs.h \
+  /usr/include/machine/_types.h /usr/include/ppc/_types.h \
+  /usr/include/stdlib.h /usr/include/sys/wait.h /usr/include/sys/signal.h \
+  /usr/include/sys/appleapiopts.h /usr/include/machine/signal.h \
+  /usr/include/ppc/signal.h /usr/include/sys/resource.h \
   /usr/include/machine/endian.h /usr/include/ppc/endian.h \
-  /usr/include/stdlib.h /usr/include/alloca.h cdd.h cddmp.h \
-  /usr/local/include/gmp.h /usr/include/gcc/darwin/3.3/c++/iosfwd \
-  /usr/include/gcc/darwin/3.3/c++/ppc-darwin/bits/c++config.h \
-  /usr/include/gcc/darwin/3.3/c++/ppc-darwin/bits/os_defines.h \
-  /usr/include/gcc/darwin/3.3/c++/ppc-darwin/bits/c++locale.h \
-  /usr/include/gcc/darwin/3.3/c++/clocale /usr/include/locale.h \
-  /usr/include/gcc/darwin/3.3/c++/cctype /usr/include/ctype.h \
+  /usr/include/sys/_endian.h /usr/include/alloca.h \
+  /usr/include/machine/types.h /usr/include/ppc/types.h cdd.h cddmp.h \
+  /usr/local/include/gmp.h /usr/include/gcc/darwin/4.0/c++/iosfwd \
+  /usr/include/gcc/darwin/4.0/c++/powerpc-apple-darwin8/bits/c++config.h \
+  /usr/include/gcc/darwin/4.0/c++/powerpc-apple-darwin8/bits/os_defines.h \
+  /usr/include/gcc/darwin/4.0/c++/powerpc-apple-darwin8/bits/c++locale.h \
+  /usr/include/gcc/darwin/4.0/c++/clocale /usr/include/locale.h \
+  /usr/include/_locale.h /usr/include/gcc/darwin/4.0/c++/cstring \
+  /usr/include/gcc/darwin/4.0/c++/cstddef \
+  /usr/lib/gcc/powerpc-apple-darwin8/4.0.0/include/stddef.h \
+  /usr/include/string.h /usr/include/gcc/darwin/4.0/c++/cstdio \
+  /usr/include/gcc/darwin/4.0/c++/powerpc-apple-darwin8/bits/c++io.h \
+  /usr/include/gcc/darwin/4.0/c++/powerpc-apple-darwin8/bits/gthr.h \
+  /usr/include/gcc/darwin/4.0/c++/powerpc-apple-darwin8/bits/gthr-default.h \
+  /usr/include/pthread.h /usr/include/pthread_impl.h /usr/include/sched.h \
+  /usr/include/time.h /usr/include/machine/_limits.h \
+  /usr/include/ppc/_limits.h /usr/include/unistd.h \
+  /usr/include/sys/unistd.h /usr/include/sys/select.h \
+  /usr/include/sys/types.h /usr/include/signal.h /usr/include/sys/time.h \
+  /usr/include/gcc/darwin/4.0/c++/cctype /usr/include/ctype.h \
   /usr/include/runetype.h \
-  /usr/include/gcc/darwin/3.3/c++/bits/stringfwd.h \
-  /usr/include/gcc/darwin/3.3/c++/bits/fpos.h \
-  /usr/include/gcc/darwin/3.3/c++/ppc-darwin/bits/c++io.h \
-  /usr/include/gcc/darwin/3.3/c++/cstdio \
-  /usr/include/gcc/darwin/3.3/c++/cstddef /usr/include/stddef.h \
-  /usr/include/gcc/darwin/3.3/c++/ppc-darwin/bits/gthr.h \
-  /usr/include/gcc/darwin/3.3/c++/ppc-darwin/bits/gthr-default.h \
-  /usr/include/pthread.h /usr/include/pthread_impl.h /usr/include/errno.h \
-  /usr/include/sys/errno.h /usr/include/sched.h /usr/include/time.h \
-  /usr/include/gcc/darwin/3.3/machine/limits.h /usr/include/ppc/limits.h \
-  /usr/include/unistd.h /usr/include/sys/unistd.h /usr/include/signal.h \
-  /usr/include/sys/signal.h /usr/include/machine/signal.h \
-  /usr/include/ppc/signal.h /usr/include/limits.h \
-  /usr/include/sys/syslimits.h /usr/include/mach/mach_types.h \
-  /usr/include/gcc/darwin/3.3/stdint.h /usr/include/mach/host_info.h \
-  /usr/include/mach/vm_statistics.h /usr/include/mach/machine/vm_types.h \
-  /usr/include/mach/ppc/vm_types.h /usr/include/mach/machine.h \
-  /usr/include/mach/boolean.h /usr/include/mach/machine/boolean.h \
-  /usr/include/mach/ppc/boolean.h /usr/include/mach/time_value.h \
-  /usr/include/mach/host_notify.h /usr/include/mach/host_special_ports.h \
-  /usr/include/mach/memory_object_types.h /usr/include/mach/port.h \
-  /usr/include/mach/vm_types.h /usr/include/mach/exception_types.h \
-  /usr/include/mach/machine/exception.h /usr/include/mach/ppc/exception.h \
-  /usr/include/mach/thread_status.h \
-  /usr/include/mach/machine/thread_status.h \
-  /usr/include/mach/ppc/thread_status.h \
-  /usr/include/mach/machine/thread_state.h \
-  /usr/include/mach/ppc/thread_state.h /usr/include/mach/processor_info.h \
-  /usr/include/mach/machine/processor_info.h \
-  /usr/include/mach/ppc/processor_info.h /usr/include/mach/task_info.h \
-  /usr/include/mach/policy.h /usr/include/mach/task_policy.h \
-  /usr/include/mach/task_special_ports.h /usr/include/mach/thread_info.h \
-  /usr/include/mach/thread_policy.h \
-  /usr/include/mach/thread_special_ports.h \
-  /usr/include/mach/clock_types.h /usr/include/mach/vm_attributes.h \
-  /usr/include/mach/vm_inherit.h /usr/include/mach/vm_behavior.h \
-  /usr/include/mach/vm_prot.h /usr/include/mach/vm_sync.h \
-  /usr/include/mach/vm_region.h /usr/include/mach/kmod.h \
-  /usr/include/mach/kern_return.h /usr/include/mach/machine/kern_return.h \
-  /usr/include/mach/ppc/kern_return.h /usr/include/mach/std_types.h \
-  /usr/include/sys/time.h /usr/include/gcc/darwin/3.3/c++/cwchar \
-  /usr/include/gcc/darwin/3.3/c++/ctime /usr/include/wchar.h \
-  /usr/include/gcc/darwin/3.3/stdarg.h \
-  /usr/include/gcc/darwin/3.3/c++/bits/functexcept.h \
-  /usr/include/gcc/darwin/3.3/c++/exception_defines.h cddtypes.h cdd_f.h \
+  /usr/include/gcc/darwin/4.0/c++/bits/stringfwd.h \
+  /usr/include/gcc/darwin/4.0/c++/bits/postypes.h \
+  /usr/include/gcc/darwin/4.0/c++/cwchar \
+  /usr/include/gcc/darwin/4.0/c++/ctime /usr/include/wchar.h \
+  /usr/lib/gcc/powerpc-apple-darwin8/4.0.0/include/stdarg.h \
+  /usr/include/_wctype.h \
+  /usr/lib/gcc/powerpc-apple-darwin8/4.0.0/include/stdint.h \
+  /usr/include/gcc/darwin/4.0/c++/bits/functexcept.h \
+  /usr/include/gcc/darwin/4.0/c++/exception_defines.h cddtypes.h cdd_f.h \
   cddmp_f.h cddtypes_f.h /usr/include/math.h \
-  /usr/include/architecture/ppc/math.h /usr/include/string.h
+  /usr/include/architecture/ppc/math.h
 
 setoper.h:
 
 /usr/include/stdio.h:
 
-/usr/include/sys/types.h:
+/usr/include/_types.h:
 
-/usr/include/sys/appleapiopts.h:
+/usr/include/sys/_types.h:
 
 /usr/include/sys/cdefs.h:
 
-/usr/include/machine/types.h:
+/usr/include/machine/_types.h:
 
-/usr/include/ppc/types.h:
+/usr/include/ppc/_types.h:
 
-/usr/include/machine/ansi.h:
+/usr/include/stdlib.h:
 
-/usr/include/ppc/ansi.h:
+/usr/include/sys/wait.h:
+
+/usr/include/sys/signal.h:
+
+/usr/include/sys/appleapiopts.h:
+
+/usr/include/machine/signal.h:
+
+/usr/include/ppc/signal.h:
+
+/usr/include/sys/resource.h:
 
 /usr/include/machine/endian.h:
 
 /usr/include/ppc/endian.h:
 
-/usr/include/stdlib.h:
+/usr/include/sys/_endian.h:
 
 /usr/include/alloca.h:
+
+/usr/include/machine/types.h:
+
+/usr/include/ppc/types.h:
 
 cdd.h:
 
@@ -91,177 +84,85 @@ cddmp.h:
 
 /usr/local/include/gmp.h:
 
-/usr/include/gcc/darwin/3.3/c++/iosfwd:
+/usr/include/gcc/darwin/4.0/c++/iosfwd:
 
-/usr/include/gcc/darwin/3.3/c++/ppc-darwin/bits/c++config.h:
+/usr/include/gcc/darwin/4.0/c++/powerpc-apple-darwin8/bits/c++config.h:
 
-/usr/include/gcc/darwin/3.3/c++/ppc-darwin/bits/os_defines.h:
+/usr/include/gcc/darwin/4.0/c++/powerpc-apple-darwin8/bits/os_defines.h:
 
-/usr/include/gcc/darwin/3.3/c++/ppc-darwin/bits/c++locale.h:
+/usr/include/gcc/darwin/4.0/c++/powerpc-apple-darwin8/bits/c++locale.h:
 
-/usr/include/gcc/darwin/3.3/c++/clocale:
+/usr/include/gcc/darwin/4.0/c++/clocale:
 
 /usr/include/locale.h:
 
-/usr/include/gcc/darwin/3.3/c++/cctype:
+/usr/include/_locale.h:
 
-/usr/include/ctype.h:
+/usr/include/gcc/darwin/4.0/c++/cstring:
 
-/usr/include/runetype.h:
+/usr/include/gcc/darwin/4.0/c++/cstddef:
 
-/usr/include/gcc/darwin/3.3/c++/bits/stringfwd.h:
+/usr/lib/gcc/powerpc-apple-darwin8/4.0.0/include/stddef.h:
 
-/usr/include/gcc/darwin/3.3/c++/bits/fpos.h:
+/usr/include/string.h:
 
-/usr/include/gcc/darwin/3.3/c++/ppc-darwin/bits/c++io.h:
+/usr/include/gcc/darwin/4.0/c++/cstdio:
 
-/usr/include/gcc/darwin/3.3/c++/cstdio:
+/usr/include/gcc/darwin/4.0/c++/powerpc-apple-darwin8/bits/c++io.h:
 
-/usr/include/gcc/darwin/3.3/c++/cstddef:
+/usr/include/gcc/darwin/4.0/c++/powerpc-apple-darwin8/bits/gthr.h:
 
-/usr/include/stddef.h:
-
-/usr/include/gcc/darwin/3.3/c++/ppc-darwin/bits/gthr.h:
-
-/usr/include/gcc/darwin/3.3/c++/ppc-darwin/bits/gthr-default.h:
+/usr/include/gcc/darwin/4.0/c++/powerpc-apple-darwin8/bits/gthr-default.h:
 
 /usr/include/pthread.h:
 
 /usr/include/pthread_impl.h:
 
-/usr/include/errno.h:
-
-/usr/include/sys/errno.h:
-
 /usr/include/sched.h:
 
 /usr/include/time.h:
 
-/usr/include/gcc/darwin/3.3/machine/limits.h:
+/usr/include/machine/_limits.h:
 
-/usr/include/ppc/limits.h:
+/usr/include/ppc/_limits.h:
 
 /usr/include/unistd.h:
 
 /usr/include/sys/unistd.h:
 
+/usr/include/sys/select.h:
+
+/usr/include/sys/types.h:
+
 /usr/include/signal.h:
-
-/usr/include/sys/signal.h:
-
-/usr/include/machine/signal.h:
-
-/usr/include/ppc/signal.h:
-
-/usr/include/limits.h:
-
-/usr/include/sys/syslimits.h:
-
-/usr/include/mach/mach_types.h:
-
-/usr/include/gcc/darwin/3.3/stdint.h:
-
-/usr/include/mach/host_info.h:
-
-/usr/include/mach/vm_statistics.h:
-
-/usr/include/mach/machine/vm_types.h:
-
-/usr/include/mach/ppc/vm_types.h:
-
-/usr/include/mach/machine.h:
-
-/usr/include/mach/boolean.h:
-
-/usr/include/mach/machine/boolean.h:
-
-/usr/include/mach/ppc/boolean.h:
-
-/usr/include/mach/time_value.h:
-
-/usr/include/mach/host_notify.h:
-
-/usr/include/mach/host_special_ports.h:
-
-/usr/include/mach/memory_object_types.h:
-
-/usr/include/mach/port.h:
-
-/usr/include/mach/vm_types.h:
-
-/usr/include/mach/exception_types.h:
-
-/usr/include/mach/machine/exception.h:
-
-/usr/include/mach/ppc/exception.h:
-
-/usr/include/mach/thread_status.h:
-
-/usr/include/mach/machine/thread_status.h:
-
-/usr/include/mach/ppc/thread_status.h:
-
-/usr/include/mach/machine/thread_state.h:
-
-/usr/include/mach/ppc/thread_state.h:
-
-/usr/include/mach/processor_info.h:
-
-/usr/include/mach/machine/processor_info.h:
-
-/usr/include/mach/ppc/processor_info.h:
-
-/usr/include/mach/task_info.h:
-
-/usr/include/mach/policy.h:
-
-/usr/include/mach/task_policy.h:
-
-/usr/include/mach/task_special_ports.h:
-
-/usr/include/mach/thread_info.h:
-
-/usr/include/mach/thread_policy.h:
-
-/usr/include/mach/thread_special_ports.h:
-
-/usr/include/mach/clock_types.h:
-
-/usr/include/mach/vm_attributes.h:
-
-/usr/include/mach/vm_inherit.h:
-
-/usr/include/mach/vm_behavior.h:
-
-/usr/include/mach/vm_prot.h:
-
-/usr/include/mach/vm_sync.h:
-
-/usr/include/mach/vm_region.h:
-
-/usr/include/mach/kmod.h:
-
-/usr/include/mach/kern_return.h:
-
-/usr/include/mach/machine/kern_return.h:
-
-/usr/include/mach/ppc/kern_return.h:
-
-/usr/include/mach/std_types.h:
 
 /usr/include/sys/time.h:
 
-/usr/include/gcc/darwin/3.3/c++/cwchar:
+/usr/include/gcc/darwin/4.0/c++/cctype:
 
-/usr/include/gcc/darwin/3.3/c++/ctime:
+/usr/include/ctype.h:
+
+/usr/include/runetype.h:
+
+/usr/include/gcc/darwin/4.0/c++/bits/stringfwd.h:
+
+/usr/include/gcc/darwin/4.0/c++/bits/postypes.h:
+
+/usr/include/gcc/darwin/4.0/c++/cwchar:
+
+/usr/include/gcc/darwin/4.0/c++/ctime:
 
 /usr/include/wchar.h:
 
-/usr/include/gcc/darwin/3.3/stdarg.h:
+/usr/lib/gcc/powerpc-apple-darwin8/4.0.0/include/stdarg.h:
 
-/usr/include/gcc/darwin/3.3/c++/bits/functexcept.h:
+/usr/include/_wctype.h:
 
-/usr/include/gcc/darwin/3.3/c++/exception_defines.h:
+/usr/lib/gcc/powerpc-apple-darwin8/4.0.0/include/stdint.h:
+
+/usr/include/gcc/darwin/4.0/c++/bits/functexcept.h:
+
+/usr/include/gcc/darwin/4.0/c++/exception_defines.h:
 
 cddtypes.h:
 
@@ -274,5 +175,3 @@ cddtypes_f.h:
 /usr/include/math.h:
 
 /usr/include/architecture/ppc/math.h:
-
-/usr/include/string.h:

@@ -1,6 +1,16 @@
-libcdd, cdd & cdd+ HISTORY file    (as of August 25, 2005)
+libcdd, cdd & cdd+ HISTORY file    (as of April 23, 2006)
 
 *** libcdd version (date) / changes ***
+
+Version 094c (April 23, 2006) /
+ - A bug for reading a rational number of length longer
+   than 255 characters have been fixed. This was reported
+   by Ruriko Yoshida. Now the longest
+   number is controlled by dd_wordlenmax defined in
+   cddtypes.h .  The longest line is also controlled by
+   dd_linelenmax .  These are currently fixed to
+   1024 and 4096.  Larger numbers and lines can be
+   handled by modifying these numbers and recompilation.
 
 Version 094b (August 25, 2005) /
  - A bug for the representation conversion, reported by

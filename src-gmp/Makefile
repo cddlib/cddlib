@@ -18,7 +18,7 @@ SHELL = /bin/sh
 srcdir = .
 top_srcdir = ..
 
-prefix = /u/fukuda/local
+prefix = /usr/local
 exec_prefix = ${prefix}
 
 bindir = ${exec_prefix}/bin
@@ -38,10 +38,10 @@ pkglibdir = $(libdir)/cddlib
 pkgincludedir = $(includedir)/cddlib
 top_builddir = ..
 
-ACLOCAL = ${SHELL} /u/fukuda/Algorithm/Cdd/Development/cddlib-094b/missing --run aclocal-1.6
-AUTOCONF = ${SHELL} /u/fukuda/Algorithm/Cdd/Development/cddlib-094b/missing --run autoconf
-AUTOMAKE = ${SHELL} /u/fukuda/Algorithm/Cdd/Development/cddlib-094b/missing --run automake-1.6
-AUTOHEADER = ${SHELL} /u/fukuda/Algorithm/Cdd/Development/cddlib-094b/missing --run autoheader
+ACLOCAL = ${SHELL} /u/fukuda/Algorithm/Cdd/Development/cddlib-094c/missing --run aclocal-1.6
+AUTOCONF = ${SHELL} /u/fukuda/Algorithm/Cdd/Development/cddlib-094c/missing --run autoconf
+AUTOMAKE = ${SHELL} /u/fukuda/Algorithm/Cdd/Development/cddlib-094c/missing --run automake-1.6
+AUTOHEADER = ${SHELL} /u/fukuda/Algorithm/Cdd/Development/cddlib-094c/missing --run autoheader
 
 am__cd = CDPATH="$${ZSH_VERSION+.}$(PATH_SEPARATOR)" && cd
 INSTALL = /usr/bin/install -c
@@ -63,7 +63,7 @@ POST_UNINSTALL = :
 EXEEXT = 
 OBJEXT = o
 PATH_SEPARATOR = :
-AMTAR = ${SHELL} /u/fukuda/Algorithm/Cdd/Development/cddlib-094b/missing --run tar
+AMTAR = ${SHELL} /u/fukuda/Algorithm/Cdd/Development/cddlib-094c/missing --run tar
 AWK = gawk
 
 # cddmathlink_SOURCES                = cddmathlink.c cddmlio.h cddmlio.c
@@ -77,7 +77,7 @@ STRIP =
 VERSION = 0.94
 am__include = include
 am__quote = 
-install_sh = /u/fukuda/Algorithm/Cdd/Development/cddlib-094b/install-sh
+install_sh = /u/fukuda/Algorithm/Cdd/Development/cddlib-094c/install-sh
 bin_PROGRAMS = \
 scdd_gmp \
 lcdd_gmp \

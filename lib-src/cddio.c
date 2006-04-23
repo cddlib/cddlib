@@ -1,6 +1,6 @@
 /* cddio.c:  Basic Input and Output Procedures for cddlib
    written by Komei Fukuda, fukuda@ifor.math.ethz.ch
-   Version 0.94, Aug. 4, 2005
+   Version 0.94c, April 23, 2006
 */
 
 /* cddlib : C-library of the double description method for
@@ -2015,7 +2015,7 @@ void dd_fread_rational_value (FILE *f, mytype value)
    /* reads a rational value from the specified file "f" and assigns it to "value"      */
    
 {
-   char     number_s [255];
+   char     number_s [dd_wordlenmax];
    mytype rational_value;
    
    dd_init(rational_value);

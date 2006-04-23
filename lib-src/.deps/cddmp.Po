@@ -1,37 +1,54 @@
-cddmp.o: cddmp.c setoper.h /usr/include/stdio.h /usr/include/sys/types.h \
-  /usr/include/sys/appleapiopts.h /usr/include/sys/cdefs.h \
-  /usr/include/machine/types.h /usr/include/ppc/types.h \
-  /usr/include/machine/ansi.h /usr/include/ppc/ansi.h \
+cddmp.o: cddmp.c setoper.h /usr/include/stdio.h /usr/include/_types.h \
+  /usr/include/sys/_types.h /usr/include/sys/cdefs.h \
+  /usr/include/machine/_types.h /usr/include/ppc/_types.h \
+  /usr/include/stdlib.h /usr/include/sys/wait.h /usr/include/sys/signal.h \
+  /usr/include/sys/appleapiopts.h /usr/include/machine/signal.h \
+  /usr/include/ppc/signal.h /usr/include/sys/resource.h \
   /usr/include/machine/endian.h /usr/include/ppc/endian.h \
-  /usr/include/stdlib.h /usr/include/alloca.h cdd.h cddmp.h cddtypes.h \
-  /usr/include/time.h /usr/include/gcc/darwin/3.3/machine/limits.h \
-  /usr/include/ppc/limits.h
+  /usr/include/sys/_endian.h /usr/include/alloca.h \
+  /usr/include/machine/types.h /usr/include/ppc/types.h cdd.h cddmp.h \
+  cddtypes.h /usr/include/time.h /usr/include/machine/_limits.h \
+  /usr/include/ppc/_limits.h
 
 setoper.h:
 
 /usr/include/stdio.h:
 
-/usr/include/sys/types.h:
+/usr/include/_types.h:
 
-/usr/include/sys/appleapiopts.h:
+/usr/include/sys/_types.h:
 
 /usr/include/sys/cdefs.h:
 
-/usr/include/machine/types.h:
+/usr/include/machine/_types.h:
 
-/usr/include/ppc/types.h:
+/usr/include/ppc/_types.h:
 
-/usr/include/machine/ansi.h:
+/usr/include/stdlib.h:
 
-/usr/include/ppc/ansi.h:
+/usr/include/sys/wait.h:
+
+/usr/include/sys/signal.h:
+
+/usr/include/sys/appleapiopts.h:
+
+/usr/include/machine/signal.h:
+
+/usr/include/ppc/signal.h:
+
+/usr/include/sys/resource.h:
 
 /usr/include/machine/endian.h:
 
 /usr/include/ppc/endian.h:
 
-/usr/include/stdlib.h:
+/usr/include/sys/_endian.h:
 
 /usr/include/alloca.h:
+
+/usr/include/machine/types.h:
+
+/usr/include/ppc/types.h:
 
 cdd.h:
 
@@ -41,6 +58,6 @@ cddtypes.h:
 
 /usr/include/time.h:
 
-/usr/include/gcc/darwin/3.3/machine/limits.h:
+/usr/include/machine/_limits.h:
 
-/usr/include/ppc/limits.h:
+/usr/include/ppc/_limits.h:
