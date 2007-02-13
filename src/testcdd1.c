@@ -97,6 +97,7 @@ int main(int argc, char *argv[])
     dd_WriteErrorMessages(stdout,err);
   }
 _L99:
+  dd_free_global_constants();  /* At the end, this must be called. */
   return 0;
 }
 

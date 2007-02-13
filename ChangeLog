@@ -1,6 +1,13 @@
-libcdd, cdd & cdd+ HISTORY file    (as of April 23, 2006)
+libcdd, cdd & cdd+ HISTORY file   (as of February 12, 2007)
 
 *** libcdd version (date) / changes ***
+
+Version 094d (February 12, 2007) /
+ - A bug of reporting a wrong unbounded direction vector of
+   a dual inconsistent LP is fixed.  This bug occurs only
+   if the exact GMP version of the dd_LPSolve is used.
+   For example, this error may occur in scdd_gmp.  This
+   error was reported by Lars Schewe.
 
 Version 094c (April 23, 2006) /
  - A bug for reading a rational number of length longer

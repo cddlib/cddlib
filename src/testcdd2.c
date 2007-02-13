@@ -84,6 +84,7 @@ int main(int argc, char *argv[])
 _L99:
   if (err!=dd_NoError) dd_WriteErrorMessages(stdout,err);
 
+  dd_free_global_constants();  /* At the end, this must be called. */
   return 0;
 }
 

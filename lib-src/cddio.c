@@ -1,6 +1,6 @@
 /* cddio.c:  Basic Input and Output Procedures for cddlib
    written by Komei Fukuda, fukuda@ifor.math.ethz.ch
-   Version 0.94c, April 23, 2006
+   Version 0.94d, February 12, 2007
 */
 
 /* cddlib : C-library of the double description method for

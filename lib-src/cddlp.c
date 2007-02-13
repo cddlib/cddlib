@@ -1,6 +1,6 @@
 /* cddlp.c:  dual simplex method c-code
    written by Komei Fukuda, fukuda@ifor.math.ethz.ch
-   Version 0.94a, Aug. 24, 2005
+   Version 0.94d, February 12, 2007
 */
 
 /* cddlp.c : C-Implementation of the dual simplex method for
@@ -49,10 +49,10 @@ void dd_FindDualFeasibleBasis(dd_rowrange,dd_colrange,dd_Amatrix,dd_Bmatrix,dd_r
 void dd_BasisStatus(ddf_LPPtr lpf, dd_LPPtr lp, dd_boolean*);
 void dd_BasisStatusMinimize(dd_rowrange,dd_colrange, dd_Amatrix,dd_Bmatrix,dd_rowset,
     dd_rowrange,dd_colrange,ddf_LPStatusType,mytype *,dd_Arow,dd_Arow,dd_rowset,ddf_colindex,
-    ddf_rowrange,ddf_colrange,long *, int *, int *);
+    ddf_rowrange,ddf_colrange,dd_colrange *,long *, int *, int *);
 void dd_BasisStatusMaximize(dd_rowrange,dd_colrange,dd_Amatrix,dd_Bmatrix,dd_rowset,
     dd_rowrange,dd_colrange,ddf_LPStatusType,mytype *,dd_Arow,dd_Arow,dd_rowset,ddf_colindex,
-    ddf_rowrange,ddf_colrange,long *, int *, int *);
+    ddf_rowrange,ddf_colrange,dd_colrange *,long *, int *, int *);
 #endif
 
 void dd_WriteBmatrix(FILE *f,dd_colrange d_size,dd_Bmatrix T);
@@ -963,32 +963,32 @@ dd_LPStatusType LPSf2LPS(ddf_LPStatusType lpsf)
 void dd_BasisStatus(ddf_LPPtr lpf, dd_LPPtr lp, dd_boolean *LPScorrect)
 {
   int i;
-  dd_colrange j;
+  dd_colrange se, j;
   dd_boolean basisfound; 
  
   switch (lp->objective) {
     case dd_LPmax:
       dd_BasisStatusMaximize(lp->m,lp->d,lp->A,lp->B,lp->equalityset,lp->objrow,lp->rhscol,
-           lpf->LPS,&(lp->optvalue),lp->sol,lp->dsol,lp->posset_extra,lpf->nbindex,lpf->re,lpf->se,lp->pivots, 
+           lpf->LPS,&(lp->optvalue),lp->sol,lp->dsol,lp->posset_extra,lpf->nbindex,lpf->re,lpf->se,&se,lp->pivots, 
            &basisfound, LPScorrect);
       if (*LPScorrect) {
          /* printf("BasisStatus Check: the current basis is verified with GMP\n"); */
          lp->LPS=LPSf2LPS(lpf->LPS);
          lp->re=lpf->re;
-         lp->se=lpf->se;
+         lp->se=se;
          for (j=1; j<=lp->d; j++) lp->nbindex[j]=lpf->nbindex[j]; 
       }
       for (i=1; i<=5; i++) lp->pivots[i-1]+=lpf->pivots[i-1]; 
       break;
     case dd_LPmin:
       dd_BasisStatusMinimize(lp->m,lp->d,lp->A,lp->B,lp->equalityset,lp->objrow,lp->rhscol,
-           lpf->LPS,&(lp->optvalue),lp->sol,lp->dsol,lp->posset_extra,lpf->nbindex,lpf->re,lpf->se,lp->pivots, 
+           lpf->LPS,&(lp->optvalue),lp->sol,lp->dsol,lp->posset_extra,lpf->nbindex,lpf->re,lpf->se,&se,lp->pivots, 
            &basisfound, LPScorrect);
       if (*LPScorrect) {
          /* printf("BasisStatus Check: the current basis is verified with GMP\n"); */
          lp->LPS=LPSf2LPS(lpf->LPS);
          lp->re=lpf->re;
-         lp->se=lpf->se;
+         lp->se=se;
          for (j=1; j<=lp->d; j++) lp->nbindex[j]=lpf->nbindex[j]; 
       }
       for (i=1; i<=5; i++) lp->pivots[i-1]+=lpf->pivots[i-1]; 
@@ -1866,6 +1866,7 @@ When LP is dual-inconsistent then *se returns the evidence column.
   ddf_ErrorType errf;
   dd_boolean LPScorrect=dd_FALSE;
   dd_boolean localdebug=dd_FALSE;
+  if (dd_debug) localdebug=dd_debug;
 #endif
 
   *err=dd_NoError;
@@ -3560,7 +3561,7 @@ void dd_BasisStatusMaximize(dd_rowrange m_size,dd_colrange d_size,
     dd_Amatrix A,dd_Bmatrix T,dd_rowset equalityset,
     dd_rowrange objrow,dd_colrange rhscol,ddf_LPStatusType LPS,
     mytype *optvalue,dd_Arow sol,dd_Arow dsol,dd_rowset posset, ddf_colindex nbindex,
-    ddf_rowrange re,ddf_colrange se,long *pivots, int *found, int *LPScorrect)
+    ddf_rowrange re,ddf_colrange se, dd_colrange *nse, long *pivots, int *found, int *LPScorrect)
 /*  This is just to check whether the status LPS of the basis given by 
 nbindex with extra certificates se or re is correct.  It is done
 by recomputing the basis inverse matrix T.  It does not solve the LP
@@ -3575,7 +3576,7 @@ arithmetics.
 {
   long pivots0,pivots1;
   dd_rowrange i,is;
-  dd_colrange s,j;
+  dd_colrange s,senew,j;
   static dd_rowindex bflag;
   static long mlast=0;
   static dd_rowindex OrderVector;  /* the permutation vector to store a preordered row indices */
@@ -3622,6 +3623,11 @@ arithmetics.
   
   dd_FindLPBasis2(m_size,d_size,A,T,OrderVector, equalityset,nbindex,bflag,
       objrow,rhscol,&s,found,&pivots0);
+
+/* set up the new se column and corresponding variable */
+  senew=bflag[is];
+  is=nbindex[senew];
+  if (localdebug) printf("new se=%ld,  is=%ld\n", senew, is);
       
   pivots[4]=pivots0;  /*GMP postopt pivots */
   dd_statBSpivots+=pivots0;
@@ -3702,7 +3708,8 @@ arithmetics.
   ddlps=LPSf2LPS(LPS);
 
   dd_SetSolutions(m_size,d_size,A,T,
-   objrow,rhscol,ddlps,optvalue,sol,dsol,posset,nbindex,re,se,bflag);
+   objrow,rhscol,ddlps,optvalue,sol,dsol,posset,nbindex,re,senew,bflag);
+  *nse=senew;
 
   
 _L99:
@@ -3714,13 +3721,13 @@ void dd_BasisStatusMinimize(dd_rowrange m_size,dd_colrange d_size,
     dd_Amatrix A,dd_Bmatrix T,dd_rowset equalityset,
     dd_rowrange objrow,dd_colrange rhscol,ddf_LPStatusType LPS,
     mytype *optvalue,dd_Arow sol,dd_Arow dsol, dd_rowset posset, ddf_colindex nbindex,
-    ddf_rowrange re,ddf_colrange se,long *pivots, int *found, int *LPScorrect)
+    ddf_rowrange re,ddf_colrange se,dd_colrange *nse,long *pivots, int *found, int *LPScorrect)
 {
    dd_colrange j;
    
    for (j=1; j<=d_size; j++) dd_neg(A[objrow-1][j-1],A[objrow-1][j-1]);
    dd_BasisStatusMaximize(m_size,d_size,A,T,equalityset, objrow,rhscol,
-     LPS,optvalue,sol,dsol,posset,nbindex,re,se,pivots,found,LPScorrect);
+     LPS,optvalue,sol,dsol,posset,nbindex,re,se,nse,pivots,found,LPScorrect);
    dd_neg(*optvalue,*optvalue);
    for (j=1; j<=d_size; j++){
      dd_neg(dsol[j-1],dsol[j-1]);

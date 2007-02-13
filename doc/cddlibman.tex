@@ -1,7 +1,7 @@
 % The name of this file: cddlibman.tex
 % written by by Komei Fukuda
 % created March 15, 1999
-% modified August 25, 2005
+% modified February 12, 2007
 %
 \documentclass[11pt]{article}
 \usepackage{html,amsmath,amssymb}
@@ -29,7 +29,7 @@ Mathematics Institute / ROSO\\
 EPFL, CH-1015 Lausanne, Switzerland\\
 email: fukuda@ifor.math.ethz.ch\\
 }
-\date{ (cddlib ver. 0.94, manual ver. August 25, 2005)}
+\date{ (cddlib ver. 0.94, manual ver. February 12, 2007)}
 
 \maketitle
 
@@ -436,6 +436,9 @@ before doing any computation.    Just call this once.
  See Section \ref{constants} for the definitions of
 constants.
 
+\item[{\tt void dd\_free\_global\_constants(void)}]:\\
+This is to free the global constants. This should be called
+when one does not use cddlib functions anymore.
 \end{description}
 
 \subsection{Core Functions}  \label{CoreLibrary}
