@@ -1,6 +1,6 @@
 /* cddcore.c:  Core Procedures for cddlib
    written by Komei Fukuda, fukuda@ifor.math.ethz.ch
-   Version 0.94d, February 12, 2007
+   Version 0.94e, January 27, 2008
 */
 
 /* cddlib : C-library of the double description method for
@@ -928,7 +928,7 @@ long dd_MatrixRank(dd_MatrixPtr M, dd_rowset ignoredrows, dd_colset ignoredcols,
   set_copy(ColSelected,ignoredcols);
   dd_InitializeBmatrix(M->colsize, &B);
   dd_SetToIdentity(M->colsize, B);
-  roworder=(long *)calloc(M->rowsize+1,sizeof(long*));
+  roworder=(long *)calloc(M->rowsize+1,sizeof(long));
   for (r=0; r<M->rowsize; r++){roworder[r+1]=r+1;
   }
 

@@ -1,6 +1,15 @@
-libcdd, cdd & cdd+ HISTORY file   (as of February 12, 2007)
+libcdd, cdd & cdd+ HISTORY file   (as of January 27, 2008)
 
 *** libcdd version (date) / changes ***
+
+Version 094e (January 27, 2008) /
+ - A bug of reporting a wrong (sign) certificate of
+   an infeasible LP is fixed.  This bug reported by
+   Charles Geyer, occurs if the exact GMP version of 
+   the dd_LPSolve is used with minimization. A bug of
+   reporting infeasibility of a feasible LP with 
+   column non-full rank LP is fixed.  This bug was reported
+   by Sven Verdoolaege.
 
 Version 094d (February 12, 2007) /
  - A bug of reporting a wrong unbounded direction vector of

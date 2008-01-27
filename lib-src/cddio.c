@@ -1,6 +1,6 @@
 /* cddio.c:  Basic Input and Output Procedures for cddlib
    written by Komei Fukuda, fukuda@ifor.math.ethz.ch
-   Version 0.94d, February 12, 2007
+   Version 0.94e, January 27, 2008
 */
 
 /* cddlib : C-library of the double description method for
@@ -310,8 +310,8 @@ dd_MatrixPtr dd_MatrixNormalizedSortedCopy(dd_MatrixPtr M,dd_rowindex *newpos)  
   /* if (newpos!=NULL) free(newpos); */
   m= M->rowsize;
   d= M->colsize;
-  roworder=(long *)calloc(m+1,sizeof(long*));
-  *newpos=(long *)calloc(m+1,sizeof(long*));
+  roworder=(long *)calloc(m+1,sizeof(long));
+  *newpos=(long *)calloc(m+1,sizeof(long));
   if (m >=0 && d >=0){
     Mnorm=dd_MatrixNormalizedCopy(M);
     Mcopy=dd_CreateMatrix(m, d);
@@ -354,7 +354,7 @@ dd_MatrixPtr dd_MatrixUniqueCopy(dd_MatrixPtr M,dd_rowindex *newpos)
   m= M->rowsize;
   d= M->colsize;
   preferredrows=M->linset;
-  roworder=(long *)calloc(m+1,sizeof(long*));
+  roworder=(long *)calloc(m+1,sizeof(long));
   if (m >=0 && d >=0){
     for(i=1; i<=m; i++) roworder[i]=i;
     dd_UniqueRows(roworder, 1, m, M->matrix, d,preferredrows, &uniqrows);
@@ -391,8 +391,8 @@ dd_MatrixPtr dd_MatrixNormalizedSortedUniqueCopy(dd_MatrixPtr M,dd_rowindex *new
   /* if (newpos!=NULL) free(newpos); */
   m= M->rowsize;
   d= M->colsize;
-  *newpos=(long *)calloc(m+1,sizeof(long*));  
-  newpos1r=(long *)calloc(m+1,sizeof(long*));  
+  *newpos=(long *)calloc(m+1,sizeof(long));  
+  newpos1r=(long *)calloc(m+1,sizeof(long));  
   if (m>=0 && d>=0){
     M1=dd_MatrixNormalizedSortedCopy(M,&newpos1);
     for (i=1; i<=m;i++) newpos1r[newpos1[i]]=i;  /* reverse of newpos1 */
@@ -426,8 +426,8 @@ dd_MatrixPtr dd_MatrixSortedUniqueCopy(dd_MatrixPtr M,dd_rowindex *newpos)  /* 0
   /* if (newpos!=NULL) free(newpos); */
   m= M->rowsize;
   d= M->colsize;
-  *newpos=(long *)calloc(m+1,sizeof(long*));  
-  newpos1r=(long *)calloc(m+1,sizeof(long*));  
+  *newpos=(long *)calloc(m+1,sizeof(long));  
+  newpos1r=(long *)calloc(m+1,sizeof(long));  
   if (m>=0 && d>=0){
     M1=dd_MatrixNormalizedSortedCopy(M,&newpos1);
     for (i=1; i<=m;i++) newpos1r[newpos1[i]]=i;  /* reverse of newpos1 */
@@ -539,7 +539,7 @@ int dd_MatrixRowRemove2(dd_MatrixPtr *M, dd_rowrange r, dd_rowindex *newpos) /* 
   d=(*M)->colsize;
 
   if (r >= 1 && r <=m){
-    roworder=(long *)calloc(m+1,sizeof(long*));
+    roworder=(long *)calloc(m+1,sizeof(long));
     (*M)->rowsize=m-1;
     dd_FreeArow(d, (*M)->matrix[r-1]);
     set_delelem((*M)->linset,r);
@@ -605,7 +605,7 @@ dd_MatrixPtr dd_MatrixSubmatrix2(dd_MatrixPtr M, dd_rowset delset,dd_rowindex *n
   d= M->colsize;
   msub=m;
   if (m >=0 && d >=0){
-    roworder=(long *)calloc(m+1,sizeof(long*));
+    roworder=(long *)calloc(m+1,sizeof(long));
     for (i=1; i<=m; i++) {
        if (set_member(i,delset)) msub-=1;
     }
@@ -645,7 +645,7 @@ dd_MatrixPtr dd_MatrixSubmatrix2L(dd_MatrixPtr M, dd_rowset delset,dd_rowindex *
   d= M->colsize;
   msub=m;
   if (m >=0 && d >=0){
-    roworder=(long *)calloc(m+1,sizeof(long*));
+    roworder=(long *)calloc(m+1,sizeof(long));
     for (i=1; i<=m; i++) {
        if (set_member(i,delset)) msub-=1;
     }
@@ -729,6 +729,7 @@ dd_PolyhedraPtr dd_CreatePolyhedraData(dd_rowrange m, dd_colrange d)
   poly->n           =-1;  /* the size of output is not known */
   poly->m_alloc     =m+2; /* the allocated row size of matrix A */
   poly->d_alloc     =d;   /* the allocated col size of matrix A */
+  poly->ldim		=0;   /* initialize the linearity dimension */
   poly->numbtype=dd_Real;
   dd_InitializeAmatrix(poly->m_alloc,poly->d_alloc,&(poly->A));
   dd_InitializeArow(d,&(poly->c));           /* cost vector */
@@ -1266,21 +1267,8 @@ void dd_WriteReal(FILE *f, mytype x)
 void dd_WriteNumber(FILE *f, mytype x)
 {
 #if defined GMPRATIONAL
-  mpz_t zn,zd;
-
-  mpz_init(zn); mpz_init(zd);
-  mpq_canonicalize(x);
-  mpq_get_num(zn,x);
-  mpq_get_den(zd,x);
   fprintf(f," ");
-  if (mpz_sgn(zn)==0){
-    fprintf(f,"0");
-  } else if (mpz_cmp_ui(zd,1U)==0){
-    mpz_out_str(f,10,zn);
-  } else {
-    mpz_out_str(f,10,zn);fprintf(f,"/");mpz_out_str(f,10,zd);
-  }
-  mpz_clear(zn); mpz_clear(zd);
+  mpq_out_str(f, 10, x);
 #else
   dd_WriteReal(f, x);
 #endif
