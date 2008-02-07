@@ -17,6 +17,10 @@ typedef unsigned long *set_type;   /* set type definition */
 
 typedef unsigned char set_card_lut_t;
 
+#if defined(__cplusplus)
+extern "C" {
+#endif
+
 unsigned long set_blocks(long len);
 void set_initialize(set_type *setp,long len);
 void set_free(set_type set);
@@ -38,7 +42,9 @@ void set_fwrite_compl(FILE *f,set_type set); /* write the complement */
 void set_binwrite(set_type set);
 void set_fbinwrite(FILE *f,set_type set);
 
-
+#if defined(__cplusplus)
+}
+#endif
 
 /* End of File: setoper.h */
 

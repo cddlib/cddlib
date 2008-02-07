@@ -1,6 +1,6 @@
 /* cddmp.h       (cddlib arithmetic operations using gmp)
    Copyright: Komei Fukuda 2000, fukuda@ifor.math.ethz.ch
-   Version 0.94e, January 27, 2008
+   Version 0.94f, February 7, 2008
 */
 
 /* This program is free software; you can redistribute it and/or modify
@@ -95,6 +95,10 @@
  typedef double mytype[1];
 #endif
 
+#if defined(__cplusplus)
+extern "C" {
+#endif
+
 void ddd_mpq_set_si(mytype,signed long);
 void ddd_init(mytype);  
 void ddd_clear(mytype);
@@ -115,5 +119,9 @@ void ddd_mpq_set_si(mytype,signed long);
 
 void dd_set_global_constants(void);
 void dd_free_global_constants(void);  /* 094d */
+
+#if defined(__cplusplus)
+}
+#endif
 
 /* end of  cddmp.h  */

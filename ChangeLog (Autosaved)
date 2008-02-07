@@ -2,7 +2,7 @@ libcdd, cdd & cdd+ HISTORY file   (as of February 7, 2008)
 
 *** libcdd version (date) / changes ***
 
-Version 094e (February 7, 2008) /
+Version 094f (February 7, 2008) /
  - Thanks to Sven Verdoolaege's fixes,
    the "configure" script now uses "gcc" as the default
    compiler, rather than "g++" in earlier releases,

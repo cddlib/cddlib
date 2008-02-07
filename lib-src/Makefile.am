@@ -15,8 +15,4 @@ cddmp.h \
 cddtypes.h \
 setoper.h
 
-CC       = $(CXX)
-CPPFLAGS = -UGMPRATIONAL
-CXXFLAGS = -O3
-
-
+AM_CPPFLAGS = -UGMPRATIONAL

@@ -65,10 +65,7 @@ OBJEXT = @OBJEXT@
 PATH_SEPARATOR = @PATH_SEPARATOR@
 AMTAR = @AMTAR@
 AWK = @AWK@
-
-# cddmathlink_SOURCES                = cddmathlink.c cddmlio.h cddmlio.c
-CC = $(CXX)
-CXX = @CXX@
+CC = @CC@
 DEPDIR = @DEPDIR@
 INSTALL_STRIP_PROGRAM = @INSTALL_STRIP_PROGRAM@
 PACKAGE = @PACKAGE@
@@ -108,10 +105,11 @@ testcdd2_SOURCES = testcdd2.c
 testlp1_SOURCES = testlp1.c
 testlp2_SOURCES = testlp2.c
 testlp3_SOURCES = testlp3.c
+
+# cddmathlink_SOURCES                = cddmathlink.c cddmlio.h cddmlio.c
 LDADD = ../lib-src/libcdd.a
 INCLUDES = -I../lib-src
-CPPFLAGS = -UGMPRATIONAL
-CXXFLAGS = -O2
+AM_CPPFLAGS = -UGMPRATIONAL
 subdir = src
 mkinstalldirs = $(SHELL) $(top_srcdir)/mkinstalldirs
 CONFIG_CLEAN_FILES =
@@ -190,6 +188,7 @@ testshoot_LDFLAGS =
 
 DEFS = @DEFS@
 DEFAULT_INCLUDES =  -I. -I$(srcdir)
+CPPFLAGS = @CPPFLAGS@
 LDFLAGS = @LDFLAGS@
 LIBS = @LIBS@
 depcomp = $(SHELL) $(top_srcdir)/depcomp

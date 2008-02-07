@@ -1,6 +1,6 @@
-2005-08-04 (August 4, 2005)
+2008-02-07 (February 7, 2008)
 -----------------------------------------------
-C-Library cddlib (version 0.94) README FILE
+C-Library cddlib (version 0.94f) README FILE
 -----------------------------------------------
 1. The C-library  cddlib is a C implementation of the Double Description 
 Method of Motzkin et al. for generating all vertices (i.e. extreme points)
@@ -89,14 +89,14 @@ where *** must be replaced by the appropriate version number, and
 For compilation of libcdd, go to the cddlib top directorycddlib
 and follow the general instruction of autoconf.  In generic
 unix/linux environment, use "./configure" and "make".
-To enforce a certain compiler (say, C-compiler instead of C++) 
-to be used, specify it as
+To enforce a certain compiler to be used, specify it as
 
-   CXX=gcc ./configure
+   CXX=g++ ./configure
 
-The DEFAULT is g++ which might cause problems when you want to link with
-objects created by gcc.  Note that one must install GMP-4.1 (or GMP-3.*) first.  
-For compilation of MathLink programs, use gcc rather than g++, and
+The default compiler is gcc.
+Note that one must install GMP-4.* (or higher) first.
+
+For compilation of MathLink programs,
 you need a binary "mprep", MathLink library "libML.a" and include file
 "mathlink.h" which come with Mathematica.   I have tested for Mathematica 4.1
 and 3.* on MacOSX and Linux.  This part is not "autoconf"igured
@@ -145,10 +145,6 @@ and Institute of Theoretical Computer Science
 ETH Zentrum, CH-8092 Zurich, Switzerland
 Tel +41-1-632-4023, Fax +41-1-632-1025
 http://www.ifor.math.ethz.ch/staff/fukuda/
-and
-Mathematics Institute / ROSO
-EPFL, CH-1015 Lausanne, Switzerland
-Tel +41-21-693-2536, Fax +41-21-693-5570
 
 // END of README 
 

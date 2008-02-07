@@ -29,10 +29,8 @@ testlp2_gmp_SOURCES                = testlp2.c
 testlp3_gmp_SOURCES                = testlp3.c
 # cddmathlink_SOURCES                = cddmathlink.c cddmlio.h cddmlio.c
 
-CC           = $(CXX)
 LDADD        = ../lib-src-gmp/libcddgmp.a
-LDFLAGS      = -L$(gmplibdir)
+AM_LDFLAGS   = -L$(gmplibdir)
 INCLUDES     = -I../lib-src-gmp
 INCLUDES    += -I$(gmpincludedir)
-CPPFLAGS     = -DGMPRATIONAL
-CXXFLAGS     = -O2
+AM_CPPFLAGS  = -DGMPRATIONAL

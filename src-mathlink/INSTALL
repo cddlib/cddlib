@@ -16,11 +16,6 @@ Once a correct Makefile is created, just type
 Before cddmathlink compilation, one must compile 
 the cddlib libraries (libcdd.a and libcddgmp.a) which are
 supposed to be in the lib-src and lib-src-gmp directories.  
-It is perhaps necessary to compile cddlib using the GNU gcc 
-compiler, not with g++.  This can be done by configuring
-cddlib with
-
-CXX=gcc ./configure
 
 There is a new version of cddmathlink, called
 cddmathlink2 which supports rational exact arithmetic with GMP.

@@ -65,9 +65,7 @@ OBJEXT = @OBJEXT@
 PATH_SEPARATOR = @PATH_SEPARATOR@
 AMTAR = @AMTAR@
 AWK = @AWK@
-
-CC = $(CXX)
-CXX = @CXX@
+CC = @CC@
 DEPDIR = @DEPDIR@
 INSTALL_STRIP_PROGRAM = @INSTALL_STRIP_PROGRAM@
 PACKAGE = @PACKAGE@
@@ -95,8 +93,8 @@ cddmp.h \
 cddtypes.h \
 setoper.h
 
-CPPFLAGS = -UGMPRATIONAL
-CXXFLAGS = -O3
+
+AM_CPPFLAGS = -UGMPRATIONAL
 subdir = lib-src
 mkinstalldirs = $(SHELL) $(top_srcdir)/mkinstalldirs
 CONFIG_CLEAN_FILES =
@@ -111,6 +109,7 @@ libcdd_a_OBJECTS = $(am_libcdd_a_OBJECTS)
 
 DEFS = @DEFS@
 DEFAULT_INCLUDES =  -I. -I$(srcdir)
+CPPFLAGS = @CPPFLAGS@
 LDFLAGS = @LDFLAGS@
 LIBS = @LIBS@
 depcomp = $(SHELL) $(top_srcdir)/depcomp

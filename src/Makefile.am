@@ -29,8 +29,6 @@ testlp2_SOURCES                = testlp2.c
 testlp3_SOURCES                = testlp3.c
 # cddmathlink_SOURCES                = cddmathlink.c cddmlio.h cddmlio.c
 
-CC           = $(CXX)
 LDADD        = ../lib-src/libcdd.a
 INCLUDES     = -I../lib-src
-CPPFLAGS     = -UGMPRATIONAL
-CXXFLAGS     = -O2
+AM_CPPFLAGS  = -UGMPRATIONAL

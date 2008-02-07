@@ -65,9 +65,7 @@ OBJEXT = @OBJEXT@
 PATH_SEPARATOR = @PATH_SEPARATOR@
 AMTAR = @AMTAR@
 AWK = @AWK@
-
-CC = $(CXX)
-CXX = @CXX@
+CC = @CC@
 DEPDIR = @DEPDIR@
 INSTALL_STRIP_PROGRAM = @INSTALL_STRIP_PROGRAM@
 PACKAGE = @PACKAGE@
@@ -104,8 +102,8 @@ cddmp_f.h \
 cddtypes_f.h \
 setoper.h
 
-CPPFLAGS = -DGMPRATIONAL
-CXXFLAGS = -O3
+
+AM_CPPFLAGS = -DGMPRATIONAL
 INCLUDES = -I$(gmpincludedir)
 subdir = lib-src-gmp
 mkinstalldirs = $(SHELL) $(top_srcdir)/mkinstalldirs
@@ -123,6 +121,7 @@ libcddgmp_a_OBJECTS = $(am_libcddgmp_a_OBJECTS)
 
 DEFS = @DEFS@
 DEFAULT_INCLUDES =  -I. -I$(srcdir)
+CPPFLAGS = @CPPFLAGS@
 LDFLAGS = @LDFLAGS@
 LIBS = @LIBS@
 depcomp = $(SHELL) $(top_srcdir)/depcomp

@@ -1,6 +1,6 @@
 /* cdd.h: Header file for cddlib.c 
    written by Komei Fukuda, fukuda@ifor.math.ethz.ch
-   Version 0.94e, January 27, 2008
+   Version 0.94f, February 7, 2008
 */
 
 /* cddlib.c : C-Implementation of the double description method for
@@ -52,6 +52,10 @@ extern dd_boolean dd_choiceLexicoPivotQ;    /* whether to use the lexicographic 
 #define dd_almostzero  1.0E-7
 
 /* ---------- FUNCTIONS MEANT TO BE PUBLIC ---------- */
+
+#if defined(__cplusplus)
+extern "C" {
+#endif
 
 /* basic matrix manipulations */
 void dd_InitializeArow(dd_colrange,dd_Arow *);
@@ -206,6 +210,10 @@ void dd_WriteLPMode(FILE *f);
 
 dd_MatrixPtr dd_FourierElimination(dd_MatrixPtr,dd_ErrorType *);
 dd_MatrixPtr dd_BlockElimination(dd_MatrixPtr, dd_colset, dd_ErrorType *);
+
+#if defined(__cplusplus)
+}
+#endif
 
 /* ---------- FUNCTIONS MEANT TO BE NON-PUBLIC ---------- */
 void dd_QuickSort(dd_rowindex, long, long, dd_Amatrix, long);

@@ -24,8 +24,6 @@ cddmp_f.h \
 cddtypes_f.h \
 setoper.h
 
-CC       = $(CXX)
-CPPFLAGS = -DGMPRATIONAL
-CXXFLAGS = -O3
-INCLUDES = -I$(gmpincludedir)
+AM_CPPFLAGS = -DGMPRATIONAL
+INCLUDES    = -I$(gmpincludedir)
 
