@@ -1,6 +1,6 @@
 /* cdd.h: Header file for cddlib.c 
    written by Komei Fukuda, fukuda@ifor.math.ethz.ch
-   Version 0.94f, February 7, 2008
+   Version 0.94g, March 23, 2012
 */
 
 /* cddlib.c : C-Implementation of the double description method for
@@ -48,8 +48,8 @@ extern dd_LPSolverType dd_choiceLPSolverDefault;  /* Default LP solver Algorithm
 extern dd_LPSolverType dd_choiceRedcheckAlgorithm;  /* Redundancy Checking Algorithm */
 extern dd_boolean dd_choiceLexicoPivotQ;    /* whether to use the lexicographic pivot */
 
-   /* to be used to avoid creating temporary spaces for mytype */
-#define dd_almostzero  1.0E-7
+/* to be used to avoid creating temporary spaces for mytype */
+#define dd_almostzero  1.0E-6
 
 /* ---------- FUNCTIONS MEANT TO BE PUBLIC ---------- */
 
@@ -225,7 +225,7 @@ dd_boolean dd_DoubleDescription2(dd_PolyhedraPtr, dd_RowOrderType, dd_ErrorType 
 
 void dd_FreeDDMemory0(dd_ConePtr);
 void dd_fread_rational_value (FILE *f, mytype value);
-void dd_sread_rational_value (char *s, mytype value);
+void dd_sread_rational_value (const char *s, mytype value);
 void dd_AddNewHalfspace1(dd_ConePtr, dd_rowrange);
 void dd_AddNewHalfspace2(dd_ConePtr, dd_rowrange);
 void dd_AddRay(dd_ConePtr, mytype *);
@@ -259,7 +259,7 @@ dd_boolean dd_LexLarger(mytype *, mytype *, long);
 dd_boolean dd_LexEqual(mytype *, mytype *, long);
 void dd_Normalize(dd_colrange, mytype *);
 void dd_MatrixIntegerFilter(dd_MatrixPtr);
-void dd_ProcessCommandLine(FILE*,dd_MatrixPtr, char *);
+void dd_ProcessCommandLine(FILE*,dd_MatrixPtr, const char *);
 void dd_SelectNextHalfspace(dd_ConePtr, dd_rowset, dd_rowrange *);
 void dd_SelectPivot2(dd_rowrange,dd_colrange,dd_Amatrix,
 dd_Bmatrix,dd_RowOrderType,dd_rowindex, dd_rowset,dd_rowrange,dd_rowset,
@@ -277,7 +277,7 @@ void dd_WriteRay(FILE *, dd_colrange, dd_RayPtr,
 void dd_ZeroIndexSet(dd_rowrange, dd_colrange, dd_Amatrix, mytype *, dd_rowset);
 
 /* New functions to handle data loading, NON-PUBLIC */
-dd_NumberType dd_GetNumberType(char *);
+dd_NumberType dd_GetNumberType(const char *);
 dd_ConePtr dd_ConeDataLoad(dd_PolyhedraPtr);
 dd_PolyhedraPtr dd_CreatePolyhedraData(dd_rowrange, dd_colrange);
 dd_boolean dd_InitializeConeData(dd_rowrange, dd_colrange, dd_ConePtr*);

@@ -1,6 +1,6 @@
 /* cddlib.c: cdd library  (library version of cdd)
    written by Komei Fukuda, fukuda@ifor.math.ethz.ch
-   Version 0.94f, February 7, 2008
+   Version 0.94g, March 23, 2012
    Standard ftp site: ftp.ifor.math.ethz.ch, Directory: pub/fukuda/cdd
 */
 
@@ -152,8 +152,8 @@ void dd_InitialDataSetup(dd_ConePtr cone)
   if (last_d < cone->d){
     if (last_d>0) {
     for (j=0; j<last_d; j++){
-      dd_init(Vector1[j]);
-      dd_init(Vector2[j]);
+      dd_clear(Vector1[j]);
+      dd_clear(Vector2[j]);
     }
     free(Vector1); free(Vector2);
     }

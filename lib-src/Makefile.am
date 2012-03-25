@@ -1,6 +1,6 @@
-lib_LIBRARIES = libcdd.a
+lib_LTLIBRARIES = libcdd.la
 
-libcdd_a_SOURCES = \
+libcdd_la_SOURCES = \
 cddcore.c \
 cddlp.c	\
 cddmp.c \
@@ -16,3 +16,4 @@ cddtypes.h \
 setoper.h
 
 AM_CPPFLAGS = -UGMPRATIONAL
+AM_LDFLAGS = -version-info 0:0:0

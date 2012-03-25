@@ -1,6 +1,6 @@
 /* cddlp.c:  dual simplex method c-code
    written by Komei Fukuda, fukuda@ifor.math.ethz.ch
-   Version 0.94f, February 7, 2008
+   Version 0.94g, March 23, 2012
 */
 
 /* cddlp.c : C-Implementation of the dual simplex method for
@@ -557,8 +557,8 @@ void dd_SelectDualSimplexPivot(dd_rowrange m_size,dd_colrange d_size,
     for (j=1; j<=d_size; j++){ dd_init(rcost[j-1]);}
     set_initialize(&tieset,d_size);
     set_initialize(&stieset,d_size);
+    d_last=d_size;
   }
-  d_last=d_size;
 
   *r=0; *s=0;
   *selected=dd_FALSE;
@@ -1202,8 +1202,8 @@ void dd_FindDualFeasibleBasis(dd_rowrange m_size,dd_colrange d_size,
     rcost=(mytype*) calloc(d_size,sizeof(mytype));
     nbindex_ref=(long*) calloc(d_size+1,sizeof(long));
     for (j=1; j<=d_size; j++){ dd_init(rcost[j-1]);}
+    d_last=d_size;
   }
-  d_last=d_size;
 
   *err=dd_NoError; *lps=dd_LPSundecided; *s=0;
   local_m_size=m_size+1;  /* increase m_size by 1 */

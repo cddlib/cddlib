@@ -1,6 +1,6 @@
-lib_LIBRARIES = libcddgmp.a
+lib_LTLIBRARIES = libcddgmp.la
 
-libcddgmp_a_SOURCES = \
+libcddgmp_la_SOURCES = \
 cddcore.c \
 cddlp.c	\
 cddmp.c \
@@ -24,6 +24,5 @@ cddmp_f.h \
 cddtypes_f.h \
 setoper.h
 
-AM_CPPFLAGS = -DGMPRATIONAL
-INCLUDES    = -I$(gmpincludedir)
-
+AM_CPPFLAGS = -I$(gmpincludedir) -DGMPRATIONAL
+AM_LDFLAGS = -version-info 0:0:0

@@ -1,6 +1,6 @@
-2008-02-07 (February 7, 2008)
+2012-03-25 (March 25, 2012)
 -----------------------------------------------
-C-Library cddlib (version 0.94f) README FILE
+C-Library cddlib (version 0.94g) README FILE
 -----------------------------------------------
 1. The C-library  cddlib is a C implementation of the Double Description 
 Method of Motzkin et al. for generating all vertices (i.e. extreme points)
@@ -62,7 +62,7 @@ If you need speedy computation with floating-point arithmetic,
 you might want to "play with" the constant "dd_almostzero" defined 
 in cdd.h:
 
-   #define dd_almostzero  1.0E-7
+   #define dd_almostzero  1.0E-6
 
 This number is used to recognize whether a number is zero: 
 a number whose absolute value is smaller
@@ -119,7 +119,7 @@ or (with GMP rational arithmetic)
    % gcc -I/usr/local/include -L/usr/local/lib -DGMPRATIONAL testcdd1.c -lcddgmp -lgmp
 
 
-5. cddlib comes with a MatheLink version of cddlib that can be
+5. cddlib comes with a MathLink version of cddlib that can be
 called from Mathematica (tested for Mathematica 2.2, 3.0, 4.1, 5.1).
 A few Mathematica notebooks are included to explain how one can 
 use this program "cddmathlink" from Mathematica
@@ -139,11 +139,10 @@ for free software development is user's appreciation.
 
 For more information, contact
 
-Komei Fukuda <fukuda@ifor.math.ethz.ch>
-Institute for Operations Research
-and Institute of Theoretical Computer Science
+Komei Fukuda <fukuda@.math.ethz.ch>
+Institute of Theoretical Computer Science
 ETH Zentrum, CH-8092 Zurich, Switzerland
-Tel +41-1-632-4023, Fax +41-1-632-1025
+Tel +41-1-632-4023, Fax +41-1-632-1063
 http://www.ifor.math.ethz.ch/staff/fukuda/
 
 // END of README 

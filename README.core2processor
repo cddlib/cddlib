@@ -1,0 +1,11 @@
+To compile on Intel Core 2 (64 bit) processors running MacOSX,
+you might need to add the compilation flags "-m64 -fast" by 
+
+./configure CFLAGS="-m64 -fast"
+
+This may apply to other operating systems.  Also, note that
+this does not apply to 32 bit processors like 
+Intel Core processor.
+
+Komei Fukuda
+February 14, 2009

@@ -1,6 +1,6 @@
 /* cddio.c:  Basic Input and Output Procedures for cddlib
    written by Komei Fukuda, fukuda@ifor.math.ethz.ch
-   Version 0.94f, February 7, 2008
+   Version 0.94g, March 23, 2012
 */
 
 /* cddlib : C-library of the double description method for
@@ -138,7 +138,7 @@ void dd_SetWriteFileName(dd_DataFileType inputfile, dd_DataFileType outfile, cha
 }
 
 
-dd_NumberType dd_GetNumberType(char *line)
+dd_NumberType dd_GetNumberType(const char *line)
 {
   dd_NumberType nt;
 
@@ -157,7 +157,7 @@ dd_NumberType dd_GetNumberType(char *line)
   return nt;
 }
 
-void dd_ProcessCommandLine(FILE *f, dd_MatrixPtr M, char *line)
+void dd_ProcessCommandLine(FILE *f, dd_MatrixPtr M, const char *line)
 {
   char newline[dd_linelenmax];
   dd_colrange j;
@@ -1930,7 +1930,7 @@ dd_MatrixPtr dd_CopyInequalities(dd_PolyhedraPtr poly)
 /****************************************************************************************/
 /*  rational number (a/b) read is taken from Vinci by Benno Bueeler and Andreas Enge    */
 /****************************************************************************************/
-void dd_sread_rational_value (char *s, mytype value)
+void dd_sread_rational_value (const char *s, mytype value)
    /* reads a rational value from the specified string "s" and assigns it to "value"    */
    
 {

@@ -1,6 +1,6 @@
-/* fourier.c: Test program to call the cdd library cddlib
+/* redcheck.c: Test program to call the cdd library cddlib
    written by Komei Fukuda, fukuda@ifor.math.ethz.ch
-   Version 0.94, August 4, 2005
+   Version 0.92, December 11, 2001
    Standard ftp site: ftp.ifor.math.ethz.ch, Directory: pub/fukuda/cdd
 */
 
@@ -59,11 +59,10 @@ dd_boolean SetWriteFile(FILE **f, dd_DataFileType fname)
 
 int main(int argc, char *argv[])
 {
-  dd_MatrixPtr M=NULL,M1=NULL,M2=NULL;
-  dd_colrange j,s,d;
+  dd_MatrixPtr M=NULL,M2=NULL;
+  dd_colrange d;
   dd_ErrorType err=dd_NoError;
-  dd_rowset redset,impl_linset;
-  dd_rowindex newpos;
+  dd_rowset redrows,linrows;
   mytype val;
   dd_DataFileType inputfile;
   FILE *reading=NULL;
@@ -74,7 +73,7 @@ int main(int argc, char *argv[])
   if (argc>1) strcpy(inputfile,argv[1]);
   if (argc<=1 || !SetInputFile(&reading,argv[1])){
     dd_WriteProgramDescription(stdout);
-    fprintf(stdout,"\ncddlib test program to apply Fourier's Elimination to an H-polyhedron.\n");
+    fprintf(stdout,"\ncddlib test program to check redundancy of an H/V-representation\nby Clarkson's algorithm.");
     dd_SetInputFile(&reading,inputfile, &err);
   }
   if (err==dd_NoError) {
@@ -87,46 +86,36 @@ int main(int argc, char *argv[])
 
   if (err!=dd_NoError) goto _L99;
 
-  d=M->colsize;
-  M2=dd_CopyMatrix(M);
+  if (M->representation==dd_Generator) d=M->colsize+1; else d=M->colsize;
 
-  printf("How many variables to elminate? (max %ld): ",d-1);
-  scanf("%ld",&s);
-  
-  if (s>0 && s < d){
-    for (j=1; j<=s; j++){
-      M1=dd_FourierElimination(M2, &err);
-      printf("\nRemove the variable %ld.  The resulting redundant system.\n",d-j);
-      dd_WriteMatrix(stdout, M1);
+  fprintf(stdout, "redundant rows: ");
+  redrows=dd_RedundantRowsViaShooting(M, &err);
+  set_fwrite(stdout, redrows);
 
-      dd_MatrixCanonicalize(&M1, &impl_linset, &redset, &newpos, &err);
-      if (err!=dd_NoError) goto _L99;
+  M2=dd_MatrixSubmatrix(M, redrows);
 
-      fprintf(stdout, "\nRedundant rows: ");
-      set_fwrite(stdout, redset);
+  fprintf(stdout, "Implicit linearity (after removal of redundant rows): ");
+  linrows=dd_ImplicitLinearityRows(M2, &err);
 
-      dd_FreeMatrix(M2);
-      M2=M1;
-      set_free(redset);
-      set_free(impl_linset);
-      free(newpos);
-    }
+  if (M->representation==dd_Generator)
+    fprintf(stdout," %ld  ", set_card(linrows));
+  else 
+    fprintf(stdout," %ld  ", set_card(linrows));
+  set_fwrite(stdout,linrows);
+  set_uni(M2->linset, M2->linset, linrows); 
+      /* add the implicit linrows to the given linearity rows */
 
-    printf("\nNonredundant representation:\n");
-    dd_WriteMatrix(stdout, M1);
-  } else {
-    printf("Value out of range\n");
-  }
+  printf("\nNonredundant representation (except for the linearity part):\n");
+  dd_WriteMatrix(stdout, M2);
+
 
   dd_FreeMatrix(M);
-  dd_FreeMatrix(M1);
-  dd_clear(val);
+  dd_FreeMatrix(M2);
 
 _L99:;
-  /* if (err!=dd_NoError) dd_WriteErrorMessages(stderr,err); */
-  dd_free_global_constants();  /* At the end, this should be called. */
+  if (err!=dd_NoError) dd_WriteErrorMessages(stderr,err);
   return 0;
 }
 
 
-/* end of fourier.c */
+/* end of redcheck.c */
