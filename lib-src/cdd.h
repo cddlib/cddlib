@@ -1,6 +1,6 @@
 /* cdd.h: Header file for cddlib.c 
-   written by Komei Fukuda, fukuda@ifor.math.ethz.ch
-   Version 0.94g, March 23, 2012
+   written by Komei Fukuda, fukuda@math.ethz.ch
+   Version 0.94h, April 30, 2015
 */
 
 /* cddlib.c : C-Implementation of the double description method for
@@ -48,8 +48,8 @@ extern dd_LPSolverType dd_choiceLPSolverDefault;  /* Default LP solver Algorithm
 extern dd_LPSolverType dd_choiceRedcheckAlgorithm;  /* Redundancy Checking Algorithm */
 extern dd_boolean dd_choiceLexicoPivotQ;    /* whether to use the lexicographic pivot */
 
-/* to be used to avoid creating temporary spaces for mytype */
-#define dd_almostzero  1.0E-6
+   /* to be used to avoid creating temporary spaces for mytype */
+#define dd_almostzero  1.0E-7
 
 /* ---------- FUNCTIONS MEANT TO BE PUBLIC ---------- */
 

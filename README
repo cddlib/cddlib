@@ -1,6 +1,6 @@
-2012-03-25 (March 25, 2012)
+2012-04-30 (April 30, 2015)
 -----------------------------------------------
-C-Library cddlib (version 0.94g) README FILE
+C-Library cddlib (version 0.94h) README FILE
 -----------------------------------------------
 1. The C-library  cddlib is a C implementation of the Double Description 
 Method of Motzkin et al. for generating all vertices (i.e. extreme points)
@@ -139,7 +139,7 @@ for free software development is user's appreciation.
 
 For more information, contact
 
-Komei Fukuda <fukuda@.math.ethz.ch>
+Komei Fukuda <fukuda@math.ethz.ch>
 Institute of Theoretical Computer Science
 ETH Zentrum, CH-8092 Zurich, Switzerland
 Tel +41-1-632-4023, Fax +41-1-632-1063

@@ -1,0 +1,18 @@
+1999-03-14 (March 14, 1999)
+
+You need a properly built cddmathlink binary for the notebooks
+in this subdirectory "mma".  Go to "makedir" subdirectory, and
+use Makefile to build it.  I will try to put some prebuilt
+binaries in the ftp directory:
+
+ftp://ftp.ifor.math.ethz.ch/pub/fukuda/cdd/cddlibml_binary/
+
+For more information, contact
+   Komei Fukuda
+   fukuda@ifor.math.ethz.ch
+   Zurich  :IFOR, ETH Zentrum, CH-8092 Zurich, Switzerland  
+   Lausanne:DMA, EPFL, Ch-1015 Lausanne, Switzerland
+   homepage: http://www.ifor.math.ethz.ch/staff/fukuda/fukuda.html
+
+// END of libcdd.readme
+

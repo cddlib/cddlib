@@ -1,6 +1,6 @@
 /* cddio.c:  Basic Input and Output Procedures for cddlib
-   written by Komei Fukuda, fukuda@ifor.math.ethz.ch
-   Version 0.94g, March 23, 2012
+   written by Komei Fukuda, fukuda@math.ethz.ch
+   Version 0.94h, April 30, 2015
 */
 
 /* cddlib : C-library of the double description method for
@@ -809,6 +809,7 @@ dd_boolean dd_InitializeConeData(dd_rowrange m, dd_colrange d, dd_ConePtr *cone)
 
   (*cone)->Edges
      =(dd_AdjacencyType**) calloc((*cone)->m_alloc,sizeof(dd_AdjacencyType*));
+  for (j=0; j<(*cone)->m_alloc; j++) (*cone)->Edges[j]=NULL; /* 094h */
   (*cone)->InitialRayIndex=(long*)calloc(d+1,sizeof(long));
   (*cone)->OrderVector=(long*)calloc((*cone)->m_alloc+1,sizeof(long));
 

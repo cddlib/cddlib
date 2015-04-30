@@ -1,0 +1,663 @@
+(************** Content-type: application/mathematica **************
+
+                    Mathematica-Compatible Notebook
+
+This notebook can be used with any Mathematica-compatible
+application, such as Mathematica, MathReader or Publicon. The data
+for the notebook starts with the line containing stars above.
+
+To get the notebook into a Mathematica-compatible application, do
+one of the following:
+
+* Save the data starting with the line of stars above into a file
+  with a name ending in .nb, then open the file inside the
+  application;
+
+* Copy the data starting with the line of stars above to the
+  clipboard, then use the Paste menu command inside the application.
+
+Data for notebooks contains only printable 7-bit ASCII and can be
+sent directly in email or through ftp in text mode.  Newlines can be
+CR, LF or CRLF (Unix, Macintosh or MS-DOS style).
+
+NOTE: If you modify the data for this notebook not in a Mathematica-
+compatible application, you must delete the line below containing
+the word CacheID, otherwise Mathematica-compatible applications may
+try to use invalid cache data.
+
+For more information on notebooks and Mathematica-compatible 
+applications, contact Wolfram Research:
+  web: http://www.wolfram.com
+  email: info@wolfram.com
+  phone: +1-217-398-0700 (U.S.)
+
+Notebook reader applications are available free of charge from 
+Wolfram Research.
+*******************************************************************)
+
+(*CacheID: 232*)
+
+
+(*NotebookFileLineBreakTest
+NotebookFileLineBreakTest*)
+(*NotebookOptionsPosition[     14720,        468]*)
+(*NotebookOutlinePosition[     16078,        512]*)
+(*  CellTagsIndexPosition[     15906,        504]*)
+(*WindowFrame->Normal*)
+
+
+
+Notebook[{
+Cell[TextData[{
+  StyleBox["cddmathlink",
+    FontColor->RGBColor[0.0557107, 0.137819, 0.517113]],
+  "\nConvex Hull and Vertex Enumeration by ",
+  StyleBox["MathLink",
+    FontSlant->"Italic",
+    FontColor->RGBColor[0.0146487, 0.461387, 0.0967727]],
+  " to ",
+  StyleBox["cddlib",
+    FontColor->RGBColor[0.517113, 0.0273594, 0.0273594]],
+  "\nby Komei Fukuda\nApril 17, 2001"
+}], "Title",
+  ImageRegion->{{0, 1}, {0, 1}}],
+
+Cell[CellGroupData[{
+
+Cell["Connecting  cddmathlink", "Subsection",
+  InitializationCell->True,
+  ImageRegion->{{0, 1}, {0, 1}}],
+
+Cell[CellGroupData[{
+
+Cell[TextData[{
+  "You just put the compiled cddmathlink for your computer in some directory. \
+ In this example, the name of the directory is ",
+  StyleBox["\"~/Math\".",
+    FontFamily->"Courier",
+    FontWeight->"Bold"]
+}], "Text",
+  InitializationCell->True,
+  ImageRegion->{{0, 1}, {0, 1}}],
+
+Cell["Off[General::spell1]; Off[General::spell];", "Input",
+  InitializationCell->True,
+  ImageRegion->{{0, 1}, {0, 1}}],
+
+Cell[CellGroupData[{
+
+Cell["\<\
+cddml=
+Install[\"~/Math/cddmathlink\"]\
+\>", "Input",
+  InitializationCell->True,
+  ImageRegion->{{0, 1}, {0, 1}}],
+
+Cell[BoxData[
+    \(LinkObject["/Users/fukuda/Math/cddmathlink", 9, 8]\)], "Output"]
+}, Open  ]]
+}, Open  ]]
+}, Closed]],
+
+Cell[CellGroupData[{
+
+Cell["Generating All Vertices ", "Subsection",
+  ImageRegion->{{0, 1}, {0, 1}}],
+
+Cell[CellGroupData[{
+
+Cell["?AllVertices", "Input",
+  ImageRegion->{{0, 1}, {0, 1}}],
+
+Cell[BoxData[
+    \("AllVertices[m,d+1,A] generates all extreme points (vertices) and \
+extreme rays of the convex polyhedron in R^(d+1) given as the solution set to \
+an inequality system  A x >= 0 where  A is an m*(d+1) matrix  and  \
+x=(1,x1,...,xd).  The output is {{extlist, linearity}, ecdlist} where extlist \
+is  the extreme point list and ecdlist is the incidence list.  Each vertex \
+(ray) has the first component 1 (0).  If the convex polyhedron is nonempty \
+and has no vertices, extlist is a (nonunique) set of generators of the \
+polyhedron where those generators in the linearity list are considered as \
+linearity space (of points satisfying A (0, x1, x2, ...., xd) = 0)  \
+generators."\)], "Print",
+  CellTags->"Info3249106863-2654627"],
+
+Cell["\<\
+Let's try this function with a 3-dimenstional cube defined by 6 \
+inequalities (facets);  
+x1  >= 0, x2 >=0, x3 >= 0, 1 - x1 >= 0,   1 - x2 >= 0 and  1 - x3 >= 0.  We \
+write these six inequalities  as   A  x  >=  0  and  x=(1, x1, x2, x3).\
+\>", \
+"Text",
+  ImageRegion->{{0, 1}, {0, 1}}],
+
+Cell[CellGroupData[{
+
+Cell["\<\
+MatrixForm[a={{0,1,0,0},{0,0,1,0},{0,0,0,1},
+\t{1,-1,0,0},{1,0,-1,0},{1,0,0,-1}}]\
+\>", "Input",
+  ImageRegion->{{0, 1}, {0, 1}}],
+
+Cell[BoxData[
+    TagBox[
+      RowBox[{"(", "\[NoBreak]", GridBox[{
+            {"0", "1", "0", "0"},
+            {"0", "0", "1", "0"},
+            {"0", "0", "0", "1"},
+            {"1", \(-1\), "0", "0"},
+            {"1", "0", \(-1\), "0"},
+            {"1", "0", "0", \(-1\)}
+            }], "\[NoBreak]", ")"}],
+      Function[ BoxForm`e$, 
+        MatrixForm[ BoxForm`e$]]]], "Output"],
+
+Cell[CellGroupData[{
+
+Cell["{m,d1}=Dimensions[a]", "Input",
+  ImageRegion->{{0, 1}, {0, 1}}],
+
+Cell[BoxData[
+    \({6, 4}\)], "Output"]
+}, Open  ]],
+
+Cell[CellGroupData[{
+
+Cell["\<\
+{{vertices, linearity}, \
+incidences}=AllVertices[m,d1,Flatten[a]]\
+\>", "Input",
+  ImageRegion->{{0, 1}, {0, 1}}],
+
+Cell[BoxData[
+    \({{{{1.`, 1.`, 1.`, 0.`}, {1.`, 0.`, 1.`, 0.`}, {1.`, 0.`, 0.`, 
+            0.`}, {1.`, 1.`, 0.`, 0.`}, {1.`, 0.`, 0.`, 1.`}, {1.`, 1.`, 0.`, 
+            1.`}, {1.`, 0.`, 1.`, 1.`}, {1.`, 1.`, 1.`, 1.`}}, {}}, {{3, 4, 
+          5}, {1, 3, 5}, {1, 2, 3}, {2, 3, 4}, {1, 2, 6}, {2, 4, 6}, {1, 5, 
+          6}, {4, 5, 6}}}\)], "Output"]
+}, Open  ]]
+}, Open  ]]
+}, Open  ]]
+}, Closed]],
+
+Cell[CellGroupData[{
+
+Cell["Generating the Graph Structure", "Subsection",
+  ImageRegion->{{0, 1}, {0, 1}}],
+
+Cell[CellGroupData[{
+
+Cell["?AllVerticesWithAdjacency", "Input",
+  ImageRegion->{{0, 1}, {0, 1}}],
+
+Cell[BoxData[
+    \("AllVerticesWithAdjacency[m,d+1,A] generates all extreme points \
+(vertices) and extreme rays of the convex polyhedron in R^(d+1) given as the \
+solution set to an inequality system  A x >= 0 where   A is an m*(d+1) matrix \
+ and x=(1,x1,...,xd). The output is {{extlist, linearity}, ecdlist, eadlist, \
+icdlist, iadlist} where extlist, ecdlist, eadlist are the extreme point list, \
+the incidence list, the adjacency list (of extreme points and rays), and \
+icdlist, iadlist are the incidence list, the adjacency list (of \
+inequalities).  Each vertex (ray) has the first component 1 (0). If the \
+convex polyhedron is nonempty and has no vertices, extlist is a (nonunique) \
+set of generators of the polyhedron where those generators in the linearity \
+list are considered as linearity space (of points satisfying A (0, x1, x2, \
+...., xd) = 0) generators."\)], "Print",
+  CellTags->"Info3249106869-2272285"],
+
+Cell[CellGroupData[{
+
+Cell["\<\
+{{vertices,linearity},ecd,ead,icd,iad}=
+\tAllVerticesWithAdjacency[m,d1,Flatten[a]]\
+\>", "Input",
+  ImageRegion->{{0, 1}, {0, 1}}],
+
+Cell[BoxData[
+    \({{{{1.`, 1.`, 1.`, 0.`}, {1.`, 0.`, 1.`, 0.`}, {1.`, 0.`, 0.`, 
+            0.`}, {1.`, 1.`, 0.`, 0.`}, {1.`, 0.`, 0.`, 1.`}, {1.`, 1.`, 0.`, 
+            1.`}, {1.`, 0.`, 1.`, 1.`}, {1.`, 1.`, 1.`, 1.`}}, {}}, {{3, 4, 
+          5}, {1, 3, 5}, {1, 2, 3}, {2, 3, 4}, {1, 2, 6}, {2, 4, 6}, {1, 5, 
+          6}, {4, 5, 6}}, {{2, 4, 8}, {1, 3, 7}, {2, 4, 5}, {1, 3, 6}, {3, 6, 
+          7}, {4, 5, 8}, {2, 5, 8}, {1, 6, 7}}, {{2, 3, 5, 7}, {3, 4, 5, 
+          6}, {1, 2, 3, 4}, {1, 4, 6, 8}, {1, 2, 7, 8}, {5, 6, 7, 
+          8}, {}}, {{2, 3, 5, 6}, {1, 3, 4, 6}, {1, 2, 4, 5}, {2, 3, 5, 
+          6}, {1, 3, 4, 6}, {1, 2, 4, 5}, {}}}\)], "Output"]
+}, Open  ]]
+}, Open  ]],
+
+Cell[TextData[{
+  "The graph structure is output as the adjacency  list  ",
+  StyleBox["ead. ",
+    FontFamily->"Courier",
+    FontWeight->"Bold"],
+  "For example, the first list {2, 4 ,8} represents the neighbour vertices of \
+the first vertex 1.  The adjacency of input is given by\nthe list  ",
+  StyleBox["iad.",
+    FontFamily->"Courier",
+    FontWeight->"Bold"]
+}], "Text",
+  ImageRegion->{{0, 1}, {0, 1}}]
+}, Closed]],
+
+Cell[CellGroupData[{
+
+Cell["Convex Hull (Facet Generation)", "Subsection",
+  ImageRegion->{{0, 1}, {0, 1}}],
+
+Cell[CellGroupData[{
+
+Cell["?AllFacets", "Input",
+  ImageRegion->{{0, 1}, {0, 1}}],
+
+Cell[BoxData[
+    \("AllFacets[n,d+1,G] generates all facet inequalities of the convex \
+polyhedron in R^(d+1) generated by points and rays given in the rows of an \
+n*(d+1) matrix G.  Each point (ray) must have 1 (0) in the first coordinate.  \
+The output is {{faclist, equalities}, icdlist} where faclist is  the facet  \
+list and icdlist is the incidence list.  If the convex polyhedron is not \
+full-dimensional, extlist is a (nonunique) set of inequalities of the \
+polyhedron where those inequalities in the equalities list are considered as \
+equalities."\)], "Print",
+  CellTags->"Info3249106877-5554290"],
+
+Cell["\<\
+We have computed all the vertices of a 3-cube.  Let's try the \
+reverse operation.  First check the size of the list of vertics.   It should \
+reconstruct the facets we have started with.\
+\>", "Text",
+  ImageRegion->{{0, 1}, {0, 1}}],
+
+Cell[CellGroupData[{
+
+Cell["{n, d1}=Dimensions[vertices]", "Input",
+  ImageRegion->{{0, 1}, {0, 1}}],
+
+Cell[BoxData[
+    \({8, 4}\)], "Output"]
+}, Open  ]],
+
+Cell[CellGroupData[{
+
+Cell["\<\
+
+{{facets,equalities}, fincidences}= AllFacets[n,d1,Flatten[vertices]]\
+\>", \
+"Input",
+  ImageRegion->{{0, 1}, {0, 1}}],
+
+Cell[BoxData[
+    \({{{{0.`, 0.`, 0.`, 1.`}, {0.`, 1.`, 0.`, 0.`}, {0.`, 0.`, 1.`, 
+            0.`}, {1.`, 0.`, 0.`, \(-1.`\)}, {1.`, 0.`, \(-1.`\), 
+            0.`}, {1.`, \(-1.`\), 0.`, 0.`}}, {}}, {{1, 2, 3, 4}, {2, 3, 5, 
+          7}, {3, 4, 5, 6}, {5, 6, 7, 8}, {1, 2, 7, 8}, {1, 4, 6, 
+          8}}}\)], "Output"]
+}, Open  ]],
+
+Cell[TextData[{
+  "We can compute how the facets are connected by using ",
+  StyleBox["AllFacetsWithAdjacency",
+    FontWeight->"Bold"],
+  " function."
+}], "Text",
+  ImageRegion->{{0, 1}, {0, 1}}],
+
+Cell[CellGroupData[{
+
+Cell["\<\
+
+{{facets,equalities}, icd,iad, ecd,ead}= 
+\tAllFacetsWithAdjacency[n,d1,Flatten[vertices]]\
+\>", "Input",
+  ImageRegion->{{0, 1}, {0, 1}}],
+
+Cell[BoxData[
+    \({{{{0.`, 0.`, 0.`, 1.`}, {0.`, 1.`, 0.`, 0.`}, {0.`, 0.`, 1.`, 
+            0.`}, {1.`, 0.`, 0.`, \(-1.`\)}, {1.`, 0.`, \(-1.`\), 
+            0.`}, {1.`, \(-1.`\), 0.`, 0.`}}, {}}, {{1, 2, 3, 4}, {2, 3, 5, 
+          7}, {3, 4, 5, 6}, {5, 6, 7, 8}, {1, 2, 7, 8}, {1, 4, 6, 8}}, {{2, 
+          3, 5, 6}, {1, 3, 4, 5}, {1, 2, 4, 6}, {2, 3, 5, 6}, {1, 2, 4, 
+          6}, {1, 3, 4, 5}}, {{1, 5, 6}, {1, 2, 5}, {1, 2, 3}, {1, 3, 6}, {2, 
+          3, 4}, {3, 4, 6}, {2, 4, 5}, {4, 5, 6}}, {{2, 4, 8}, {1, 3, 7}, {2, 
+          4, 5}, {1, 3, 6}, {3, 6, 7}, {4, 5, 8}, {2, 5, 8}, {1, 6, 
+          7}}}\)], "Output"]
+}, Open  ]]
+}, Open  ]],
+
+Cell[CellGroupData[{
+
+Cell["\<\
+If you want to compute an inequality description of the \
+one-dimensional cone in R^3 with a vertex at origin and containing the \
+direction (1,1,1), you must set up the input (generator) data as:\
+\>", "Text",\
+
+  ImageRegion->{{0, 1}, {0, 1}}],
+
+Cell[CellGroupData[{
+
+Cell["coneGenerators={{1,0,0,0},{0,1,1,1}}", "Input",
+  ImageRegion->{{0, 1}, {0, 1}}],
+
+Cell[BoxData[
+    \({{1, 0, 0, 0}, {0, 1, 1, 1}}\)], "Output"]
+}, Open  ]],
+
+Cell[CellGroupData[{
+
+Cell["\<\
+{{cfacets,cequalities}, cfincidences}= 
+\tAllFacets[2,4,Flatten[coneGenerators]]\
+\>", "Input",
+  ImageRegion->{{0, 1}, {0, 1}}],
+
+Cell[BoxData[
+    \({{{{1.`, 0.`, 0.`, 0.`}, {0.`, 1.`, 0.`, 0.`}, {0.`, \(-1.`\), 1.`, 
+            0.`}, {0.`, \(-1.`\), 0.`, 1.`}}, {3, 4}}, {{2}, {1}, {1, 2}, {1, 
+          2}}}\)], "Output"]
+}, Open  ]],
+
+Cell["\<\
+Since the equalities list contains 3 and 4, of the four output \
+inequalities , the third and the forth must be considered as equalities.  It \
+is important to note that this cone can have infinitely many different \
+minimal inequality descriptions, since it is not full-dimensional.\
+\>", \
+"Text",
+  ImageRegion->{{0, 1}, {0, 1}}]
+}, Open  ]]
+}, Closed]],
+
+Cell[CellGroupData[{
+
+Cell["A Larger Example (Random 0/1 Polytopes)", "Subsection",
+  ImageRegion->{{0, 1}, {0, 1}}],
+
+Cell["\<\
+Let's compute the convex hull of 0/1 points in R^d.  First generate \
+0/1 points.  Below each point with the first component 0 is considered as a \
+direction that must be included in the convex hull.\
+\>", "Text",
+  ImageRegion->{{0, 1}, {0, 1}},
+  FontSize->13],
+
+Cell["n=30; d1=8;", "Input",
+  ImageRegion->{{0, 1}, {0, 1}}],
+
+Cell[CellGroupData[{
+
+Cell["\<\
+points=Table[Prepend[Table[Random[Integer,{0,1}],{d1-1}],0],{n}]\
+\>\
+", "Input",
+  ImageRegion->{{0, 1}, {0, 1}}],
+
+Cell[BoxData[
+    \({{0, 0, 1, 1, 0, 1, 1, 1}, {0, 1, 0, 0, 1, 1, 0, 0}, {0, 1, 0, 1, 0, 0, 
+        0, 0}, {0, 0, 0, 0, 1, 1, 1, 1}, {0, 0, 1, 1, 0, 1, 1, 1}, {0, 1, 0, 
+        1, 0, 1, 1, 1}, {0, 0, 1, 1, 0, 0, 0, 0}, {0, 1, 0, 0, 1, 1, 0, 
+        1}, {0, 0, 0, 0, 1, 0, 1, 1}, {0, 0, 1, 0, 0, 0, 1, 1}, {0, 0, 1, 0, 
+        0, 0, 1, 0}, {0, 0, 0, 0, 1, 0, 1, 0}, {0, 0, 0, 0, 0, 1, 0, 0}, {0, 
+        0, 0, 0, 1, 0, 0, 0}, {0, 1, 0, 0, 1, 1, 0, 1}, {0, 0, 0, 1, 1, 1, 0, 
+        0}, {0, 0, 1, 1, 1, 0, 0, 1}, {0, 1, 1, 0, 0, 1, 1, 0}, {0, 0, 1, 1, 
+        0, 0, 0, 1}, {0, 1, 0, 1, 1, 0, 1, 0}, {0, 1, 1, 1, 0, 1, 0, 1}, {0, 
+        1, 1, 1, 1, 0, 1, 1}, {0, 0, 0, 0, 1, 0, 0, 1}, {0, 1, 1, 0, 0, 0, 1, 
+        1}, {0, 0, 1, 0, 1, 1, 0, 1}, {0, 1, 0, 0, 0, 1, 1, 1}, {0, 1, 0, 0, 
+        0, 1, 1, 1}, {0, 0, 0, 1, 0, 0, 0, 1}, {0, 0, 1, 0, 1, 1, 0, 0}, {0, 
+        0, 0, 0, 1, 0, 1, 1}}\)], "Output"]
+}, Open  ]],
+
+Cell[CellGroupData[{
+
+Cell["Dimensions[points]", "Input",
+  ImageRegion->{{0, 1}, {0, 1}}],
+
+Cell[BoxData[
+    \({30, 8}\)], "Output"]
+}, Open  ]],
+
+Cell["\<\
+
+{CPUtime, {{facets,equalities}, inc}}= 
+\tTiming[AllFacets[n,d1,Flatten[points]]];\
+\>", "Input",
+  ImageRegion->{{0, 1}, {0, 1}}],
+
+Cell[CellGroupData[{
+
+Cell["{CPUtime,Length[facets]}", "Input",
+  ImageRegion->{{0, 1}, {0, 1}}],
+
+Cell[BoxData[
+    \({0.`\ Second, 33}\)], "Output"]
+}, Open  ]],
+
+Cell["\<\
+Usually facets of 0/1 polytopes are very pretty and their \
+coefficients are small integers.\
+\>", "Text",
+  ImageRegion->{{0, 1}, {0, 1}}],
+
+Cell[CellGroupData[{
+
+Cell["Take[facets,5]", "Input",
+  ImageRegion->{{0, 1}, {0, 1}}],
+
+Cell[BoxData[
+    \({{0.`, 0.`, 0.`, 1.`, 0.`, 0.`, 0.`, 0.`}, {0.`, \(-1.`\), 0.`, 1.`, 
+        0.`, 1.`, 0.`, 1.`}, {0.`, \(-1.`\), \(-1.`\), 1.`, 0.`, 1.`, 1.`, 
+        1.`}, {0.`, 0.`, 0.`, 0.`, 0.`, 0.`, 0.`, 1.`}, {0.`, 0.`, 1.`, 0.`, 
+        1.`, 0.`, \(-1.`\), 1.`}}\)], "Output"]
+}, Open  ]]
+}, Closed]],
+
+Cell[CellGroupData[{
+
+Cell["Disconnecting  cddmathlink", "Subsection",
+  ImageRegion->{{0, 1}, {0, 1}}],
+
+Cell[CellGroupData[{
+
+Cell["Uninstall[cddml]", "Input",
+  ImageRegion->{{0, 1}, {0, 1}}],
+
+Cell[BoxData[
+    \("/Users/fukuda/Math/cddmathlink"\)], "Output"]
+}, Open  ]]
+}, Closed]]
+},
+FrontEndVersion->"4.1 for Macintosh",
+ScreenRectangle->{{0, 1152}, {0, 746}},
+AutoGeneratedPackage->None,
+WindowToolbars->{},
+CellGrouping->Manual,
+WindowSize->{583, 634},
+WindowMargins->{{17, Automatic}, {Automatic, 41}},
+PrivateNotebookOptions->{"ColorPalette"->{RGBColor, -1}},
+ShowCellLabel->True,
+ShowCellTags->False,
+RenderingOptions->{"ObjectDithering"->True,
+"RasterDithering"->False}
+]
+
+(*******************************************************************
+Cached data follows.  If you edit this Notebook file directly, not
+using Mathematica, you must remove the line containing CacheID at
+the top of  the file.  The cache data will then be recreated when
+you save this file from within Mathematica.
+*******************************************************************)
+
+(*CellTagsOutline
+CellTagsIndex->{
+  "Info3249106863-2654627"->{
+    Cell[3168, 111, 753, 11, 183, "Print",
+      CellTags->"Info3249106863-2654627"]},
+  "Info3249106869-2272285"->{
+    Cell[5701, 192, 930, 13, 231, "Print",
+      CellTags->"Info3249106869-2272285"]},
+  "Info3249106877-5554290"->{
+    Cell[8119, 252, 613, 9, 151, "Print",
+      CellTags->"Info3249106877-5554290"]}
+  }
+*)
+
+(*CellTagsIndex
+CellTagsIndex->{
+  {"Info3249106863-2654627", 15561, 491},
+  {"Info3249106869-2272285", 15678, 494},
+  {"Info3249106877-5554290", 15795, 497}
+  }
+*)
+
+(*NotebookFileOutline
+Notebook[{
+Cell[1705, 50, 423, 12, 348, "Title"],
+
+Cell[CellGroupData[{
+Cell[2153, 66, 106, 2, 46, "Subsection",
+  InitializationCell->True],
+
+Cell[CellGroupData[{
+Cell[2284, 72, 295, 8, 50, "Text",
+  InitializationCell->True],
+Cell[2582, 82, 120, 2, 27, "Input",
+  InitializationCell->True],
+
+Cell[CellGroupData[{
+Cell[2727, 88, 124, 5, 42, "Input",
+  InitializationCell->True],
+Cell[2854, 95, 84, 1, 27, "Output"]
+}, Open  ]]
+}, Open  ]]
+}, Closed]],
+
+Cell[CellGroupData[{
+Cell[2999, 103, 79, 1, 30, "Subsection"],
+
+Cell[CellGroupData[{
+Cell[3103, 108, 62, 1, 27, "Input"],
+Cell[3168, 111, 753, 11, 183, "Print",
+  CellTags->"Info3249106863-2654627"],
+Cell[3924, 124, 299, 7, 68, "Text"],
+
+Cell[CellGroupData[{
+Cell[4248, 135, 139, 4, 42, "Input"],
+Cell[4390, 141, 392, 11, 117, "Output"],
+
+Cell[CellGroupData[{
+Cell[4807, 156, 70, 1, 27, "Input"],
+Cell[4880, 159, 40, 1, 27, "Output"]
+}, Open  ]],
+
+Cell[CellGroupData[{
+Cell[4957, 165, 124, 4, 42, "Input"],
+Cell[5084, 171, 356, 5, 91, "Output"]
+}, Open  ]]
+}, Open  ]]
+}, Open  ]]
+}, Closed]],
+
+Cell[CellGroupData[{
+Cell[5513, 184, 85, 1, 30, "Subsection"],
+
+Cell[CellGroupData[{
+Cell[5623, 189, 75, 1, 27, "Input"],
+Cell[5701, 192, 930, 13, 231, "Print",
+  CellTags->"Info3249106869-2272285"],
+
+Cell[CellGroupData[{
+Cell[6656, 209, 141, 4, 42, "Input"],
+Cell[6800, 215, 670, 9, 155, "Output"]
+}, Open  ]]
+}, Open  ]],
+Cell[7497, 228, 412, 11, 68, "Text"]
+}, Closed]],
+
+Cell[CellGroupData[{
+Cell[7946, 244, 85, 1, 30, "Subsection"],
+
+Cell[CellGroupData[{
+Cell[8056, 249, 60, 1, 27, "Input"],
+Cell[8119, 252, 613, 9, 151, "Print",
+  CellTags->"Info3249106877-5554290"],
+Cell[8735, 263, 244, 5, 50, "Text"],
+
+Cell[CellGroupData[{
+Cell[9004, 272, 78, 1, 27, "Input"],
+Cell[9085, 275, 40, 1, 27, "Output"]
+}, Open  ]],
+
+Cell[CellGroupData[{
+Cell[9162, 281, 130, 5, 57, "Input"],
+Cell[9295, 288, 323, 5, 75, "Output"]
+}, Open  ]],
+Cell[9633, 296, 196, 6, 32, "Text"],
+
+Cell[CellGroupData[{
+Cell[9854, 306, 149, 5, 57, "Input"],
+Cell[10006, 313, 633, 9, 139, "Output"]
+}, Open  ]]
+}, Open  ]],
+
+Cell[CellGroupData[{
+Cell[10688, 328, 255, 6, 50, "Text"],
+
+Cell[CellGroupData[{
+Cell[10968, 338, 86, 1, 27, "Input"],
+Cell[11057, 341, 62, 1, 27, "Output"]
+}, Open  ]],
+
+Cell[CellGroupData[{
+Cell[11156, 347, 138, 4, 42, "Input"],
+Cell[11297, 353, 196, 3, 43, "Output"]
+}, Open  ]],
+Cell[11508, 359, 342, 7, 68, "Text"]
+}, Open  ]]
+}, Closed]],
+
+Cell[CellGroupData[{
+Cell[11899, 372, 94, 1, 30, "Subsection"],
+Cell[11996, 375, 272, 6, 48, "Text"],
+Cell[12271, 383, 61, 1, 27, "Input"],
+
+Cell[CellGroupData[{
+Cell[12357, 388, 124, 4, 42, "Input"],
+Cell[12484, 394, 913, 12, 171, "Output"]
+}, Open  ]],
+
+Cell[CellGroupData[{
+Cell[13434, 411, 68, 1, 27, "Input"],
+Cell[13505, 414, 41, 1, 27, "Output"]
+}, Open  ]],
+Cell[13561, 418, 141, 5, 57, "Input"],
+
+Cell[CellGroupData[{
+Cell[13727, 427, 74, 1, 27, "Input"],
+Cell[13804, 430, 51, 1, 27, "Output"]
+}, Open  ]],
+Cell[13870, 434, 149, 4, 32, "Text"],
+
+Cell[CellGroupData[{
+Cell[14044, 442, 64, 1, 27, "Input"],
+Cell[14111, 445, 291, 4, 59, "Output"]
+}, Open  ]]
+}, Closed]],
+
+Cell[CellGroupData[{
+Cell[14451, 455, 81, 1, 30, "Subsection"],
+
+Cell[CellGroupData[{
+Cell[14557, 460, 66, 1, 27, "Input"],
+Cell[14626, 463, 66, 1, 27, "Output"]
+}, Open  ]]
+}, Closed]]
+}
+]
+*)
+
+
+
+(*******************************************************************
+End of Mathematica Notebook file.
+*******************************************************************)
+

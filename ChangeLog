@@ -1,6 +1,9 @@
-libcdd, cdd & cdd+ HISTORY file   (as of March 23, 2012)
+libcdd, cdd & cdd+ HISTORY file   (as of April 30, 2015)
 
 *** libcdd version (date) / changes ***
+
+Version 094h (April 30, 2015) /
+ - Thanks to Mathieu Dutour, one minor bug has been fixed.
 
 Version 094g (March 23, 2012) /
  - Thanks to both Anders Jensen and Mathieu Dutour

@@ -1,6 +1,6 @@
 /* redcheck.c: Test program to call the cdd library cddlib
    written by Komei Fukuda, fukuda@ifor.math.ethz.ch
-   Version 0.92, December 11, 2001
+   Version 0.94, April 12, 2012
    Standard ftp site: ftp.ifor.math.ethz.ch, Directory: pub/fukuda/cdd
 */
 
@@ -60,12 +60,12 @@ dd_boolean SetWriteFile(FILE **f, dd_DataFileType fname)
 int main(int argc, char *argv[])
 {
   dd_MatrixPtr M=NULL,M2=NULL;
-  dd_colrange d;
   dd_ErrorType err=dd_NoError;
   dd_rowset redrows,linrows;
   mytype val;
   dd_DataFileType inputfile;
   FILE *reading=NULL;
+  time_t starttime,endtime;
 
   dd_set_global_constants();  /* First, this must be called. */
 
@@ -86,8 +86,7 @@ int main(int argc, char *argv[])
 
   if (err!=dd_NoError) goto _L99;
 
-  if (M->representation==dd_Generator) d=M->colsize+1; else d=M->colsize;
-
+  time(&starttime);
   fprintf(stdout, "redundant rows: ");
   redrows=dd_RedundantRowsViaShooting(M, &err);
   set_fwrite(stdout, redrows);
@@ -105,9 +104,10 @@ int main(int argc, char *argv[])
   set_uni(M2->linset, M2->linset, linrows); 
       /* add the implicit linrows to the given linearity rows */
 
+  time(&endtime);
   printf("\nNonredundant representation (except for the linearity part):\n");
   dd_WriteMatrix(stdout, M2);
-
+  dd_WriteTimes(stdout,starttime,endtime);
 
   dd_FreeMatrix(M);
   dd_FreeMatrix(M2);
