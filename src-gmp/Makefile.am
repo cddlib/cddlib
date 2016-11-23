@@ -31,6 +31,4 @@ testlp3_gmp_SOURCES                = testlp3.c
 
 LDADD        = ../lib-src-gmp/libcddgmp.la
 AM_LDFLAGS   = -L$(gmplibdir)
-INCLUDES     = -I../lib-src-gmp
-INCLUDES    += -I$(gmpincludedir)
-AM_CPPFLAGS  = -DGMPRATIONAL
+AM_CPPFLAGS  = -I../lib-src-gmp -I$(gmpincludedir) -DGMPRATIONAL

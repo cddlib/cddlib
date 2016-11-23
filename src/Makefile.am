@@ -30,5 +30,4 @@ testlp3_SOURCES                = testlp3.c
 # cddmathlink_SOURCES                = cddmathlink.c cddmlio.h cddmlio.c
 
 LDADD        = ../lib-src/libcdd.la
-INCLUDES     = -I../lib-src
-AM_CPPFLAGS  = -UGMPRATIONAL
+AM_CPPFLAGS  = -I../lib-src -UGMPRATIONAL
