@@ -1,8 +1,8 @@
 dnl Process this file with autoconf to produce a configure script.
-AC_INIT
+AC_INIT([cddlib], [0.94])
 
 dnl Init automake.
-AM_INIT_AUTOMAKE(cddlib, 0.94)
+AM_INIT_AUTOMAKE
 
 dnl Checks for programs.
 AC_PROG_CC
