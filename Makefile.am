@@ -17,5 +17,7 @@ export gmpincludedir = $(gmpdir)/include
 # End of site customization.
 ##############################################
 SUBDIRS      = lib-src src lib-src-gmp src-gmp
-EXTRA_DIST   = examples/*.* examples-ine/*.* examples-ine3d/*.* examples-ml/*.* examples-ext/*.*
+EXTRA_DIST   = $(srcdir)/examples/*.* $(srcdir)/examples-ine/*.* \
+               $(srcdir)/examples-ine3d/*.* $(srcdir)/examples-ml/*.* \
+               $(srcdir)/examples-ext/*.*
 ACLOCAL_AMFLAGS = -I m4
