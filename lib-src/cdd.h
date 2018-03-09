@@ -1,6 +1,6 @@
 /* cdd.h: Header file for cddlib.c 
    written by Komei Fukuda, fukuda@math.ethz.ch
-   Version 0.94h, April 30, 2015
+   Version 0.94i, March 9, 2018
 */
 
 /* cddlib.c : C-Implementation of the double description method for

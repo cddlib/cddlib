@@ -1,6 +1,15 @@
-libcdd, cdd & cdd+ HISTORY file   (as of April 30, 2015)
+libcdd, cdd & cdd+ HISTORY file   (as of March 7, 2018)
 
 *** libcdd version (date) / changes ***
+
+
+Version 094i (March 9, 2018) /
+ - The missing definition of dd_set_d function in the case of
+   -DGMPRATIONAL flag is used.  The only change is in cddmp.h.
+   The use of this function is explained in testcdd2.c program.
+   This function is useful when input is mostly float (real).
+   Even such a case, running on the rational exact arithmetic 
+   might be helpful to debug the floating point computation.
 
 Version 094h (April 30, 2015) /
  - Thanks to Mathieu Dutour, one minor bug has been fixed.

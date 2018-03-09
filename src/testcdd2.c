@@ -1,6 +1,6 @@
 /* testcdd2.c: Main test program to call the cdd library cddlib
    written by Komei Fukuda, fukuda@ifor.math.ethz.ch
-   Version 0.90c, June 12, 2000
+   Version 0.94i, March 9, 2018
    Standard ftp site: ftp.ifor.math.ethz.ch, Directory: pub/fukuda/cdd
 */
 
@@ -64,9 +64,16 @@ int main(int argc, char *argv[])
   */
   m=2;
   B=dd_CreateMatrix(m,d);
-  dd_set_si(B->matrix[0][0],7); dd_set_si(B->matrix[0][1], 1); dd_set_si(B->matrix[0][2],-3);
-  dd_set_si(B->matrix[1][0],7); dd_set_si(B->matrix[1][1],-3); dd_set_si(B->matrix[1][2], 1);
+  dd_set_d(B->matrix[0][0],7.0); dd_set_d(B->matrix[0][1], 1.0); dd_set_d(B->matrix[0][2],-3.0);
+  dd_set_d(B->matrix[1][0],7.0); dd_set_d(B->matrix[1][1],-3.0); dd_set_d(B->matrix[1][2], 1.0);
   set_addelem(B->linset,1); /* setting the first to be equality */
+
+/* Above dd_set_d is used instead of dd_set_si.  This might be useful when your input is float. Yet,
+   0.33333 won't be converted to 1/3 when -DGMPRATIONAL flag is used.  Better alternative might be
+   dd_set_si2 function to assign a rational number, e.g.
+   dd_set_si2(B->matrix[0][0],1,3).  Use these three assignment functions according to your need.
+   These functions are defined in cddmp.h and cddmp.c.
+*/
 
   dd_DDInputAppend(&poly,B, &err); /* append the two inequalities and compute the generators */
   if (err!=dd_NoError) goto _L99;

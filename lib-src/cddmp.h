@@ -1,6 +1,6 @@
 /* cddmp.h       (cddlib arithmetic operations using gmp)
    written by Komei Fukuda, fukuda@math.ethz.ch
-   Version 0.94h, April 30, 2015
+   Version 0.94i, March 9, 2018
 */
 
 /* This program is free software; you can redistribute it and/or modify
@@ -35,6 +35,7 @@
  #define dd_set(a, b)            mpq_set(a,b)     
  #define dd_set_si(a, b)         ddd_mpq_set_si(a,b)  /* defined in cddgmp.c */
  #define dd_set_si2(a, b, c)     mpq_set_si(a,b,c)    /* gmp 3.1 or higher */
+ #define dd_set_d(a, b)          mpq_set_d(a,b)       /* gmp 3.1 or higher */
  #define dd_add(a, b, c)         mpq_add(a,b,c)
  #define dd_sub(a, b, c)         mpq_sub(a,b,c)
  #define dd_mul(a, b, c)         mpq_mul(a,b,c)
