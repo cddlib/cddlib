@@ -7,6 +7,7 @@ endif
 SUBDIRS          = doc lib-src src $(GMP_SUBDIRS)
 
 # Additional directories that should be part of the released tarball.
-EXTRA_DIST   = $(srcdir)/examples $(srcdir)/examples-ine $(srcdir)/examples-ine3d $(srcdir)/examples-ext
+EXTRA_DIST   = $(srcdir)/examples $(srcdir)/examples-ine $(srcdir)/examples-ine3d $(srcdir)/examples-ext \
+               $(srcdir)/bootstrap
 
 ACLOCAL_AMFLAGS = -I m4
