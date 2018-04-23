@@ -12,7 +12,6 @@ testcdd2_gmp \
 testlp1_gmp \
 testlp2_gmp \
 testlp3_gmp
-#cddmathlink
 
 scdd_gmp_SOURCES                   = simplecdd.c
 lcdd_gmp_SOURCES                   = lcdd.c
@@ -27,7 +26,6 @@ testcdd2_gmp_SOURCES               = testcdd2.c
 testlp1_gmp_SOURCES                = testlp1.c
 testlp2_gmp_SOURCES                = testlp2.c
 testlp3_gmp_SOURCES                = testlp3.c
-# cddmathlink_SOURCES                = cddmathlink.c cddmlio.h cddmlio.c
 
 LDADD        = ../lib-src-gmp/libcddgmp.la
 AM_LDFLAGS   = -L$(gmplibdir)
