@@ -19,7 +19,23 @@ LT_INIT
 dnl Look for gmp. But do not prepend -lgmp to LIBS as we do not want to link everything against gmp.
 AC_CHECK_LIB([gmp], [__gmpz_init], [true])
 dnl We do not build the gmp enabled library if we don't have gmp.
-AM_CONDITIONAL([GMP], [test "x$ac_cv_lib_gmp___gmpz_init" = "xyes" ])
+AM_CONDITIONAL([GMP], [test "x$ac_cv_lib_gmp___gmpz_init" = "xyes"])
 
-AC_CONFIG_FILES([lib-src/Makefile src/Makefile lib-src-gmp/Makefile src-gmp/Makefile Makefile])
+dnl Check for latex to build the documentation dvi
+AC_CHECK_PROGS([latex], [latex])
+AM_CONDITIONAL([LATEX], [test "x$ac_cv_prog_latex" != "x"])
+
+dnl Check for pdflatex to build the documentation pdf
+AC_CHECK_PROGS([pdflatex], [pdflatex])
+AM_CONDITIONAL([PDF], [test "x$ac_cv_prog_pdflatex" != "x"])
+
+dnl Check for latex2html to build the documentation in HTML format
+AC_CHECK_PROGS([latex2html], [latex2html])
+AM_CONDITIONAL([HTML], [test "x$ac_cv_prog_latex2html" != "x"])
+
+dnl Check for dvips to build the documentation ps
+AC_CHECK_PROGS([dvips], [dvips])
+AM_CONDITIONAL([PS], [test "x$ac_cv_prog_dvips" != "x"])
+
+AC_CONFIG_FILES([doc/Makefile lib-src/Makefile src/Makefile lib-src-gmp/Makefile src-gmp/Makefile Makefile])
 AC_OUTPUT
