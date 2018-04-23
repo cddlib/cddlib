@@ -24,5 +24,5 @@ cddmp_f.h \
 cddtypes_f.h \
 setoper.h
 
-AM_CPPFLAGS = -I$(gmpincludedir) -DGMPRATIONAL
-AM_LDFLAGS = -version-info 0:0:0
+AM_CPPFLAGS = -DGMPRATIONAL
+AM_LDFLAGS = -version-info $(libcdd_version_info)

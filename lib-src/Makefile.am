@@ -16,4 +16,4 @@ cddtypes.h \
 setoper.h
 
 AM_CPPFLAGS = -UGMPRATIONAL
-AM_LDFLAGS = -version-info 0:0:0
+AM_LDFLAGS = -version-info $(libcdd_version_info)

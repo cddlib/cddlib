@@ -28,5 +28,4 @@ testlp2_gmp_SOURCES                = testlp2.c
 testlp3_gmp_SOURCES                = testlp3.c
 
 LDADD        = ../lib-src-gmp/libcddgmp.la
-AM_LDFLAGS   = -L$(gmplibdir)
-AM_CPPFLAGS  = -I../lib-src-gmp -I$(gmpincludedir) -DGMPRATIONAL
+AM_CPPFLAGS  = -I../lib-src-gmp -DGMPRATIONAL

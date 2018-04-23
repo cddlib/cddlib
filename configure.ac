@@ -1,31 +1,25 @@
-dnl Process this file with autoconf to produce a configure script.
+dnl Process this file with autoconf to produce a configure script, e.g., by running ./bootstrap.
 AC_INIT([cddlib], [0.94i])
+dnl Version number of the library c:r:a.
+dnl Set to c+1:0:0 on a non-backwards-compatible change.
+dnl Set to c+1:0:a+1 on a backwards-compatible change.
+dnl Set to c:r+1:a if the interface is unchanged.
+AC_SUBST([libcdd_version_info], [0:0:0])
 
 AC_CONFIG_MACRO_DIR([m4])
-
-dnl Init automake.
 AM_INIT_AUTOMAKE
 
-dnl Checks for programs.
+dnl Find C compiler.
 AC_PROG_CC
+dnl Set INSTALL or use install-sh.
 AC_PROG_INSTALL
+dnl Configure libtool.
 LT_INIT
 
-dnl Checks for libraries.
-dnl Replace `main' with a function in -lg:
-dnl AC_CHECK_LIB(g, main)
-dnl Replace `main' with a function in -lstdc:
-dnl AC_CHECK_LIB(stdc, main)
-dnl look for gmp:
-AC_CHECK_LIB(gmp, main)
-
-dnl Checks for header files.
-AC_HEADER_STDC
-
-dnl Checks for typedefs, structures, and compiler characteristics.
-AC_C_CONST
-
-dnl Checks for library functions.
+dnl Look for gmp.
+AC_CHECK_LIB([gmp], [__gmpz_init])
+dnl We do not build the gmp enabled library if we don't have gmp.
+AM_CONDITIONAL([GMP], [test "x$ac_cv_lib_gmp___gmpz_init" = "xyes" ])
 
 AC_CONFIG_FILES([lib-src/Makefile src/Makefile lib-src-gmp/Makefile src-gmp/Makefile Makefile])
 AC_OUTPUT
