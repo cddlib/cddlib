@@ -16,8 +16,8 @@ AC_PROG_INSTALL
 dnl Configure libtool.
 LT_INIT
 
-dnl Look for gmp.
-AC_CHECK_LIB([gmp], [__gmpz_init])
+dnl Look for gmp. But do not prepend -lgmp to LIBS as we do not want to link everything against gmp.
+AC_CHECK_LIB([gmp], [__gmpz_init], [true])
 dnl We do not build the gmp enabled library if we don't have gmp.
 AM_CONDITIONAL([GMP], [test "x$ac_cv_lib_gmp___gmpz_init" = "xyes" ])
 
