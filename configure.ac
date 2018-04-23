@@ -1,5 +1,5 @@
 dnl Process this file with autoconf to produce a configure script.
-AC_INIT([cddlib], [0.94])
+AC_INIT([cddlib], [0.94i])
 
 AC_CONFIG_MACRO_DIR([m4])
 
