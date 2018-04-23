@@ -18,6 +18,5 @@ export gmpincludedir = $(gmpdir)/include
 ##############################################
 SUBDIRS      = lib-src src lib-src-gmp src-gmp
 EXTRA_DIST   = $(srcdir)/examples/*.* $(srcdir)/examples-ine/*.* \
-               $(srcdir)/examples-ine3d/*.* $(srcdir)/examples-ml/*.* \
-               $(srcdir)/examples-ext/*.*
+               $(srcdir)/examples-ine3d/*.* $(srcdir)/examples-ext/*.*
 ACLOCAL_AMFLAGS = -I m4
