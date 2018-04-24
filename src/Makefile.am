@@ -24,6 +24,6 @@ redundancies_clarkson
 # testuniq
 
 LDADD = ../lib-src/libcdd.la
-AM_CPPFLAGS = -I../lib-src
+AM_CPPFLAGS = -I$(top_srcdir)/lib-src
 
 include ./Makefile.gmp.am
