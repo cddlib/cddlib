@@ -11,7 +11,8 @@ testcdd1_gmp \
 testcdd2_gmp \
 testlp1_gmp \
 testlp2_gmp \
-testlp3_gmp
+testlp3_gmp \
+cdd_both_reps
 
 scdd_gmp_SOURCES                   = simplecdd.c
 lcdd_gmp_SOURCES                   = lcdd.c
@@ -26,6 +27,7 @@ testcdd2_gmp_SOURCES               = testcdd2.c
 testlp1_gmp_SOURCES                = testlp1.c
 testlp2_gmp_SOURCES                = testlp2.c
 testlp3_gmp_SOURCES                = testlp3.c
+cdd_both_reps_SOURCES              = cdd_both_reps.c
 
 LDADD        = ../lib-src-gmp/libcddgmp.la -lgmp
 AM_CPPFLAGS  = -I../lib-src-gmp -DGMPRATIONAL
