@@ -11,3 +11,7 @@ EXTRA_DIST   = $(srcdir)/examples $(srcdir)/examples-ine $(srcdir)/examples-ine3
                $(srcdir)/bootstrap
 
 ACLOCAL_AMFLAGS = -I m4
+
+# All localdebug should be disabled before we distribute
+distcheck-hook:
+	! find $(srcdir) -type f -print0 | xargs -0 $(EGREP) 'localdebug *= *dd_TRUE'

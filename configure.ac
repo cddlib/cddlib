@@ -13,6 +13,8 @@ dnl Find C compiler.
 AC_PROG_CC
 dnl Set INSTALL or use install-sh.
 AC_PROG_INSTALL
+dnl Our "make distcheck" needs egrep.
+AC_PROG_EGREP
 dnl Configure libtool.
 LT_INIT
 
