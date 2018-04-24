@@ -3,7 +3,8 @@ SUBDIRS          = doc lib-src src
 
 # Additional directories that should be part of the released tarball.
 EXTRA_DIST   = $(srcdir)/examples $(srcdir)/examples-ine $(srcdir)/examples-ine3d $(srcdir)/examples-ext \
-               $(srcdir)/bootstrap
+               $(srcdir)/bootstrap \
+               README.core2processor
 
 ACLOCAL_AMFLAGS = -I m4
 
