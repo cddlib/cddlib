@@ -1,12 +1,6 @@
 # Directories where we can build something.
 SUBDIRS          = doc lib-src src
 
-# Only build GMP binaries if GMP is available.
-if GMP
-    SUBDIRS += src-gmp
-endif
-
-
 # Additional directories that should be part of the released tarball.
 EXTRA_DIST   = $(srcdir)/examples $(srcdir)/examples-ine $(srcdir)/examples-ine3d $(srcdir)/examples-ext \
                $(srcdir)/bootstrap

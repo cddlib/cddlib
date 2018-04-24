@@ -1,0 +1,101 @@
+# Build _gmp variations of all binaries.
+# Sadly, automake does not support loops (without requiring GNU make)
+# so we have to be extremely verbose here.
+
+if GMP
+
+gmp_ldflags = ../lib-src/libcddgmp.la -lgmp
+gmp_cppflags = -DGMPRATIONAL
+
+bin_PROGRAMS += scdd_gmp
+scdd_gmp_SOURCES = scdd.c
+scdd_gmp_LDADD = $(gmp_ldflags)
+scdd_gmp_CPPFLAGS = $(gmp_cppflags)
+
+bin_PROGRAMS += lcdd_gmp
+lcdd_gmp_SOURCES = lcdd.c
+lcdd_gmp_LDADD = $(gmp_ldflags)
+lcdd_gmp_CPPFLAGS = $(gmp_cppflags)
+
+bin_PROGRAMS += redcheck_gmp
+redcheck_gmp_SOURCES = redcheck.c
+redcheck_gmp_LDADD = $(gmp_ldflags)
+redcheck_gmp_CPPFLAGS = $(gmp_cppflags)
+
+bin_PROGRAMS += projection_gmp
+projection_gmp_SOURCES = projection.c
+projection_gmp_LDADD = $(gmp_ldflags)
+projection_gmp_CPPFLAGS = $(gmp_cppflags)
+
+bin_PROGRAMS += adjacency_gmp
+adjacency_gmp_SOURCES = adjacency.c
+adjacency_gmp_LDADD = $(gmp_ldflags)
+adjacency_gmp_CPPFLAGS = $(gmp_cppflags)
+
+bin_PROGRAMS += allfaces_gmp
+allfaces_gmp_SOURCES = allfaces.c
+allfaces_gmp_LDADD = $(gmp_ldflags)
+allfaces_gmp_CPPFLAGS = $(gmp_cppflags)
+
+bin_PROGRAMS += testshoot_gmp
+testshoot_gmp_SOURCES = testshoot.c
+testshoot_gmp_LDADD = $(gmp_ldflags)
+testshoot_gmp_CPPFLAGS = $(gmp_cppflags)
+
+bin_PROGRAMS += testcdd1_gmp
+testcdd1_gmp_SOURCES = testcdd1.c
+testcdd1_gmp_LDADD = $(gmp_ldflags)
+testcdd1_gmp_CPPFLAGS = $(gmp_cppflags)
+
+bin_PROGRAMS += testcdd2_gmp
+testcdd2_gmp_SOURCES = testcdd2.c
+testcdd2_gmp_LDADD = $(gmp_ldflags)
+testcdd2_gmp_CPPFLAGS = $(gmp_cppflags)
+
+bin_PROGRAMS += testlp1_gmp
+testlp1_gmp_SOURCES = testlp1.c
+testlp1_gmp_LDADD = $(gmp_ldflags)
+testlp1_gmp_CPPFLAGS = $(gmp_cppflags)
+
+bin_PROGRAMS += testlp2_gmp
+testlp2_gmp_SOURCES = testlp2.c
+testlp2_gmp_LDADD = $(gmp_ldflags)
+testlp2_gmp_CPPFLAGS = $(gmp_cppflags)
+
+bin_PROGRAMS += testlp3_gmp
+testlp3_gmp_SOURCES = testlp3.c
+testlp3_gmp_LDADD = $(gmp_ldflags)
+testlp3_gmp_CPPFLAGS = $(gmp_cppflags)
+
+bin_PROGRAMS += minkowski_gmp
+minkowski_gmp_SOURCES = minkowski.c
+minkowski_gmp_LDADD = $(gmp_ldflags)
+minkowski_gmp_CPPFLAGS = $(gmp_cppflags)
+
+bin_PROGRAMS += redundancies_gmp
+redundancies_gmp_SOURCES = redundancies.c
+redundancies_gmp_LDADD = $(gmp_ldflags)
+redundancies_gmp_CPPFLAGS = $(gmp_cppflags)
+
+bin_PROGRAMS += redundancies_clarkson_gmp
+redundancies_clarkson_gmp_SOURCES = redundancies_clarkson.c
+redundancies_clarkson_gmp_LDADD = $(gmp_ldflags)
+redundancies_clarkson_gmp_CPPFLAGS = $(gmp_cppflags)
+
+bin_PROGRAMS += redexter_gmp
+redexter_gmp_SOURCES = redexter.c
+redexter_gmp_LDADD = $(gmp_ldflags)
+redexter_gmp_CPPFLAGS = $(gmp_cppflags)
+
+bin_PROGRAMS += fourier_gmp
+fourier_gmp_SOURCES = fourier.c
+fourier_gmp_LDADD = $(gmp_ldflags)
+fourier_gmp_CPPFLAGS = $(gmp_cppflags)
+
+# testuniq does not build at the moment
+# bin_PROGRAMS += testuniq_gmp
+# testuniq_gmp_SOURCES = testuniq.c
+# testuniq_gmp_LDADD = $(gmp_ldflags)
+# testuniq_gmp_CPPFLAGS = $(gmp_cppflags)
+
+endif
