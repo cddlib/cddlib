@@ -1,4 +1,4 @@
-/* simplecdd.c: Main test program to call the cdd library cddlib
+/* scdd.c: Main test program to call the cdd library cddlib
    written by Komei Fukuda, fukuda@ifor.math.ethz.ch
    Version 0.94, Aug. 4, 2005
    Standard ftp site: ftp.ifor.math.ethz.ch, Directory: pub/fukuda/cdd
@@ -19,8 +19,9 @@
     Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 */
 
-#include "setoper.h"
-#include "cdd.h"
+#include <setoper.h>
+#include <cdd.h>
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <time.h>
