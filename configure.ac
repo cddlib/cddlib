@@ -39,5 +39,5 @@ dnl Check for dvips to build the documentation ps
 AC_CHECK_PROGS([dvips], [dvips])
 AM_CONDITIONAL([PS], [test "x$ac_cv_prog_dvips" != "x"])
 
-AC_CONFIG_FILES([doc/Makefile lib-src/Makefile src/Makefile lib-src-gmp/Makefile src-gmp/Makefile Makefile])
+AC_CONFIG_FILES([doc/Makefile lib-src/Makefile src/Makefile src-gmp/Makefile Makefile])
 AC_OUTPUT
