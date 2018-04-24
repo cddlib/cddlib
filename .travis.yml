@@ -1,0 +1,11 @@
+language: c
+script: ./bootstrap && ./configure && make distcheck
+
+# Install LaTeX & GMP for make distcheck
+before_install:
+  - if [ $TRAVIS_OS_NAME = linux ]; then sudo apt-get -qq update; sudo apt-get install -y texlive libgmp-dev; else brew install gmp; brew tap caskroom/cask; brew cask install mactex; fi
+
+# Try everything on a recent Linux and OSX
+os:
+    - linux
+    - osx
