@@ -5,19 +5,15 @@
 
 if LATEX
 LATEX_SRC = $(srcdir)/cddlibman.tex $(srcdir)/cddlibman.bbl
-# If these auxiliary files are up-to-date, then we'll most likely get the labels right.
-LATEX_AUX = cddlibman.toc cddlibman.aux
 
 # Building twice seems to be enough to get references right.
-$(LATEX_AUX): ${LATEX_SRC}
+cddlibman.dvi: ${LATEX_SRC}
 	$(latex) $<
-	$(latex) $<
-
-cddlibman.dvi: ${LATEX_SRC} | ${LATEX_AUX}
 	$(latex) $<
 
 if PDF
-cddlibman.pdf: ${LATEX_SRC} | ${LATEX_AUX}
+cddlibman.pdf: ${LATEX_SRC}
+	$(pdflatex) $<
 	$(pdflatex) $<
 endif
 
@@ -29,7 +25,9 @@ endif
 if HTML
 # Wipe the HTML output directory as latex2html's perl calls otherwise try to
 # find images.pl in there without putting cddlibman into @INC.
-cddlibman/cddlibman.html: ${LATEX_SRC} html.sty | ${LATEX_AUX}
+# We depend on cddlibman.dvi so we know that the references have been correctly
+# resolved in the .aux file.
+cddlibman/cddlibman.html: ${LATEX_SRC} html.sty cddlibman.dvi
 	rm -rf cddlibman
 	$(latex2html) $<
 endif
