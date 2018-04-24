@@ -5,7 +5,7 @@
 if GMP
 
 gmp_ldflags = ../lib-src/libcddgmp.la -lgmp
-gmp_cppflags = -DGMPRATIONAL
+gmp_cppflags = $(AM_CPPFLAGS) -DGMPRATIONAL
 
 bin_PROGRAMS += scdd_gmp
 scdd_gmp_SOURCES = scdd.c
