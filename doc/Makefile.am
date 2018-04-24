@@ -49,3 +49,6 @@ MAINTAINERCLEANFILES = cddlibman.pdf cddlibman.ps cddlibman.dvi
 # Change this to maintainer-clean-local if the HTML documentation should be part of the released tarball
 clean-local:
 	rm -rf cddlibman/
+
+# Install the PDF, PS, and DVI documentation into PREFIX/share/doc/cddlib/
+doc_DATA = cddlibman.pdf cddlibman.dvi cddlibman.ps

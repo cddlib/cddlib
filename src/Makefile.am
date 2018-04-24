@@ -1,4 +1,5 @@
-bin_PROGRAMS = scdd \
+bin_PROGRAMS = \
+scdd \
 lcdd \
 redcheck \
 fourier \
@@ -9,7 +10,11 @@ testcdd1 \
 testshoot \
 testcdd2 \
 testlp1 \
-testlp2 \
+testlp2
+
+# Build these binaries but do not install them; these are sample applications
+# that are mostly interesting to developers.
+noinst_PROGRAMS = \
 testlp3 \
 minkowski \
 redexter \

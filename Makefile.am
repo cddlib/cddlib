@@ -1,10 +1,11 @@
 # Directories where we can build something.
 SUBDIRS          = doc lib-src src
 
-# Additional directories that should be part of the released tarball.
-EXTRA_DIST   = $(srcdir)/examples $(srcdir)/examples-ine $(srcdir)/examples-ine3d $(srcdir)/examples-ext \
-               $(srcdir)/bootstrap \
-               README.core2processor
+# Install the examples into /usr/share/doc/examples*
+nobase_doc_DATA = $(srcdir)/examples/* $(srcdir)/examples-ine/* $(srcdir)/examples-ine3d/* $(srcdir)/examples-ext/*
+
+# Additional bits that should be part of the released tarball.
+EXTRA_DIST = $(nobase_doc_DATA) README.core2processor $(srcdir)/bootstrap
 
 ACLOCAL_AMFLAGS = -I m4
 

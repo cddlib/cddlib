@@ -17,6 +17,11 @@ lcdd_gmp_SOURCES = lcdd.c
 lcdd_gmp_LDADD = $(gmp_ldflags)
 lcdd_gmp_CPPFLAGS = $(gmp_cppflags)
 
+bin_PROGRAMS += fourier_gmp
+fourier_gmp_SOURCES = fourier.c
+fourier_gmp_LDADD = $(gmp_ldflags)
+fourier_gmp_CPPFLAGS = $(gmp_cppflags)
+
 bin_PROGRAMS += redcheck_gmp
 redcheck_gmp_SOURCES = redcheck.c
 redcheck_gmp_LDADD = $(gmp_ldflags)
@@ -62,38 +67,33 @@ testlp2_gmp_SOURCES = testlp2.c
 testlp2_gmp_LDADD = $(gmp_ldflags)
 testlp2_gmp_CPPFLAGS = $(gmp_cppflags)
 
-bin_PROGRAMS += testlp3_gmp
+noinst_PROGRAMS += testlp3_gmp
 testlp3_gmp_SOURCES = testlp3.c
 testlp3_gmp_LDADD = $(gmp_ldflags)
 testlp3_gmp_CPPFLAGS = $(gmp_cppflags)
 
-bin_PROGRAMS += minkowski_gmp
+noinst_PROGRAMS += minkowski_gmp
 minkowski_gmp_SOURCES = minkowski.c
 minkowski_gmp_LDADD = $(gmp_ldflags)
 minkowski_gmp_CPPFLAGS = $(gmp_cppflags)
 
-bin_PROGRAMS += redundancies_gmp
+noinst_PROGRAMS += redundancies_gmp
 redundancies_gmp_SOURCES = redundancies.c
 redundancies_gmp_LDADD = $(gmp_ldflags)
 redundancies_gmp_CPPFLAGS = $(gmp_cppflags)
 
-bin_PROGRAMS += redundancies_clarkson_gmp
+noinst_PROGRAMS += redundancies_clarkson_gmp
 redundancies_clarkson_gmp_SOURCES = redundancies_clarkson.c
 redundancies_clarkson_gmp_LDADD = $(gmp_ldflags)
 redundancies_clarkson_gmp_CPPFLAGS = $(gmp_cppflags)
 
-bin_PROGRAMS += redexter_gmp
+noinst_PROGRAMS += redexter_gmp
 redexter_gmp_SOURCES = redexter.c
 redexter_gmp_LDADD = $(gmp_ldflags)
 redexter_gmp_CPPFLAGS = $(gmp_cppflags)
 
-bin_PROGRAMS += fourier_gmp
-fourier_gmp_SOURCES = fourier.c
-fourier_gmp_LDADD = $(gmp_ldflags)
-fourier_gmp_CPPFLAGS = $(gmp_cppflags)
-
 # testuniq does not build at the moment
-# bin_PROGRAMS += testuniq_gmp
+# noinst_PROGRAMS += testuniq_gmp
 # testuniq_gmp_SOURCES = testuniq.c
 # testuniq_gmp_LDADD = $(gmp_ldflags)
 # testuniq_gmp_CPPFLAGS = $(gmp_cppflags)
