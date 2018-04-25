@@ -31,22 +31,21 @@ CLEANFILES = $(BUILT_SOURCES)
 define SED_GMP
 	sed -e 's/dd_/ddf_/g' \
 		-e 's/cddf_/cdd_/g' \
-	    -e 's/mytype/myfloat/g' \
-	    -e 's/#include "cdd.h"/#include "cdd_f.h"/' \
-	    -e 's/#include "cddtypes.h"/#include "cddtypes_f.h"/' \
-	    -e 's/#include "cddmp.h"/#include "cddmp_f.h"/' \
-	    -e 's/__CDD_H/__CDD_HF/' \
-	    -e 's/__CDD_HFF/__CDD_HF/' \
-	    -e 's/__CDDMP_H/_CDDMP_HF/' \
-	    -e 's/__CDDTYPES_H/_CDDTYPES_HF/' \
-	    -e 's/GMPRATIONAL/ddf_GMPRATIONAL/g' \
-	    -e 's/ARITHMETIC/ddf_ARITHMETIC/g' \
-	    -e 's/CDOUBLE/ddf_CDOUBLE/g' \
-		-e '1i\ \
-/* automatically generated from $< */ \
-' \
-		$< > $@
+		-e 's/mytype/myfloat/g' \
+		-e 's/#include "cdd.h"/#include "cdd_f.h"/' \
+		-e 's/#include "cddtypes.h"/#include "cddtypes_f.h"/' \
+		-e 's/#include "cddmp.h"/#include "cddmp_f.h"/' \
+		-e 's/__CDD_H/__CDD_HF/' \
+		-e 's/__CDD_HFF/__CDD_HF/' \
+		-e 's/__CDDMP_H/_CDDMP_HF/' \
+		-e 's/__CDDTYPES_H/_CDDTYPES_HF/' \
+		-e 's/GMPRATIONAL/ddf_GMPRATIONAL/g' \
+		-e 's/ARITHMETIC/ddf_ARITHMETIC/g' \
+		-e 's/CDOUBLE/ddf_CDOUBLE/g' \
+		$< | awk 'BEGIN{print "/* generated automatically from $< */"}1' \
+		> $@
 endef
+
 
 SUFFIXES = _f.h _f.c
 # A rule to create a _f.h from a .h
