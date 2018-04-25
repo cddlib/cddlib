@@ -42,7 +42,9 @@ define SED_GMP
 	    -e 's/GMPRATIONAL/ddf_GMPRATIONAL/g' \
 	    -e 's/ARITHMETIC/ddf_ARITHMETIC/g' \
 	    -e 's/CDOUBLE/ddf_CDOUBLE/g' \
-		-e '1i\\n/* automatically generated from $< */\n' \
+		-e '1i\ \
+/* automatically generated from $< */ \
+' \
 		$< > $@
 endef
 
