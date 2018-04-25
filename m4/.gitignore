@@ -1,0 +1,5 @@
+# Old versions of aclocal fail with unhelpful error messages if this directory
+# is missing, so keep this .gitignore file to make sure that the directory is
+# always around.
+*
+!.gitignore
