@@ -9,6 +9,6 @@ EXTRA_DIST = $(nobase_doc_DATA) $(srcdir)/README.core2processor $(srcdir)/bootst
 
 ACLOCAL_AMFLAGS = -I m4
 
-# All localdebug should be disabled before we distribute
+# All localdebug should be disabled before we package a releasable tarball
 distcheck-hook:
 	! find $(srcdir) -type f -print0 | xargs -0 $(EGREP) 'localdebug *= *dd_TRUE'

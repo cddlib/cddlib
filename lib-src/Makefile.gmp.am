@@ -24,10 +24,7 @@ BUILT_SOURCES = cdd_f.h cddmp_f.h cddtypes_f.h $(nodist_libcddgmp_la_SOURCES)
 CLEANFILES = $(BUILT_SOURCES)
 
 # The _f.h and _f.c files are generated from the .h and .c files by the
-# following sed script.
-# We insert a header explaining that they are generated (the confusing \n is
-# due to quirks of "i" on some platforms, see
-# https://stackoverflow.com/a/19078926/812379)
+# following sed/awk script.
 define SED_GMP
 	sed -e 's/dd_/ddf_/g' \
 		-e 's/cddf_/cdd_/g' \
