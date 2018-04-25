@@ -5,7 +5,7 @@ SUBDIRS          = doc lib-src src
 nobase_doc_DATA = $(srcdir)/examples/* $(srcdir)/examples-ine/* $(srcdir)/examples-ine3d/* $(srcdir)/examples-ext/*
 
 # Additional bits that should be part of the released tarball.
-EXTRA_DIST = $(nobase_doc_DATA) README.core2processor $(srcdir)/bootstrap
+EXTRA_DIST = $(nobase_doc_DATA) $(srcdir)/README.core2processor $(srcdir)/bootstrap
 
 ACLOCAL_AMFLAGS = -I m4
 
