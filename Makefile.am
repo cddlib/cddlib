@@ -1,7 +1,7 @@
 # Directories where we can build something.
 SUBDIRS          = doc lib-src src
 
-# Install the examples into /usr/share/doc/examples*
+# Install the examples into /usr/share/doc/cddlib/examples*
 nobase_doc_DATA = $(srcdir)/examples/* $(srcdir)/examples-ine/* $(srcdir)/examples-ine3d/* $(srcdir)/examples-ext/*
 
 # Additional bits that should be part of the released tarball.
