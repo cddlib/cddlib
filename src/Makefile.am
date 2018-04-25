@@ -10,12 +10,12 @@ testcdd1 \
 testshoot \
 testcdd2 \
 testlp1 \
-testlp2
+testlp2 \
+testlp3
 
 # Build these binaries but do not install them; these are sample applications
 # that are mostly interesting to developers.
 noinst_PROGRAMS = \
-testlp3 \
 minkowski \
 redexter \
 redundancies \
