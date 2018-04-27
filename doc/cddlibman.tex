@@ -76,7 +76,7 @@ In order to make this library version, a large part of the cdd source
 (Version 0.61) has been rewritten.
 This library version is more flexible since it can be called from other programs in C/C++.
 Unlike cdd/cdd+, cddlib can handle any general input and is more general.
-Furtthermore,  additional functions have been written to extend its functionality.
+Furthermore,  additional functions have been written to extend its functionality.
 
 One useful feature of  cddlib/cdd/cdd+ is its capability
 of handling the dual (reverse)  problem without any transformation
@@ -211,7 +211,7 @@ a linear objective function.  See the attached LP files, samplelp*.ine.
 
 \bigskip
 Next we define Polyhedra  {\em V-format}.  Let $P$ be 
-represented by $n$ gerating points and $s$ generating directions (rays) as 
+represented by $n$ generating points and $s$ generating directions (rays) as
 $P = conv(v_1,\ldots,v_n) +  nonneg(r_{n+1},\ldots,r_{n+s})$.
 Then the Polyhedra V-format for $P$ is 
 
@@ -465,7 +465,7 @@ Store the representation given by {\tt matrix} in a polyhedra data, and
 generate the second representation of {\tt *poly}.  It returns
 a pointer to the data. {\tt *err}
 returns {\tt dd\_NoError} if the computation terminates normally.  Otherwise,
-it returns a value according to the error occured.
+it returns a value according to the error occurred.
 
 \item[{\tt dd\_PolyhedraPtr dd\_DDMatrix2Poly2(matrix, roworder, err)}]:\\
 This is the same function as  {\tt dd\_DDMatrix2Poly} except that the insertion
@@ -923,14 +923,14 @@ Compute the representation conversion for a polyhedron given
 by a Polyhedra file ifile, and write the other representation
 in a Polyhedra file ofile.  {\tt *err}
 returns {\tt dd\_NoError} if the computation terminates normally.  Otherwise,
-it returns a value according to the error occured.
+it returns a value according to the error occurred.
 
 \item[{\tt void dd\_WriteMatrix(f, matrix)}]:\\
 Write {\tt  matrix} to stream {\tt f}.
 
 \item[{\tt void dd\_WriteNumber(f, x)}]:\\
 Write {\tt x} to stream {\tt f}.  If {\tt x} is of GMP mpq\_t rational $p/q$,
-the output is $p/q$.  If it is of C double, it is formated as a double float
+the output is $p/q$.  If it is of C double, it is formatted as a double float
 with a decimal point.
 
 \item[{\tt void dd\_WritePolyFile(f, poly)}]:\\
@@ -1148,7 +1148,7 @@ of the reverse search algorithm \cite{fjt-cgf-05}.
 
 \item {\tt TOPCOM} \cite{r-topcom-05} computes the combinatorial structure
 (the oriented matroid) of a point configuration and enumerates all triangulations
-of a point set.   It detects the regularlity of a triangulation using cddlib.
+of a point set.   It detects the regularity of a triangulation using cddlib.
 
 \end{enumerate}
 
