@@ -16,12 +16,9 @@ testlp3
 # Build these binaries but do not install them; these are sample applications
 # that are mostly interesting to developers.
 noinst_PROGRAMS = \
-minkowski \
 redexter \
 redundancies \
 redundancies_clarkson
-# testuniq does not build currently
-# testuniq
 
 LDADD = ../lib-src/libcdd.la
 AM_CPPFLAGS = -I$(top_srcdir)/lib-src
