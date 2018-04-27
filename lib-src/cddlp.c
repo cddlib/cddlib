@@ -2570,7 +2570,7 @@ dd_rowset dd_RedundantRows(dd_MatrixPtr M, dd_ErrorType *error)  /* 092 */
   dd_rowset redset;
   dd_MatrixPtr Mcopy;
   dd_Arow cvec; /* certificate */  
-  dd_boolean localdebug=dd_TRUE;
+  dd_boolean localdebug=dd_FALSE;
 
   m=M->rowsize;
   if (M->representation==dd_Generator){
@@ -2874,7 +2874,7 @@ dd_rowset dd_RedundantRowsViaShooting(dd_MatrixPtr M, dd_ErrorType *error)  /* 0
   dd_LPSolutionPtr lps; 
   dd_ErrorType err;
   dd_LPSolverType solver=dd_DualSimplex; 
-  dd_boolean localdebug=dd_TRUE;
+  dd_boolean localdebug=dd_FALSE;
 
   m=M->rowsize;
   d=M->colsize;

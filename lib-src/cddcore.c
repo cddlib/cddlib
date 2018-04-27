@@ -35,7 +35,7 @@ void dd_CheckAdjacency(dd_ConePtr cone,
     last_m=cone->m;
   }
 
-  if (dd_debug) localdebug=dd_TRUE;
+  localdebug=dd_debug;
   *adjacent = dd_TRUE;
   set_int(Face1, (*RP1)->ZeroSet, (*RP2)->ZeroSet);
   set_int(Face, Face1, cone->AddedHalfspaces);
@@ -177,7 +177,7 @@ void dd_StoreRay2(dd_ConePtr cone, mytype *p,
 
   dd_init(temp);
   RR=cone->LastRay;
-  if (dd_debug) localdebug=dd_TRUE;
+  localdebug=dd_debug;
   *feasible = dd_TRUE;
   *weaklyfeasible = dd_TRUE;
   set_initialize(&(RR->ZeroSet),cone->m);
@@ -1921,7 +1921,7 @@ in highest order.
   long rr;
   dd_boolean found, localdebug=dd_FALSE;
   
-  if (dd_debug) localdebug=dd_TRUE;
+  localdebug=dd_debug;
   found=dd_TRUE;
   rr=set_card(PriorityRows);
   if (localdebug) set_fwrite(stderr,PriorityRows);

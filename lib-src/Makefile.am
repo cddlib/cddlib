@@ -8,6 +8,9 @@ cddio.c \
 cddlib.c \
 cddproj.c \
 setoper.c
+libcdd_la_CPPFLAGS = -UGMPRATIONAL
+
+AM_LDFLAGS = -version-info $(libcdd_version_info)
 
 include_HEADERS = \
 cdd.h \
@@ -15,5 +18,4 @@ cddmp.h \
 cddtypes.h \
 setoper.h
 
-AM_CPPFLAGS = -UGMPRATIONAL
-AM_LDFLAGS = -version-info 0:0:0
+include ./Makefile.gmp.am
