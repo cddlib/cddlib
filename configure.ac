@@ -1,4 +1,8 @@
 dnl Process this file with autoconf to produce a configure script, e.g., by running ./bootstrap.
+
+dnl We need at least autoconf 2.69 for this configure.ac to work.
+AC_PREREQ([2.69])
+
 AC_INIT([cddlib], [0.94i])
 dnl Version number of the library c:r:a.
 dnl Set to c+1:0:0 on a non-backwards-compatible change.
@@ -7,12 +11,14 @@ dnl Set to c:r+1:a if the interface is unchanged.
 AC_SUBST([libcdd_version_info], [0:0:0])
 
 AC_CONFIG_MACRO_DIR([m4])
-AM_INIT_AUTOMAKE
+AM_INIT_AUTOMAKE([1.14.1])
 
 dnl Find C compiler.
 AC_PROG_CC
 dnl Set INSTALL or use install-sh.
 AC_PROG_INSTALL
+dnl Our "make distcheck" needs egrep.
+AC_PROG_EGREP
 dnl Configure libtool.
 LT_INIT
 
@@ -37,5 +43,5 @@ dnl Check for dvips to build the documentation ps
 AC_CHECK_PROGS([dvips], [dvips])
 AM_CONDITIONAL([PS], [test "x$ac_cv_prog_dvips" != "x"])
 
-AC_CONFIG_FILES([doc/Makefile lib-src/Makefile src/Makefile lib-src-gmp/Makefile src-gmp/Makefile Makefile])
+AC_CONFIG_FILES([doc/Makefile lib-src/Makefile src/Makefile Makefile])
 AC_OUTPUT

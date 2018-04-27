@@ -1,6 +1,6 @@
-/* minkowski.c: Main test program to call the cdd library cddlib
+/* scdd.c: Main test program to call the cdd library cddlib
    written by Komei Fukuda, fukuda@ifor.math.ethz.ch
-   Version 0.93, July 15, 2003
+   Version 0.94, Aug. 4, 2005
    Standard ftp site: ftp.ifor.math.ethz.ch, Directory: pub/fukuda/cdd
 */
 
@@ -19,8 +19,9 @@
     Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 */
 
-#include "setoper.h"
-#include "cdd.h"
+#include <setoper.h>
+#include <cdd.h>
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <time.h>
@@ -67,6 +68,7 @@ int main(int argc, char *argv[])
   FILE *reading=NULL, *writing;
 
   dd_set_global_constants();  /* First, this must be called. */
+  dd_log=dd_TRUE;  /* output log */
 
   if (argc>1) strcpy(inputfile,argv[1]);
   if (argc<=1 || !SetInputFile(&reading,argv[1])){

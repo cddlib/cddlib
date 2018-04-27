@@ -1,0 +1,14 @@
+language: c
+script:
+- if [ $TRAVIS_OS_NAME = osx ]; then export PATH="/Library/TeX/texbin/:$PATH"; fi
+- ./bootstrap && ./configure && make distcheck
+
+# Install LaTeX & GMP for make distcheck
+before_install:
+- if [ $TRAVIS_OS_NAME = linux ]; then sudo apt-get -qq update; sudo apt-get install -y texlive libgmp-dev; fi
+- if [ $TRAVIS_OS_NAME = osx ]; then brew install gmp; brew tap caskroom/cask; brew cask install basictex; fi
+
+# Try everything on a recent Linux and OSX
+os:
+- linux
+- osx
