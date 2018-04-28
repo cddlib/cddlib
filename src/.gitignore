@@ -26,11 +26,9 @@ testlp3
 testlp3_gmp
 redexter
 redexter_gmp
-minkowski
-minkowski_gmp
 redundancies
 redundancies_gmp
 redundancies_clarkson
 redundancies_clarkson_gmp
-testuniq
-testuniq_gmp
+cdd_both_reps
+cdd_both_reps_gmp
