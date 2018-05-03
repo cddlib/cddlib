@@ -72,6 +72,11 @@ testlp3_gmp_SOURCES = testlp3.c
 testlp3_gmp_LDADD = $(gmp_ldflags)
 testlp3_gmp_CPPFLAGS = $(gmp_cppflags)
 
+bin_PROGRAMS += cddexec
+cddexec_gmp_SOURCES = cddexec.c
+cddexec_gmp_LDADD = $(gmp_ldflags)
+cddexec_gmp_CPPFLAGS = $(gmp_cppflags)
+
 noinst_PROGRAMS += redundancies_gmp
 redundancies_gmp_SOURCES = redundancies.c
 redundancies_gmp_LDADD = $(gmp_ldflags)
