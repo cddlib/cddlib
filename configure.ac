@@ -20,7 +20,18 @@ AC_PROG_INSTALL
 dnl Our "make distcheck" needs egrep.
 AC_PROG_EGREP
 dnl Configure libtool.
-LT_INIT
+LT_INIT([win32-dll])
+
+AC_CANONICAL_HOST
+dnl libtool requires "-no-undefined" for win32 dll
+AC_SUBST(CDD_LDFLAGS)
+case $host_os in
+    *cygwin*|*mingw*)
+    if test x"$enable_shared" = "xyes"; then
+        CDD_LDFLAGS="$CDD_LDFLAGS -no-undefined"
+    fi
+;;
+esac
 
 dnl Look for gmp. But do not prepend -lgmp to LIBS as we do not want to link everything against gmp.
 AC_CHECK_LIB([gmp], [__gmpz_init], [true])

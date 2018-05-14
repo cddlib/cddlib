@@ -9,6 +9,7 @@ cddtypes_f.h
 
 libcddgmp_la_SOURCES = $(libcdd_la_SOURCES)
 libcddgmp_la_CPPFLAGS = -DGMPRATIONAL
+libcddgmp_la_LDFLAGS = -lgmp
 # do not ship generated source files
 nodist_libcddgmp_la_SOURCES = \
 cddcore_f.c \

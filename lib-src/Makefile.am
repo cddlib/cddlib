@@ -10,7 +10,7 @@ cddproj.c \
 setoper.c
 libcdd_la_CPPFLAGS = -UGMPRATIONAL
 
-AM_LDFLAGS = -version-info $(libcdd_version_info)
+AM_LDFLAGS = -version-info $(libcdd_version_info) $(CDD_LDFLAGS)
 
 include_HEADERS = \
 cdd.h \
