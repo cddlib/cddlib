@@ -21,9 +21,11 @@ If you find some problems or bugs, please kindly report them to our [issue
 tracker](https://github.com/cddlib/cddlib/issues).
 
 ## Documentation
-The [documentation](doc/cddlibman.tex) is still incomplete but contains
-descriptions of the most important functions. Please look at the
-[examples](src/) for how the library functions can be used in user's C-codes.
+The
+[documentation](ftp://ftp.math.ethz.ch/users/fukudak/cdd/cddlibman/cddlibman.html)
+is still incomplete but contains descriptions of the most important functions.
+Please look at the [examples](src/) for how the library functions can be used
+in user's C-codes.
 
 ## H-representation & V-polyhedron
 One convenient feature of cddlib is the ability to handle essentially any data.
