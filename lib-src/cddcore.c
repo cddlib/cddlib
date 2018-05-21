@@ -12,6 +12,7 @@
 
 #include "setoper.h"  /* set operation library header (Ver. June 1, 2000 or later) */
 #include "cdd.h"
+#include "splitmix64.h"
 #include <stdio.h>
 #include <stdlib.h>
 #include <time.h>
@@ -1856,12 +1857,12 @@ void dd_QuickSort(dd_rowindex OV, long p, long r, dd_Amatrix A, long dmax)
 void dd_RandomPermutation(dd_rowindex OV, long t, unsigned int seed)
 {
   long k,j,ovj;
-  double u,xk,r,rand_max=(double) RAND_MAX;
+  double u,xk,r,rand_max=(double) UINT64_MAX;
   dd_boolean localdebug=dd_FALSE;
 
-  srand(seed);
+  srand_splitmix64(seed);
   for (j=t; j>1 ; j--) {
-    r=rand();
+    r=rand_splitmix64();
     u=r/rand_max;
     xk=(double)(j*u +1);
     k=(long)xk;

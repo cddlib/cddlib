@@ -13,6 +13,7 @@
 
 #include "setoper.h"  /* set operation library header (Ver. May 18, 2000 or later) */
 #include "cdd.h"
+#include "splitmix64.h"
 #include <stdio.h>
 #include <stdlib.h>
 #include <time.h>
@@ -1752,12 +1753,12 @@ the LP.
 void dd_RandomPermutation2(dd_rowindex OV,long t,unsigned int seed)
 {
   long k,j,ovj;
-  double u,xk,r,rand_max=(double) RAND_MAX;
+  double u,xk,r,rand_max=(double) UINT64_MAX;
   int localdebug=dd_FALSE;
 
-  srand(seed);
+  srand_splitmix64(seed);
   for (j=t; j>1 ; j--) {
-    r=rand();
+    r=rand_splitmix64();
     u=r/rand_max;
     xk=(double)(j*u +1);
     k=(long)xk;
