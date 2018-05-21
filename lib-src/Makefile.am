@@ -16,6 +16,7 @@ include_HEADERS = \
 cdd.h \
 cddmp.h \
 cddtypes.h \
-setoper.h
+setoper.h \
+splitmix64.h
 
 include ./Makefile.gmp.am
