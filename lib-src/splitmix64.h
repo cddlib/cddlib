@@ -13,11 +13,11 @@
 
 static uint64_t x; /* The state can be seeded with any value. */
 
-void srand_splitmix64(uint64_t seed) {
+static void srand_splitmix64(uint64_t seed) {
 	x = seed;
 }
 
-uint64_t rand_splitmix64() {
+static uint64_t rand_splitmix64() {
 	uint64_t z = (x += 0x9e3779b97f4a7c15);
 	z = (z ^ (z >> 30)) * 0xbf58476d1ce4e5b9;
 	z = (z ^ (z >> 27)) * 0x94d049bb133111eb;
