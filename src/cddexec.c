@@ -38,10 +38,10 @@ void compute_adjacency(dd_MatrixPtr Rep, dd_ErrorType* err_ptr)
 
   switch (Rep->representation) {
   case dd_Inequality:
-    fprintf(stdout, "Facet graph\n");
+    fprintf(stdout, "Facet adjacency\n");
     break;
   case dd_Generator:
-    fprintf(stdout, "Vertex graph\n");
+    fprintf(stdout, "Vertex adjacency\n");
     break;
   case dd_Unspecified:
     fprintf(stderr, "unknown representation type!\n");
