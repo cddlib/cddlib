@@ -96,12 +96,6 @@ make
 
 ## Contact the Author
 The library cddlib is free software, but if cddlib turns out to be useful,
-please kindly send me (at the address below) a note or a paper mentioning what
+please kindly send a note or paper to the [author](./AUTHORS) mentioning what
 purpose and how cddlib has been used for. The most powerful support for free
 software development is user's appreciation.
-
-> Komei Fukuda fukuda@math.ethz.ch<br/>
-> Institute of Theoretical Computer Science<br/>
-> ETH Zentrum, CH-8092 Zurich, Switzerland<br/>
-> Tel +41-1-632-4023, Fax +41-1-632-1063<br/>
-> http://www.ifor.math.ethz.ch/staff/fukuda/
