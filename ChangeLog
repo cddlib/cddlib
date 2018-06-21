@@ -2,11 +2,12 @@ libcdd, cdd & cdd+ HISTORY file
 
 *** libcdd version (date) / changes ***
 
-Version 094j (June 11, 2018) /
+Version 094j (June 21, 2018) /
  - Thanks to Julian Rüth, modernized autotooling, mirrored
    code on GitHub, introduced cddexec as a replacement of
    cdd_both_reps that many distributions packaged, made
-   randomization portable.
+   randomization portable. Thanks to Matthias C. M. Troffaes, fixed
+   representation type in dd_MatrixAppendTo.
 
 Version 094i (March 9, 2018) /
  - The missing definition of dd_set_d function in the case of
