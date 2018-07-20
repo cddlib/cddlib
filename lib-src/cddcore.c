@@ -693,7 +693,7 @@ void dd_InitializeArow(dd_colrange d,dd_Arow *a)
 {
   dd_colrange j;
 
-  if (d>0) *a=(mytype*) calloc(d,sizeof(mytype));
+  *a=(mytype*) calloc(d,sizeof(mytype));
   for (j = 0; j < d; j++) {
       dd_init((*a)[j]);
   }
@@ -703,7 +703,7 @@ void dd_InitializeAmatrix(dd_rowrange m,dd_colrange d,dd_Amatrix *A)
 {
   dd_rowrange i;
 
-  if (m>0) (*A)=(mytype**) calloc(m,sizeof(mytype*));
+  (*A)=(mytype**) calloc(m,sizeof(mytype*));
   for (i = 0; i < m; i++) {
     dd_InitializeArow(d,&((*A)[i]));
   }
