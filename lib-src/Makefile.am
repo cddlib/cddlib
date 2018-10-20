@@ -1,3 +1,4 @@
+AM_CPPFLAGS = -I${srcdir}/include
 lib_LTLIBRARIES = libcdd.la
 
 libcdd_la_SOURCES = \
@@ -8,11 +9,11 @@ cddio.c \
 cddlib.c \
 cddproj.c \
 setoper.c
-libcdd_la_CPPFLAGS = -UGMPRATIONAL
+libcdd_la_CPPFLAGS = ${AM_CPPFLAGS} -UGMPRATIONAL
 
 AM_LDFLAGS = -version-info $(libcdd_version_info) $(CDD_LDFLAGS)
 
-include_HEADERS = \
+pkginclude_HEADERS = \
 cdd.h \
 cddmp.h \
 cddtypes.h \

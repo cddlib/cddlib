@@ -22,6 +22,6 @@ redundancies \
 redundancies_clarkson
 
 LDADD = ../lib-src/libcdd.la
-AM_CPPFLAGS = -I$(top_srcdir)/lib-src
+AM_CPPFLAGS = -I${top_srcdir}/lib-src/include
 
 include ./Makefile.gmp.am

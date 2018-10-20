@@ -17,8 +17,8 @@
    Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  */
 
-#include "setoper.h"  /* set operation library header (Ver. March 16,1995 or later) */
-#include "cdd.h"
+#include <cddlib/setoper.h>  /* set operation library header (Ver. March 16,1995 or later) */
+#include <cddlib/cdd.h>
 
 void dd_set_global_constants()
 {

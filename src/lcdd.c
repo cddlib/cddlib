@@ -31,8 +31,8 @@
     lcdd < filein
 */
 
-#include <setoper.h>
-#include <cdd.h>
+#include <cddlib/setoper.h>
+#include <cddlib/cdd.h>
 
 #include <stdio.h>
 #include <stdlib.h>

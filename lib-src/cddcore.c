@@ -10,9 +10,9 @@
    the manual cddlibman.tex for detail.
 */
 
-#include "setoper.h"  /* set operation library header (Ver. June 1, 2000 or later) */
-#include "cdd.h"
-#include "splitmix64.h"
+#include <cddlib/setoper.h>  /* set operation library header (Ver. June 1, 2000 or later) */
+#include <cddlib/cdd.h>
+#include <cddlib/splitmix64.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <time.h>

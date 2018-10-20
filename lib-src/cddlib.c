@@ -31,9 +31,9 @@
    from the Pascal program pdd.p written by Komei Fukuda. 
 */
 
-#include "setoper.h" 
+#include <cddlib/setoper.h>
   /* set operation library header (Ver. June 1, 2000 or later) */
-#include "cdd.h"
+#include <cddlib/cdd.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <time.h>

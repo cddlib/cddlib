@@ -7,7 +7,7 @@
    (set_fwrite_compl(), set_groundsize added.  set_compl fixed.)
  */
  
-#include "setoper.h"
+#include <cddlib/setoper.h>
 
 #include <limits.h>
 #define SETBITS (sizeof(long) * CHAR_BIT)
