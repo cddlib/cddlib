@@ -681,9 +681,8 @@ void dd_PermuteCopyAmatrix(mytype **Acopy, mytype **A, dd_rowrange m, dd_colrang
 void dd_PermutePartialCopyAmatrix(mytype **Acopy, mytype **A, dd_rowrange m, dd_colrange d, dd_rowindex roworder,dd_rowrange p, dd_rowrange q)
 {
  /* copy the rows of A whose roworder is positive.  roworder[i] is the row index of the copied row. */
-  dd_rowrange i,k;
+  dd_rowrange i;
 
-  k=0;
   for (i = 1; i<= m; i++) {
     if (roworder[i]>0) dd_CopyArow(Acopy[roworder[i]-1],A[i-1],d);
   }
