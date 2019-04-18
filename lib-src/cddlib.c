@@ -320,7 +320,6 @@ dd_boolean dd_DDInputAppend(dd_PolyhedraPtr *poly, dd_MatrixPtr M,
 
   if ((*poly)->child!=NULL) dd_FreeDDMemory(*poly);
   dd_AppendMatrix2Poly(poly, M);
-  (*poly)->representation=dd_Inequality;
   found=dd_DoubleDescription(*poly, &error);
   *err=error;
   return found;
