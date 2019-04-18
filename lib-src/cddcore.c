@@ -581,20 +581,20 @@ void dd_FreePolyhedra(dd_PolyhedraPtr poly)
 
 void dd_Normalize(dd_colrange d_size, mytype *V)
 {
-  long j,jmin=0;
+  long j;
   mytype temp,min;
   dd_boolean nonzerofound=dd_FALSE;
 
   if (d_size>0){
     dd_init(min);  dd_init(temp);
-    dd_abs(min,V[0]);  jmin=0; /* set the minmizer to 0 */
+    dd_abs(min,V[0]); /* set the minmizer to 0 */
     if (dd_Positive(min)) nonzerofound=dd_TRUE;
     for (j = 1; j < d_size; j++) {
       dd_abs(temp,V[j]);
       if (dd_Positive(temp)){
         if (!nonzerofound || dd_Smaller(temp,min)){
           nonzerofound=dd_TRUE;
-          dd_set(min, temp);  jmin=j;
+          dd_set(min, temp);
         }
       }
     }
