@@ -689,6 +689,23 @@ void dd_PermutePartialCopyAmatrix(mytype **Acopy, mytype **A, dd_rowrange m, dd_
   }
 }
 
+// The three following functions seems trivial but they
+// are usefull when writing a wrapper, e.g. they are used by CDDLib.jl
+void dd_SetMatrixObjective(dd_MatrixPtr M, dd_LPObjectiveType objective)
+{
+  M->objective = objective;
+}
+
+void dd_SetMatrixNumberType(dd_MatrixPtr M, dd_NumberType numbtype)
+{
+  M->numbtype = numbtype;
+}
+
+void dd_SetMatrixRepresentationType(dd_MatrixPtr M, dd_RepresentationType representation)
+{
+  M->representation = representation;
+}
+
 void dd_InitializeArow(dd_colrange d,dd_Arow *a)
 {
   dd_colrange j;
