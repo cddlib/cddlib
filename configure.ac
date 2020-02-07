@@ -12,7 +12,7 @@ dnl Set to c:r+1:a if the interface is unchanged.
 AC_SUBST([libcdd_version_info], [0:0:0])
 
 AC_CONFIG_MACRO_DIR([m4])
-AM_INIT_AUTOMAKE([1.14.1 foreign])
+AM_INIT_AUTOMAKE([1.14.1 foreign tar-ustar])
 
 dnl Find C compiler.
 AC_PROG_CC
