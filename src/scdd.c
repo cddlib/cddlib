@@ -19,8 +19,8 @@
     Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 */
 
-#include <setoper.h>
-#include <cdd.h>
+#include "setoper.h"
+#include "cdd.h"
 
 #include <stdio.h>
 #include <stdlib.h>

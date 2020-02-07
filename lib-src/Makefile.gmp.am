@@ -2,7 +2,7 @@ if GMP
 
 lib_LTLIBRARIES += libcddgmp.la
 
-include_HEADERS += \
+pkginclude_HEADERS += \
 cdd_f.h \
 cddmp_f.h \
 cddtypes_f.h

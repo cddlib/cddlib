@@ -12,7 +12,7 @@ libcdd_la_CPPFLAGS = -UGMPRATIONAL
 
 AM_LDFLAGS = -version-info $(libcdd_version_info) $(CDD_LDFLAGS)
 
-include_HEADERS = \
+pkginclude_HEADERS = \
 cdd.h \
 cddmp.h \
 cddtypes.h \
