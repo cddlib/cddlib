@@ -35,7 +35,7 @@ case $host_os in
 esac
 
 dnl Look for gmp. But do not prepend -lgmp to LIBS as we do not want to link everything against gmp.
-dnl 1st we need to check for gmp header
+dnl Check for GMP headers and library
 AC_CHECK_HEADER(gmp.h, [
   AC_CHECK_LIB([gmp], [__gmpz_init], [true])
 ])
