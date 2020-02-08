@@ -38,11 +38,11 @@ dnl Look for gmp. But do not prepend -lgmp to LIBS as we do not want to link eve
 dnl 1st we need to check for gmp header
 AC_CHECK_HEADER(gmp.h, [
   AC_CHECK_LIB([gmp], [__gmpz_init], [true])
-dnl We do not build the gmp enabled library if we don't have gmp.
-  AM_CONDITIONAL([GMP], [test "x$ac_cv_lib_gmp___gmpz_init" = "xyes"])
 ])
 
-AS_IF([test "x$ac_cv_lib_gmp___gmpz_init" != "x"], [CDD_LIBS="-lcdd -lcddgmp"], [CDD_LIBS="-lcdd"])
+dnl We do not build the gmp enabled library if we don't have gmp.
+AM_CONDITIONAL([GMP], [test "x$ac_cv_lib_gmp___gmpz_init" = "xyes"])
+AS_IF([test "x$ac_cv_lib_gmp___gmpz_init" = "xyes"], [CDD_LIBS="-lcdd -lcddgmp"], [CDD_LIBS="-lcdd"])
 AC_SUBST(CDD_LIBS)
 
 dnl Check for latex to build the documentation dvi
