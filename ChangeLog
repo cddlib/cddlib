@@ -2,6 +2,10 @@ libcdd, cdd & cdd+ HISTORY file
 
 *** libcdd version (date) / changes ***
 
+ - configuration file for pkg-config added: assuming cddlib installed in
+   <prefix> known to pkg-config, "pkg-config --cflags cddlib" etc will
+   work. (Otherwise, one would need PKG_CONFIG_PATH=<prefix>/lib/pkgconfig).
+
 Version 094j (June 21, 2018) /
  - Thanks to Julian Rüth, modernized autotooling, mirrored
    code on GitHub, introduced cddexec as a replacement of
