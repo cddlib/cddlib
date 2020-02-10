@@ -1,6 +1,7 @@
 ### Autotools ###
 # http://www.gnu.org/software/automake
 
+cddlib.pc
 Makefile.in
 /ar-lib
 /mdate-sh

@@ -12,3 +12,6 @@ ACLOCAL_AMFLAGS = -I m4
 # All localdebug should be disabled before we package a releasable tarball
 distcheck-hook:
 	! find $(srcdir) -type f -print0 | xargs -0 $(EGREP) 'localdebug *= *dd_TRUE'
+
+pkgconfigdir       = $(libdir)/pkgconfig
+pkgconfig_DATA     = cddlib.pc

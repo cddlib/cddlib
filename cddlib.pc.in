@@ -1,0 +1,10 @@
+prefix=@prefix@
+exec_prefix=@exec_prefix@
+libdir=@libdir@
+includedir=@prefix@/include
+
+Name: @PACKAGE_NAME@
+Description: C library implementing Double Description Method (generating vertices, etc. of polyhedra)
+Version: @PACKAGE_VERSION@
+Libs: @CDD_LDFLAGS@ -L${libdir} @CDD_LIBS@
+Cflags: -I${includedir}

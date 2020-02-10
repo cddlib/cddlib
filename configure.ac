@@ -35,9 +35,15 @@ case $host_os in
 esac
 
 dnl Look for gmp. But do not prepend -lgmp to LIBS as we do not want to link everything against gmp.
-AC_CHECK_LIB([gmp], [__gmpz_init], [true])
+dnl Check for GMP headers and library
+AC_CHECK_HEADER(gmp.h, [
+  AC_CHECK_LIB([gmp], [__gmpz_init], [true])
+])
+
 dnl We do not build the gmp enabled library if we don't have gmp.
 AM_CONDITIONAL([GMP], [test "x$ac_cv_lib_gmp___gmpz_init" = "xyes"])
+AS_IF([test "x$ac_cv_lib_gmp___gmpz_init" = "xyes"], [CDD_LIBS="-lcdd -lcddgmp"], [CDD_LIBS="-lcdd"])
+AC_SUBST(CDD_LIBS)
 
 dnl Check for latex to build the documentation dvi
 AC_CHECK_PROGS([latex], [latex])
@@ -55,5 +61,5 @@ dnl Check for dvips to build the documentation ps
 AC_CHECK_PROGS([dvips], [dvips])
 AM_CONDITIONAL([PS], [test "x$ac_cv_prog_dvips" != "x"])
 
-AC_CONFIG_FILES([doc/Makefile lib-src/Makefile src/Makefile Makefile])
+AC_CONFIG_FILES([doc/Makefile lib-src/Makefile src/Makefile Makefile cddlib.pc])
 AC_OUTPUT
