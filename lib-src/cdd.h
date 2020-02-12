@@ -240,10 +240,12 @@ void dd_CopyNormalizedAmatrix(mytype **, mytype **, dd_rowrange, dd_colrange);
 void dd_CopyNormalizedArow(mytype *, mytype *, dd_colrange);
 void dd_CopyAmatrix(mytype **, mytype **, dd_rowrange, dd_colrange);
 void dd_PermuteCopyAmatrix(mytype **, mytype **, dd_rowrange, dd_colrange, dd_rowindex);
-void dd_PermutePartialCopyAmatrix(mytype **, mytype **, dd_rowrange, dd_colrange, dd_rowindex,dd_rowrange, dd_rowrange);
+void dd_PermutePartialCopyAmatrix(mytype **, mytype **, dd_rowrange, dd_colrange, dd_rowindex, dd_rowrange, dd_rowrange);
+void dd_SetMatrixObjective(dd_MatrixPtr, dd_LPObjectiveType);
+void dd_SetMatrixNumberType(dd_MatrixPtr, dd_NumberType);
+void dd_SetMatrixRepresentationType(dd_MatrixPtr, dd_RepresentationType);
 void dd_CopyBmatrix(dd_colrange, dd_Bmatrix T, dd_Bmatrix TCOPY);
-void dd_CopyRay(mytype *, dd_colrange, dd_RayPtr,
-   dd_RepresentationType, dd_colindex);
+void dd_CopyRay(mytype *, dd_colrange, dd_RayPtr, dd_RepresentationType, dd_colindex);
 void dd_CreateInitialEdges(dd_ConePtr);
 void dd_CreateNewRay(dd_ConePtr, dd_RayPtr, dd_RayPtr, dd_rowrange);
 void dd_Eliminate(dd_ConePtr, dd_RayPtr*);
