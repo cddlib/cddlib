@@ -2,7 +2,7 @@ libcdd, cdd & cdd+ HISTORY file
 
 *** libcdd version (date) / changes ***
 
-Version 0.94k (February 14, 2020)
+Version 0.94k (September 15, 2020)
  - header files are now installed to PREFIX/include/cddlib to avoid clashes
    with other libraries.
  - configuration file for pkg-config added: assuming cddlib installed in
