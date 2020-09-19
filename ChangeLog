@@ -4,6 +4,15 @@ cddlib Change Log
 
 .. current developments
 
+v0.94l
+====================
+
+**Fixed:**
+
+* `extern C` block in cdd.h header for C++ (thanks to @jengelh)
+
+
+
 v0.94k
 ====================
 - header files are now installed to PREFIX/include/cddlib to avoid clashes
