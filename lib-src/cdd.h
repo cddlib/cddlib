@@ -28,6 +28,10 @@
 #endif
 #endif
 
+#if defined(__cplusplus)
+extern "C" {
+#endif
+
 /* GLOBAL CONSTANTS and STATISTICS VARIABLES (to be set by dd_set_global_constants() */
 extern mytype dd_zero;
 extern mytype dd_one;
@@ -52,10 +56,6 @@ extern dd_boolean dd_choiceLexicoPivotQ;    /* whether to use the lexicographic 
 #define dd_almostzero  1.0E-7
 
 /* ---------- FUNCTIONS MEANT TO BE PUBLIC ---------- */
-
-#if defined(__cplusplus)
-extern "C" {
-#endif
 
 /* basic matrix manipulations */
 void dd_InitializeArow(dd_colrange,dd_Arow *);
@@ -211,10 +211,6 @@ void dd_WriteLPMode(FILE *f);
 dd_MatrixPtr dd_FourierElimination(dd_MatrixPtr,dd_ErrorType *);
 dd_MatrixPtr dd_BlockElimination(dd_MatrixPtr, dd_colset, dd_ErrorType *);
 
-#if defined(__cplusplus)
-}
-#endif
-
 /* ---------- FUNCTIONS MEANT TO BE NON-PUBLIC ---------- */
 void dd_QuickSort(dd_rowindex, long, long, dd_Amatrix, long);
 void dd_RandomPermutation(dd_rowindex, long, unsigned int seed);
@@ -285,8 +281,8 @@ dd_PolyhedraPtr dd_CreatePolyhedraData(dd_rowrange, dd_colrange);
 dd_boolean dd_InitializeConeData(dd_rowrange, dd_colrange, dd_ConePtr*);
 dd_boolean dd_AppendMatrix2Poly(dd_PolyhedraPtr*, dd_MatrixPtr);
 
-
-
-
+#if defined(__cplusplus)
+}
+#endif
 
 /* end of cddlib.h */
