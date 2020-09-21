@@ -12,3 +12,6 @@ before_install:
 os:
 - linux
 - osx
+arch:
+    - ppc64le
+    - amd64
