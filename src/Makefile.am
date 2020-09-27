@@ -6,13 +6,15 @@ fourier \
 projection \
 adjacency \
 allfaces \
+cddexec
+
+check_PROGRAMS = \
 testcdd1 \
 testshoot \
 testcdd2 \
 testlp1 \
 testlp2 \
-testlp3 \
-cddexec
+testlp3
 
 # Build these binaries but do not install them; these are sample applications
 # that are mostly interesting to developers.
