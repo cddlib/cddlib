@@ -15,3 +15,6 @@ distcheck-hook:
 
 pkgconfigdir       = $(libdir)/pkgconfig
 pkgconfig_DATA     = cddlib.pc
+if GMP
+pkgconfig_DATA    += cddgmp.pc
+endif
