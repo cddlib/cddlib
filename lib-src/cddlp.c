@@ -2536,6 +2536,7 @@ dd_rowset *redset,dd_ErrorType *error)
     goto _L999;
   } else {
     set_copy(*redset,lp->redset_extra);
+    set_diff(*redset, *redset, M->linset);  /* linearity set is not tested for redundancy */
     set_delelem(*redset, itest);  
     /* itest row might be redundant in the lp but this has nothing to do with its redundancy
     in the original system M.   Thus we must delete it.  */
