@@ -1,0 +1,14 @@
+* This is to check whether issue #45 is fixed.
+* Only the origin satisfies all equations/inequalities.
+* The correct output of "cddexec --redcheck <examples/bug45.ine"
+* is in bug45res.ine.
+H-representation
+linearity 2 1 2
+begin
+ 5 4 real
+ 0.0 0.0 1.0 1.0
+ -1.0 0.0 1.0 1.0
+ -1.0 2.0 -1.0 0.0
+ -1.0 4.0 -2.0 0.0
+ 1 0 0 0
+end
