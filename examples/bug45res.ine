@@ -1,0 +1,20 @@
+size = 5 x 4
+Number Type = real
+Canonicalize the matrix.
+Implicit linearity rows are:
+
+Redundant rows are:3 4 5
+
+Nonredundant representation:
+The new row positions are as follows (orig:new).
+Each redundant row has the new number 0.
+Each deleted duplicated row has a number nagative of the row that
+represents its equivalence class.
+ 1:1 2:2 3:0 4:0 5:0
+H-representation
+linearity 2  1 2
+begin
+ 2 4 real
+  0  0  1  1
+ -1  0  1  1
+end
