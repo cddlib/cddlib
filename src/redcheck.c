@@ -96,9 +96,9 @@ int main(int argc, char *argv[])
   
   if (err!=dd_NoError) goto _L99;
 
-  fprintf(stdout, "Implicit linearity rows are:"); set_fwrite(stdout, impl_linset);
+  fprintf(stdout, "Implicit linearity rows are: "); set_fwrite(stdout, impl_linset);
 
-  fprintf(stdout, "\nRedundant rows are:"); set_fwrite(stdout, redset);
+  fprintf(stdout, "\nRedundant rows are: "); set_fwrite(stdout, redset);
   fprintf(stdout, "\n");
   
   fprintf(stdout, "Nonredundant representation:\n");
