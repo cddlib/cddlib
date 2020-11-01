@@ -2945,6 +2945,7 @@ dd_rowset dd_RedundantRowsViaShooting(dd_MatrixPtr M, dd_ErrorType *error)  /* 0
           if (localdebug) fprintf(stderr, "The %ld th inequality is redundant for the subsystem and thus for the whole.\n", i);
           rowflag[i]=-1;
           set_addelem(redset, i);
+          irow--;  M1->rowsize=irow;
           i++;
         }
       } else {
