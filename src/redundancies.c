@@ -112,7 +112,8 @@ int main(int argc, char *argv[])
 
   dd_FreeMatrix(M);
   dd_FreeMatrix(M2);
-
+  set_free(linrows);
+  set_free(redrows);
 _L99:;
   if (err!=dd_NoError) dd_WriteErrorMessages(stderr,err);
   return 0;
