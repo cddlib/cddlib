@@ -4,6 +4,18 @@ cddlib Change Log
 
 .. current developments
 
+v0.94m
+====================
+
+**Fixed:**
+
+* Fix and error, where a non-redundant linearity could be considered redundant.
+* Fix an optimization error in ViaShooting code so that the linear programs are now much smaller.
+* Fixed memory leaks in the redundancy code.
+* Updated version number in dd_DDVERSION define.
+
+
+
 v0.94l
 ====================
 
