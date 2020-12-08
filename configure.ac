@@ -4,12 +4,12 @@ dnl We need at least autoconf 2.69 for this configure.ac to work.
 AC_PREREQ([2.69])
 
 dnl When changing the version, also change it in cddtypes.h's dd_DDVERSION
-AC_INIT([cddlib], [0.94l])
+AC_INIT([cddlib], [0.94m])
 dnl Version number of the library c:r:a.
 dnl Set to c+1:0:0 on a non-backwards-compatible change.
 dnl Set to c+1:0:a+1 on a backwards-compatible change.
 dnl Set to c:r+1:a if the interface is unchanged.
-AC_SUBST([libcdd_version_info], [1:1:1])
+AC_SUBST([libcdd_version_info], [1:2:1])
 
 AC_CONFIG_MACRO_DIR([m4])
 AM_INIT_AUTOMAKE([1.14.1 foreign tar-ustar])

@@ -203,3 +203,6 @@ Session.vim
 .netrwhist
 # auto-generated tag files
 tags
+
+### Rever ###
+/rever
