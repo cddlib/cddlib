@@ -1,6 +1,5 @@
 /* cddtypes.h: Header file for cddlib.c 
    written by Komei Fukuda, fukuda@math.ethz.ch
-   Version 0.94i, March 9, 2018
 */
 
 /* cddlib.c : C-Implementation of the double description method for
@@ -14,7 +13,7 @@
 #define  __CDDTYPES_H
 #endif  /* __CDDTYPES_H */
 
-#define dd_COPYRIGHT   "Copyright (C) 1996-2018, Komei Fukuda, fukuda@math.ethz.ch"
+#define dd_COPYRIGHT   "Copyright (C) Komei Fukuda, fukuda@math.ethz.ch"
 #define dd_DDVERSION   "Version 0.94j"
 #include <time.h>
 

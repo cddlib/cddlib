@@ -1,6 +1,5 @@
 /* cddmp.h       (cddlib arithmetic operations using gmp)
    written by Komei Fukuda, fukuda@math.ethz.ch
-   Version 0.94i, March 9, 2018
 */
 
 /* This program is free software; you can redistribute it and/or modify

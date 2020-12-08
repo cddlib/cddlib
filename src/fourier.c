@@ -1,7 +1,5 @@
 /* fourier.c: Test program to call the cdd library cddlib
    written by Komei Fukuda, fukuda@ifor.math.ethz.ch
-   Version 0.94, August 4, 2005
-   Standard ftp site: ftp.ifor.math.ethz.ch, Directory: pub/fukuda/cdd
 */
 
 /*  This program is free software; you can redistribute it and/or modify

@@ -1,6 +1,5 @@
 /* cddio.c:  Basic Input and Output Procedures for cddlib
    written by Komei Fukuda, fukuda@math.ethz.ch
-   Version 0.94i, March 9, 2018
 */
 
 /* cddlib : C-library of the double description method for
@@ -10,7 +9,7 @@
    the manual cddlibman.tex for detail.
 */
 
-#include "setoper.h"  /* set operation library header (Ver. June 1, 2000 or later) */
+#include "setoper.h"
 #include "cdd.h"
 #include <stdio.h>
 #include <stdlib.h>
