@@ -1,6 +1,5 @@
 /* cddlib.c: cdd library  (library version of cdd)
    written by Komei Fukuda, fukuda@math.ethz.ch
-   Version 0.94i, March 9, 2018
    Standard ftp site: ftp.ifor.math.ethz.ch, Directory: pub/fukuda/cdd
 */
 
@@ -32,7 +31,6 @@
 */
 
 #include "setoper.h" 
-  /* set operation library header (Ver. June 1, 2000 or later) */
 #include "cdd.h"
 #include <stdio.h>
 #include <stdlib.h>

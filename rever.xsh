@@ -41,6 +41,7 @@ $ACTIVITIES = [
 
 $VERSION_BUMP_PATTERNS = [
     ('configure.ac', r'AC_INIT', r'AC_INIT([cddlib], [$VERSION])'),
+    ('lib-src/cddtypes.h', r'#define dd_DDVERSION', r'#define dd_DDVERSION   "Version $VERSION"'),
 ]
 
 $CHANGELOG_FILENAME = 'ChangeLog'

@@ -1,6 +1,5 @@
 /* cddmp.c       (cddlib arithmetic operations using gmp)
    written by Komei Fukuda, fukuda@math.ethz.ch
-   Version 0.94i, March 9, 2018
 */
 /* This program is free software; you can redistribute it and/or modify
    it under the terms of the GNU General Public License as published by
@@ -17,7 +16,7 @@
    Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  */
 
-#include "setoper.h"  /* set operation library header (Ver. March 16,1995 or later) */
+#include "setoper.h"
 #include "cdd.h"
 
 void dd_set_global_constants()

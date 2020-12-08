@@ -1,7 +1,5 @@
 /* testcdd2.c: Main test program to call the cdd library cddlib
    written by Komei Fukuda, fukuda@ifor.math.ethz.ch
-   Version 0.94i, March 9, 2018
-   Standard ftp site: ftp.ifor.math.ethz.ch, Directory: pub/fukuda/cdd
 */
 
 /*  This program is free software; you can redistribute it and/or modify

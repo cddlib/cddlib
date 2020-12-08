@@ -5,7 +5,6 @@
    H or V representation.
 
    Written by Komei Fukuda <fukuda@math.ethz.ch>, by using some part of cdd_both_reps.
-   Version 0.94j, May 10, 2018.
 
 */
 
