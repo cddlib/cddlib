@@ -18,7 +18,7 @@
 #include <string.h>
 
 /* void dd_fread_rational_value (FILE *, mytype *); */
-void dd_SetLinearity(dd_MatrixPtr, char *);
+void dd_SetLinearity(dd_MatrixPtr M, char * line);
 
 void dd_SetInputFile(FILE **f,dd_DataFileType inputfile,dd_ErrorType *Error)
 {

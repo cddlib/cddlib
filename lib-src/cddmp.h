@@ -99,23 +99,23 @@
 extern "C" {
 #endif
 
-void ddd_mpq_set_si(mytype,signed long);
-void ddd_init(mytype);  
-void ddd_clear(mytype);
-void ddd_set(mytype,mytype);
-void ddd_set_d(mytype,double);
-void ddd_set_si(mytype,signed long);
-void ddd_set_si2(mytype,signed long, unsigned long);
-void ddd_add(mytype,mytype,mytype);
-void ddd_sub(mytype,mytype,mytype);
-void ddd_mul(mytype,mytype,mytype);
-void ddd_div(mytype,mytype,mytype);
-void ddd_neg(mytype,mytype);
-void ddd_inv(mytype,mytype);
-int ddd_cmp(mytype,mytype);
-int ddd_sgn(mytype);
-double ddd_get_d(mytype);
-void ddd_mpq_set_si(mytype,signed long);
+void ddd_mpq_set_si(mytype a,signed long b);
+void ddd_init(mytype a);  
+void ddd_clear(mytype a);
+void ddd_set(mytype a,mytype b);
+void ddd_set_d(mytype a,double b);
+void ddd_set_si(mytype a,signed long b);
+void ddd_set_si2(mytype a,signed long b, unsigned long c);
+void ddd_add(mytype a,mytype b,mytype c);
+void ddd_sub(mytype a,mytype b,mytype c);
+void ddd_mul(mytype a,mytype b,mytype c);
+void ddd_div(mytype a,mytype b,mytype c);
+void ddd_neg(mytype a,mytype b);
+void ddd_inv(mytype a,mytype b);
+int ddd_cmp(mytype a,mytype b);
+int ddd_sgn(mytype a);
+double ddd_get_d(mytype a);
+void ddd_mpq_set_si(mytype a,signed long b);
 
 void dd_set_global_constants(void);
 void dd_free_global_constants(void);  /* 094d */
