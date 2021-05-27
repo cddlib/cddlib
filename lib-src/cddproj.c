@@ -84,6 +84,12 @@ dd_MatrixPtr dd_BlockElimination(dd_MatrixPtr M, dd_colset delset, dd_ErrorType 
   /* 2. Compute the generators of the dual system. */
   dualpoly=dd_DDMatrix2Poly(Mdual, &err);
   Gdual=dd_CopyGenerators(dualpoly);
+  /* If `dualpoly->child->CompStatus != ddf_AllFound`, then
+   * `CopyGenerators` return `NULL` so we return `NULL` as well.
+   * `DDMatrix2Poly` should have set `err` to the appropriate value.
+   */
+  if (NULL == Gdual)
+      return NULL;
 
   /* 3. Take the linear combination of the original system with each generator.  */
   dproj=d-delsize;
