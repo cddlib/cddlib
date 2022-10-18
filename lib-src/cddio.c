@@ -1080,8 +1080,8 @@ void dd_CopyRay(mytype *a, dd_colrange d_origsize, dd_RayPtr RR,
 void dd_WriteRay(FILE *f, dd_colrange d_origsize, dd_RayPtr RR, dd_RepresentationType rep, dd_colindex reducedcol)
 {
   dd_colrange j;
-  static dd_colrange d_last=0;
-  static dd_Arow a;
+  static _Thread_local dd_colrange d_last=0;
+  static _Thread_local dd_Arow a;
 
   if (d_last< d_origsize){
     if (d_last>0) free(a);
@@ -1405,8 +1405,8 @@ dd_boolean dd_InputAdjacentQ(dd_PolyhedraPtr poly,
 {
   dd_boolean adj=dd_TRUE;
   dd_rowrange i;
-  static set_type common;
-  static long lastn=0;
+  static _Thread_local set_type common;
+  static _Thread_local long lastn=0;
 
   if (poly->AincGenerated==dd_FALSE) dd_ComputeAinc(poly);
   if (lastn!=poly->n){

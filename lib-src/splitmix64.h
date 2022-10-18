@@ -11,7 +11,7 @@
 
 #include <stdint.h>
 
-static uint64_t x; /* The state can be seeded with any value. */
+static _Thread_local uint64_t x; /* The state can be seeded with any value. */
 
 static void srand_splitmix64(uint64_t seed) {
 	x = seed;

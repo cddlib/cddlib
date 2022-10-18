@@ -539,9 +539,9 @@ void dd_SelectDualSimplexPivot(dd_rowrange m_size,dd_colrange d_size,
   dd_rowrange i,iref;
   dd_colrange j,k;
   mytype val,valn, minval,rat,minrat;
-  static dd_Arow rcost;
-  static dd_colrange d_last=0;
-  static dd_colset tieset,stieset;  /* store the column indices with tie */
+  static _Thread_local dd_Arow rcost;
+  static _Thread_local dd_colrange d_last=0;
+  static _Thread_local dd_colset tieset,stieset;  /* store the column indices with tie */
 
   dd_init(val); dd_init(valn); dd_init(minval); dd_init(rat); dd_init(minrat);
   if (d_last<d_size) {
@@ -750,8 +750,8 @@ void dd_GaussianColumnPivot(dd_rowrange m_size, dd_colrange d_size,
 {
   dd_colrange j, j1;
   mytype Xtemp0, Xtemp1, Xtemp;
-  static dd_Arow Rtemp;
-  static dd_colrange last_d=0;
+  static _Thread_local dd_Arow Rtemp;
+  static _Thread_local dd_colrange last_d=0;
 
   dd_init(Xtemp0); dd_init(Xtemp1); dd_init(Xtemp);
   if (last_d!=d_size){
@@ -1180,9 +1180,9 @@ void dd_FindDualFeasibleBasis(dd_rowrange m_size,dd_colrange d_size,
   dd_rowrange i,r_val;
   dd_colrange j,l,ms=0,s_val,local_m_size;
   mytype x,val,maxcost,axvalue,maxratio;
-  static dd_colrange d_last=0;
-  static dd_Arow rcost;
-  static dd_colindex nbindex_ref; /* to be used to store the initial feasible basis for lexico rule */
+  static _Thread_local dd_colrange d_last=0;
+  static _Thread_local dd_Arow rcost;
+  static _Thread_local dd_colindex nbindex_ref; /* to be used to store the initial feasible basis for lexico rule */
 
   mytype scaling,svalue;  /* random scaling mytype value */
   mytype minval;
@@ -1411,10 +1411,10 @@ When LP is dual-inconsistent then lp->se returns the evidence column.
 
   dd_rowrange i,r;
   dd_colrange j,s;
-  static dd_rowindex bflag;
-  static long mlast=0,nlast=0;
-  static dd_rowindex OrderVector;  /* the permutation vector to store a preordered row indeces */
-  static dd_colindex nbindex_ref; /* to be used to store the initial feasible basis for lexico rule */
+  static _Thread_local dd_rowindex bflag;
+  static _Thread_local long mlast=0,nlast=0;
+  static _Thread_local dd_rowindex OrderVector;  /* the permutation vector to store a preordered row indeces */
+  static _Thread_local dd_colindex nbindex_ref; /* to be used to store the initial feasible basis for lexico rule */
 
   double redpercent=0,redpercent_prev=0,redgain=0;
   unsigned int rseed=1;
@@ -1593,9 +1593,9 @@ When LP is dual-inconsistent then lp->se returns the evidence column.
 
   dd_rowrange i,r;
   dd_colrange s;
-  static dd_rowindex bflag;
-  static long mlast=0;
-  static dd_rowindex OrderVector;  /* the permutation vector to store a preordered row indeces */
+  static _Thread_local dd_rowindex bflag;
+  static _Thread_local long mlast=0;
+  static _Thread_local dd_rowindex OrderVector;  /* the permutation vector to store a preordered row indeces */
   unsigned int rseed=1;
   dd_colindex nbtemp;
 
@@ -3595,9 +3595,9 @@ arithmetics.
   long pivots0,pivots1,fbasisrank;
   dd_rowrange i,is;
   dd_colrange s,senew,j;
-  static dd_rowindex bflag;
-  static long mlast=0;
-  static dd_rowindex OrderVector;  /* the permutation vector to store a preordered row indices */
+  static _Thread_local dd_rowindex bflag;
+  static _Thread_local long mlast=0;
+  static _Thread_local dd_rowindex OrderVector;  /* the permutation vector to store a preordered row indices */
   unsigned int rseed=1;
   mytype val;
   dd_colindex nbtemp;
