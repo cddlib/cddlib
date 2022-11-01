@@ -22,7 +22,7 @@ extern "C" {
 #endif
 
 unsigned long set_blocks(long len);
-void set_initialize(set_type *setp,long len);
+void set_initialize(set_type *setp,long length);
 void set_free(set_type set);
 void set_emptyset(set_type set);
 void set_copy(set_type setcopy,set_type set);
