@@ -42,8 +42,6 @@ AC_CHECK_HEADER(gmp.h, [
 
 dnl We do not build the gmp enabled library if we don't have gmp.
 AM_CONDITIONAL([GMP], [test "x$ac_cv_lib_gmp___gmpz_init" = "xyes"])
-AS_IF([test "x$ac_cv_lib_gmp___gmpz_init" = "xyes"], [CDD_LIBS="-lcdd -lcddgmp"], [CDD_LIBS="-lcdd"])
-AC_SUBST(CDD_LIBS)
 
 dnl Check for latex to build the documentation dvi
 AC_CHECK_PROGS([latex], [latex])
@@ -61,5 +59,5 @@ dnl Check for dvips to build the documentation ps
 AC_CHECK_PROGS([dvips], [dvips])
 AM_CONDITIONAL([PS], [test "x$ac_cv_prog_dvips" != "x"])
 
-AC_CONFIG_FILES([doc/Makefile lib-src/Makefile src/Makefile Makefile cddlib.pc])
+AC_CONFIG_FILES([doc/Makefile lib-src/Makefile src/Makefile Makefile cddlib.pc cddgmp.pc])
 AC_OUTPUT
