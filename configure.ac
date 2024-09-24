@@ -34,6 +34,13 @@ case $host_os in
 ;;
 esac
 
+dnl Add -std:c11 flag for MSVC
+case $host_os in
+    *cygwin*|*mingw*)
+    AX_CHECK_COMPILE_FLAG([-std:c11], [AX_APPEND_FLAG([-std:c11])])
+;;
+esac
+
 dnl Look for gmp. But do not prepend -lgmp to LIBS as we do not want to link everything against gmp.
 dnl Check for GMP headers and library
 AC_CHECK_HEADER(gmp.h, [
