@@ -3343,8 +3343,8 @@ dd_rowindex *newpos, dd_ErrorType *error) /* 094 */
    redundancies will be returned by *redset.
 */
   dd_rowrange i,k,m;
-  dd_rowindex newpos1,revpos;
-  dd_rowset redset1;
+  dd_rowindex newpos1=NULL,revpos=NULL;
+  dd_rowset redset1=NULL;
   dd_boolean success=dd_TRUE;
   
   m=(*M)->rowsize;
