@@ -29,45 +29,45 @@
 typedef set_type rowset;  /* set_type defined in setoper.h */
 typedef set_type colset;
 
-void dd_CrissCrossSolve(dd_LPPtr lp,dd_ErrorType *);
-void dd_DualSimplexSolve(dd_LPPtr lp,dd_ErrorType *);
-void dd_CrissCrossMinimize(dd_LPPtr,dd_ErrorType *);
-void dd_CrissCrossMaximize(dd_LPPtr,dd_ErrorType *);
-void dd_DualSimplexMinimize(dd_LPPtr,dd_ErrorType *);
-void dd_DualSimplexMaximize(dd_LPPtr,dd_ErrorType *);
-void dd_FindLPBasis(dd_rowrange,dd_colrange,dd_Amatrix,dd_Bmatrix,dd_rowindex,dd_rowset,
-    dd_colindex,dd_rowindex,dd_rowrange,dd_colrange,
-    dd_colrange *,int *,dd_LPStatusType *,long *);
-void dd_FindDualFeasibleBasis(dd_rowrange,dd_colrange,dd_Amatrix,dd_Bmatrix,dd_rowindex,
-    dd_colindex,long *,dd_rowrange,dd_colrange,dd_boolean,
-    dd_colrange *,dd_ErrorType *,dd_LPStatusType *,long *, long maxpivots);
+void dd_CrissCrossSolve(dd_LPPtr lp,dd_ErrorType * err);
+void dd_DualSimplexSolve(dd_LPPtr lp,dd_ErrorType * err);
+void dd_CrissCrossMinimize(dd_LPPtr lp,dd_ErrorType * err);
+void dd_CrissCrossMaximize(dd_LPPtr lp,dd_ErrorType * err);
+void dd_DualSimplexMinimize(dd_LPPtr lp,dd_ErrorType * err);
+void dd_DualSimplexMaximize(dd_LPPtr lp,dd_ErrorType * err);
+void dd_FindLPBasis(dd_rowrange m_size,dd_colrange d_size,dd_Amatrix A,dd_Bmatrix T,dd_rowindex OV,dd_rowset equalityset,
+    dd_colindex nbindex,dd_rowindex bflag,dd_rowrange objrow,dd_colrange rhscol,
+    dd_colrange * cs,int * found,dd_LPStatusType * lps,long * pivot_no);
+void dd_FindDualFeasibleBasis(dd_rowrange m_size,dd_colrange d_size,dd_Amatrix A,dd_Bmatrix T,dd_rowindex OV,
+    dd_colindex nbindex,long * bflag,dd_rowrange objrow,dd_colrange rhscol,dd_boolean lexicopivot,
+    dd_colrange * s,dd_ErrorType * err,dd_LPStatusType * lps,long * pivot_no, long maxpivots);
 
 
 #ifdef GMPRATIONAL
-void dd_BasisStatus(ddf_LPPtr lpf, dd_LPPtr lp, dd_boolean*);
-void dd_BasisStatusMinimize(dd_rowrange,dd_colrange, dd_Amatrix,dd_Bmatrix,dd_rowset,
-    dd_rowrange,dd_colrange,ddf_LPStatusType,mytype *,dd_Arow,dd_Arow,dd_rowset,ddf_colindex,
-    ddf_rowrange,ddf_colrange,dd_colrange *,long *, int *, int *);
-void dd_BasisStatusMaximize(dd_rowrange,dd_colrange,dd_Amatrix,dd_Bmatrix,dd_rowset,
-    dd_rowrange,dd_colrange,ddf_LPStatusType,mytype *,dd_Arow,dd_Arow,dd_rowset,ddf_colindex,
-    ddf_rowrange,ddf_colrange,dd_colrange *,long *, int *, int *);
+void dd_BasisStatus(ddf_LPPtr lpf, dd_LPPtr lp, dd_boolean* LPScorrect);
+void dd_BasisStatusMinimize(dd_rowrange m_size,dd_colrange d_size, dd_Amatrix A,dd_Bmatrix T,dd_rowset equalityset,
+    dd_rowrange objrow,dd_colrange rhscol,ddf_LPStatusType LPS,mytype * optvalue,dd_Arow sol,dd_Arow dsol,dd_rowset posset,ddf_colindex nbindex,
+    ddf_rowrange re,ddf_colrange se,dd_colrange * nse,long * pivots, int * found, int * LPScorrect);
+void dd_BasisStatusMaximize(dd_rowrange m_size,dd_colrange d_size,dd_Amatrix A,dd_Bmatrix T,dd_rowset equalityset,
+    dd_rowrange objrow,dd_colrange rhscol,ddf_LPStatusType LPS,mytype * optvalue,dd_Arow sol,dd_Arow dsol,dd_rowset posset,ddf_colindex nbindex,
+    ddf_rowrange re,ddf_colrange se,dd_colrange * nse,long * pivots, int * found, int * LPScorrect);
 #endif
 
-void dd_WriteBmatrix(FILE *f,dd_colrange d_size,dd_Bmatrix T);
+void dd_WriteBmatrix(FILE *f,dd_colrange d_size,dd_Bmatrix B);
 void dd_SetNumberType(char *line,dd_NumberType *number,dd_ErrorType *Error);
 void dd_ComputeRowOrderVector2(dd_rowrange m_size,dd_colrange d_size,dd_Amatrix A,
     dd_rowindex OV,dd_RowOrderType ho,unsigned int rseed);
 void dd_SelectPreorderedNext2(dd_rowrange m_size,dd_colrange d_size,
     rowset excluded,dd_rowindex OV,dd_rowrange *hnext);
-void dd_SetSolutions(dd_rowrange,dd_colrange,
-   dd_Amatrix,dd_Bmatrix,dd_rowrange,dd_colrange,dd_LPStatusType,
-   mytype *,dd_Arow,dd_Arow,dd_rowset,dd_colindex,dd_rowrange,dd_colrange,dd_rowindex);
+void dd_SetSolutions(dd_rowrange m_size,dd_colrange d_size,
+   dd_Amatrix A,dd_Bmatrix T,dd_rowrange objrow,dd_colrange rhscol,dd_LPStatusType LPS,
+   mytype * optvalue,dd_Arow sol,dd_Arow dsol,dd_rowset posset,dd_colindex nbindex,dd_rowrange re,dd_colrange se,dd_rowindex bflag);
    
-void dd_WriteTableau(FILE *,dd_rowrange,dd_colrange,dd_Amatrix,dd_Bmatrix,
-  dd_colindex,dd_rowindex);
+void dd_WriteTableau(FILE * f,dd_rowrange m_size,dd_colrange d_size,dd_Amatrix A,dd_Bmatrix T,
+  dd_colindex nbindex,dd_rowindex bflag);
 
-void dd_WriteSignTableau(FILE *,dd_rowrange,dd_colrange,dd_Amatrix,dd_Bmatrix,
-  dd_colindex,dd_rowindex);
+void dd_WriteSignTableau(FILE * f,dd_rowrange m_size,dd_colrange d_size,dd_Amatrix A,dd_Bmatrix T,
+  dd_colindex nbindex,dd_rowindex bflag);
 
 
 dd_LPSolutionPtr dd_CopyLPSolution(dd_LPPtr lp)
