@@ -2,6 +2,7 @@
 # http://www.gnu.org/software/automake
 
 cddlib.pc
+cddgmp.pc
 Makefile.in
 /ar-lib
 /mdate-sh
