@@ -2798,17 +2798,25 @@ dd_boolean dd_SRedundant(dd_MatrixPtr M, dd_rowrange itest, dd_Arow certificate,
           dd_FreeLPSolution(lps);
           lp=dd_CreateLP_V_SRedundancy(M, itest);
           dd_LPSolve(lp,dd_DualSimplex,&err);
-          lps=dd_CopyLPSolution(lp);
           if (localdebug) dd_WriteLPResult(stdout,lp,err);
-          if (dd_Positive(lps->optvalue)){
-            answer=dd_FALSE;
-            if (localdebug) fprintf(stderr,"==> %ld th point is not strongly redundant.\n",itest);
+          if (err!=dd_NoError){
+            *error=err;
+            goto _L999;
           } else {
-            answer=dd_TRUE;
-            if (localdebug) fprintf(stderr,"==> %ld th point is strongly redundant.\n",itest);
+            lps=dd_CopyLPSolution(lp);
+            for (j=0; j<lps->d; j++) {
+              dd_set(certificate[j], lps->sol[j]);
+            }
+            if (dd_Positive(lps->optvalue)){
+              answer=dd_FALSE;
+              if (localdebug) fprintf(stderr,"==> %ld th point is not strongly redundant.\n",itest);
+            } else {
+              answer=dd_TRUE;
+              if (localdebug) fprintf(stderr,"==> %ld th point is strongly redundant.\n",itest);
+            }
           }
        }
-    } 
+    }
     dd_FreeLPSolution(lps);
   }
   _L999:
