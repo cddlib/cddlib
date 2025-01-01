@@ -123,7 +123,7 @@ tp://home.imf.au.dk/ajensen/software/gfan/gfan.html}.
 
 \bibitem{m-pdcip-97}
 A.~Marzetta.
-\newblock {\em pd -- {C}-implementation of the primal-dual algoirithm}, 1997.
+\newblock {\em pd -- {C}-implementation of the primal-dual algorithm}, 1997.
 \newblock code available from
   \htmladdnormallink{http://www.cs.unb.ca/profs/bremner/pd/}
   {http://www.cs.unb.ca/profs/bremner/pd/}.
@@ -137,7 +137,7 @@ T.S. Motzkin, H.~Raiffa, GL. Thompson, and R.M. Thrall.
 \bibitem{m-cg-94}
 K.~Mulmuley.
 \newblock {\em Computational {G}eometry, {A}n {I}ntroduction {T}hrough
-  {R}andamized {A}lgorithms}.
+  {R}andomized {A}lgorithms}.
 \newblock Prentice-Hall, 1994.
 
 \bibitem{r-topcom-05}

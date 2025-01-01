@@ -180,7 +180,7 @@ void compute_redundancy(dd_MatrixPtr M,
     fprintf(stdout, "\n");
 
     fprintf(stdout, "Nonredundant representation:\n");
-    fprintf(stdout, "The new row positions are as follows (orig:new).\nEach redundant row has the new number 0.\nEach deleted duplicated row has a number nagative of the row that\nrepresents its equivalence class.\n");
+    fprintf(stdout, "The new row positions are as follows (orig:new).\nEach redundant row has the new number 0.\nEach deleted duplicated row has a number negative of the row that\nrepresents its equivalence class.\n");
 
     for (i=1; i<=m; i++){
         fprintf(stdout, " %ld:%ld",i, newpos[i]);

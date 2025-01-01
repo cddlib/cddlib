@@ -312,7 +312,7 @@ _L99: ;
 dd_boolean dd_DDInputAppend(dd_PolyhedraPtr *poly, dd_MatrixPtr M,
   dd_ErrorType *err)
 {
-  /* This is imcomplete.  It simply solves the problem from scratch.  */
+  /* This is incomplete.  It simply solves the problem from scratch.  */
   dd_boolean found;
   dd_ErrorType error;
 

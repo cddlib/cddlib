@@ -271,7 +271,7 @@ is to store a Polyhedra data in a straightforward manner.
 Once the user sets up a (pointer to)  {\tt dd\_MatrixType} data,
 he/she can load the data to an internal data type ({\tt dd\_PolyhedraType})
 by using functions described in the next section, and apply
-the double descrition method to get another representation.
+the double description method to get another representation.
 As an option  {\tt dd\_MatrixType} can save a linear objective function
 to be used by a linear programming solver.
 
@@ -728,7 +728,7 @@ Below  {\tt x}, {\tt y}, {\tt z}  are of type {\tt mytype}.
 Set {\tt x} to be the sum of  {\tt y} and  {\tt z}.
 
 \item[{\tt void dd\_sub(x, y, z)}]:\\
-Set {\tt x} to be the substraction of  {\tt z}  from  {\tt y}.
+Set {\tt x} to be the subtraction of  {\tt z}  from  {\tt y}.
 
 \item[{\tt void dd\_mul(x, y, z)}]:\\
 Set {\tt x} to be the multiplication of  {\tt y}  and  {\tt z}.
@@ -737,7 +737,7 @@ Set {\tt x} to be the multiplication of  {\tt y}  and  {\tt z}.
 Set {\tt x} to be the division of  {\tt y}  over  {\tt z}.
 
 \item[{\tt void dd\_inv(x, y)}]:\\
-Set {\tt x} to be the reciplocal of  {\tt y}.
+Set {\tt x} to be the reciprocal of  {\tt y}.
 
 \end{description}
 
@@ -786,7 +786,7 @@ Returns the negation of {\tt dd\_Positive(x)}.   {\tt dd\_Nonnegative(x)} works 
 \item[{\tt dd\_boolean dd\_EqualToZero(x)}]:\\
 Returns {\tt dd\_TRUE} if {\tt x} is considered zero,  and  {\tt dd\_FALSE} otherwise.
 In the GMPRATIONAL mode, the zero recognition is exact.  In the C double mode,
-this means the value is inbetween {\tt dd\_minuszero} and  {\tt dd\_zero}
+this means the value is between {\tt dd\_minuszero} and  {\tt dd\_zero}
 inclusive.
 
 \item[{\tt dd\_boolean dd\_Larger(x, y)}]:\\
@@ -952,7 +952,7 @@ negative of the cardinality, a colon ``:''
 Whenever it outputs the complements, the cardinality is negated
 so that there is no ambiguity.
 This will be considered standard for
-outputing incidence (*.icd, *ecd) and adjacency 
+outputting incidence (*.icd, *ecd) and adjacency
 (*.iad, *.ead) data in cddlib.   But there is some minor incompatibility
 with cdd/cdd+ standalone codes.
 
@@ -1032,7 +1032,7 @@ to stream {\tt f}.
 
 Starting from the version 093, the GMP version of cddlib, {\tt libcddgmp.a}, contains
 all cdd library functions in two arithmetics.   All functions with the standard prefix {\tt dd\_}
-are computed with the GMP rational arithmetic as before.  The same fuctions with
+are computed with the GMP rational arithmetic as before.  The same functions with
 the new prefix {\tt ddf\_} are now added to the library  {\tt libcddgmp.a} that are based
 on the C  double floating-point arithmetic.  Thus these functions are equivalent to
  {\tt libcdd.a} functions, except that all functions and  variable types are with prefix  {\tt ddf\_} and

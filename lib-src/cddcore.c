@@ -688,7 +688,7 @@ void dd_PermutePartialCopyAmatrix(mytype **Acopy, mytype **A, dd_rowrange m, dd_
 }
 
 // The three following functions seems trivial but they
-// are usefull when writing a wrapper, e.g. they are used by CDDLib.jl
+// are useful when writing a wrapper, e.g. they are used by CDDLib.jl
 void dd_SetMatrixObjective(dd_MatrixPtr M, dd_LPObjectiveType objective)
 {
   M->objective = objective;
@@ -1365,8 +1365,8 @@ void dd_DeleteNegativeRays(dd_ConePtr cone)
             Ptr->Next=cone->ZeroHead;
             cone->ZeroHead=Ptr;
           }
-          else{                /* store the new one inbetween ZeroPtr1 and 0 */
-            /* fprintf(stderr,"Insert inbetween\n");  */
+          else{                /* store the new one between ZeroPtr1 and 0 */
+            /* fprintf(stderr,"Insert between\n");  */
             Ptr->Next=ZeroPtr1->Next;
             ZeroPtr1->Next=Ptr;
           }
@@ -1496,7 +1496,7 @@ void dd_AddNewHalfspace1(dd_ConePtr cone, dd_rowrange hnew)
   dd_set(value1,cone->FirstRay->ARay);
   if (dd_Nonnegative(value1)) {
     if (cone->RayCount==cone->WeaklyFeasibleRayCount) cone->CompStatus=dd_AllFound;
-    goto _L99;        /* Sicne there is no hnew-infeasible ray and nothing to do */
+    goto _L99;        /* Since there is no hnew-infeasible ray and nothing to do */
   }
   else {
     RayPtr2s = RayPtr1->Next;/* RayPtr2s must point the first feasible ray */

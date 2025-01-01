@@ -67,7 +67,7 @@ dd_boolean FaceEnum(dd_MatrixPtr M, dd_rowset R, dd_rowset S, dd_boolean rip, dd
   set_initialize(&LL, M->rowsize);
   set_initialize(&RR, M->rowsize);
   set_initialize(&SS, M->rowsize);
-  set_copy(LL, M->linset); /* rememer the linset. */
+  set_copy(LL, M->linset); /* remember the linset. */
   set_copy(RR, R); /* copy of R. */
   set_copy(SS, S); /* copy of S. */
   if (dd_ExistsRestrictedFace(M, R, S, &err)){

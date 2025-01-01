@@ -89,7 +89,7 @@ int main(int argc, char *argv[])
   d=M->colsize;
   M2=dd_CopyMatrix(M);
 
-  printf("How many variables to elminate? (max %ld): ",d-1);
+  printf("How many variables to eliminate? (max %ld): ",d-1);
   scanf("%ld",&s);
   
   if (s>0 && s < d){
