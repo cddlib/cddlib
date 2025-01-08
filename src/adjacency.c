@@ -60,7 +60,6 @@ int main(int argc, char *argv[])
 {
   dd_MatrixPtr M=NULL,M2=NULL,M3=NULL;
   dd_SetFamilyPtr A=NULL;
-  dd_colrange d;
   dd_ErrorType err=dd_NoError;
   dd_rowset redrows,linrows,ignoredrows, basisrows;
   dd_colset ignoredcols, basiscols;
@@ -88,8 +87,6 @@ int main(int argc, char *argv[])
   }
 
   if (err!=dd_NoError) goto _L99;
-
-  if (M->representation==dd_Generator) d=M->colsize+1; else d=M->colsize;
 
   fprintf(stdout, "redundant rows:\n");
   time(&starttime);
