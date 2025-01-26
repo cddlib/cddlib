@@ -153,7 +153,7 @@ v093cg
 - A bug of Phase I of the dual simplex method in floating-point
   arithmetics is fixed.  The problem (bus error) occurred when input data
   is not appropriate for floating-point arithmetics.  The problem
-  occurrs even for the GMP executables as the exact LP solver first
+  occurs even for the GMP executables as the exact LP solver first
   tries to detect the terminal basis with float-point arithmetics.
 
 v093bg
@@ -173,7 +173,7 @@ v093ag
 
 v093g
 ====================
-- dd_LPSolve with GMP now runs fisrt with floating point arithmetics
+- dd_LPSolve with GMP now runs first with floating point arithmetics
   and checks with GMP the correctness of the result. New functions dd_Matrix2Adjacency,
   dd_FourierElimination, dd_BlockElimination, dd_DDMatrix2Poly2 are added.
   Some minor memory leak problems are fixed. (Thanks to the excellent
@@ -191,7 +191,7 @@ v092ag
 ====================
 - Joerg Rambau kindly created an autoconf distribution of
   cddlib-092.  This version 092a is made from Rambau's
-  version with a slight modification.  For the momoment,
+  version with a slight modification.  For the moment,
   the Mathematica cdd interface, cddmathlink (in src-mathlink),
   still needs to be handled in the conventional manner by
   editing Makefile.

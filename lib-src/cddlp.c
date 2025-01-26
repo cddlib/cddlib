@@ -1128,7 +1128,7 @@ void dd_FindLPBasis2(dd_rowrange m_size,dd_colrange d_size,
       pivots_p0++;
       rank++;
     } else{
-      *found=dd_FALSE;   /* cannot pivot on any of the spacified positions. */
+      *found=dd_FALSE;   /* cannot pivot on any of the specified positions. */
       stop=dd_TRUE;
     }
     if (rank==d_size-1-negcount) {
@@ -1231,7 +1231,7 @@ void dd_FindDualFeasibleBasis(dd_rowrange m_size,dd_colrange d_size,
     }
     
     if (localdebug){
-      fprintf(stderr,"\ndd_FindDualFeasibleBasis: curruent basis is not dual feasible.\n");
+      fprintf(stderr,"\ndd_FindDualFeasibleBasis: current basis is not dual feasible.\n");
       fprintf(stderr,"because of the column %ld assoc. with var %ld   dual cost =",
        ms,nbindex[ms]);
       dd_WriteNumber(stderr, maxcost);
@@ -1413,7 +1413,7 @@ When LP is dual-inconsistent then lp->se returns the evidence column.
   dd_colrange j,s;
   static _Thread_local dd_rowindex bflag;
   static _Thread_local long mlast=0,nlast=0;
-  static _Thread_local dd_rowindex OrderVector;  /* the permutation vector to store a preordered row indeces */
+  static _Thread_local dd_rowindex OrderVector;  /* the permutation vector to store a preordered row indices */
   static _Thread_local dd_colindex nbindex_ref; /* to be used to store the initial feasible basis for lexico rule */
 
   double redpercent=0,redpercent_prev=0,redgain=0;
@@ -1595,7 +1595,7 @@ When LP is dual-inconsistent then lp->se returns the evidence column.
   dd_colrange s;
   static _Thread_local dd_rowindex bflag;
   static _Thread_local long mlast=0;
-  static _Thread_local dd_rowindex OrderVector;  /* the permutation vector to store a preordered row indeces */
+  static _Thread_local dd_rowindex OrderVector;  /* the permutation vector to store a preordered row indices */
   unsigned int rseed=1;
   dd_colindex nbtemp;
 
@@ -2221,7 +2221,7 @@ dd_LPPtr dd_CreateLP_V_ImplicitLinearity(dd_MatrixPtr M)
 
   irev=M->rowsize; /* the first row of the linc reversed inequalities. */
   for (i = 1; i <= M->rowsize; i++) {
-    dd_set(lp->A[i-1][0],dd_purezero);  /* It is almost completely degerate LP */
+    dd_set(lp->A[i-1][0],dd_purezero);  /* It is almost completely degenerate LP */
     if (set_member(i, M->linset)) {
       irev=irev+1;
       set_addelem(lp->equalityset,i);    /* it is equality. */
@@ -2323,7 +2323,7 @@ dd_LPPtr dd_CreateLP_V_Redundancy(dd_MatrixPtr M, dd_rowrange itest)
     if (i==itest){
       dd_set(lp->A[i-1][0],dd_one); /* this is to make the LP bounded, ie. the min >= -1 */
     } else {
-      dd_set(lp->A[i-1][0],dd_purezero);  /* It is almost completely degerate LP */
+      dd_set(lp->A[i-1][0],dd_purezero);  /* It is almost completely degenerate LP */
     }
     if (set_member(i, M->linset)) {
       irev=irev+1;
@@ -2374,7 +2374,7 @@ dd_LPPtr dd_CreateLP_V_SRedundancy(dd_MatrixPtr M, dd_rowrange itest)
   m=M->rowsize+1+linc+2; 
      /* We represent each equation by two inequalities.
         This is not the best way but makes the code simple.
-        Two extra constraints are for the first equation and the bouding inequality.
+        Two extra constraints are for the first equation and the bounding inequality.
         */
   d=(M->colsize)+1;  
      /* One more column.  This is different from the H-reprentation case */
@@ -2391,7 +2391,7 @@ dd_LPPtr dd_CreateLP_V_SRedundancy(dd_MatrixPtr M, dd_rowrange itest)
     if (i==itest){
       dd_set(lp->A[i-1][0],dd_purezero);  /* this is a half of the boundary constraint. */
     } else {
-      dd_set(lp->A[i-1][0],dd_purezero);  /* It is almost completely degerate LP */
+      dd_set(lp->A[i-1][0],dd_purezero);  /* It is almost completely degenerate LP */
     }
     if (set_member(i, M->linset) || i==itest) {
       irev=irev+1;
@@ -3132,7 +3132,7 @@ _L99:
 int dd_FreeOfImplicitLinearity(dd_MatrixPtr M, dd_Arow certificate, dd_rowset *imp_linrows, dd_ErrorType *error)  
   /* 092 */
 {
-  /* Checks whether the matrix M constains any implicit linearity at all.
+  /* Checks whether the matrix M contains any implicit linearity at all.
   It returns 1 if it is free of any implicit linearity.  This means that 
   the present linearity rows define the linearity correctly.  It returns
   nonpositive values otherwise.  
@@ -3295,7 +3295,7 @@ dd_rowset dd_ImplicitLinearityRows(dd_MatrixPtr M, dd_ErrorType *error)  /* 092 
 dd_boolean dd_MatrixCanonicalizeLinearity(dd_MatrixPtr *M, dd_rowset *impl_linset,dd_rowindex *newpos, 
 dd_ErrorType *error) /* 094 */
 {
-/* This is to recongnize all implicit linearities, and put all linearities at the top of
+/* This is to recognize all implicit linearities, and put all linearities at the top of
    the matrix.    All implicit linearities will be returned by *impl_linset.
 */
   dd_rowrange rank;
@@ -3392,8 +3392,8 @@ _L99:
 dd_boolean dd_ExistsRestrictedFace(dd_MatrixPtr M, dd_rowset R, dd_rowset S, dd_ErrorType *err)
 /* 0.94 */
 {
-/* This function checkes if there is a point that satifies all the constraints of
-the matrix M (interpreted as an H-representation) with additional equality contraints
+/* This function checks if there is a point that satisfies all the constraints of
+the matrix M (interpreted as an H-representation) with additional equality constraints
 specified by R and additional strict inequality constraints specified by S.
 The set S is supposed to be disjoint from both R and M->linset.   When it is not,
 the set S will be considered as S\(R U M->linset).
@@ -3426,8 +3426,8 @@ _L99:
 dd_boolean dd_ExistsRestrictedFace2(dd_MatrixPtr M, dd_rowset R, dd_rowset S, dd_LPSolutionPtr *lps, dd_ErrorType *err)
 /* 0.94 */
 {
-/* This function checkes if there is a point that satifies all the constraints of
-the matrix M (interpreted as an H-representation) with additional equality contraints
+/* This function checks if there is a point that satisfies all the constraints of
+the matrix M (interpreted as an H-representation) with additional equality constraints
 specified by R and additional strict inequality constraints specified by S.
 The set S is supposed to be disjoint from both R and M->linset.   When it is not,
 the set S will be considered as S\(R U M->linset).
@@ -3465,7 +3465,7 @@ dd_boolean dd_FindRelativeInterior(dd_MatrixPtr M, dd_rowset *ImL, dd_rowset *Lb
 /* 0.94 */
 {
 /* This function computes a point in the relative interior of the H-polyhedron given by M.
-Even the representation is V-representation, it simply interprete M as H-representation.
+Even the representation is V-representation, it simply interpret M as H-representation.
 lps returns the result of solving an LP whose solution is a relative interior point.
 ImL returns all row indices of M that are implicit linearities, i.e. their inqualities
 are satisfied by equality by all points in the polyhedron.  Lbasis returns a row basis
@@ -3682,7 +3682,7 @@ arithmetics.
     }
 
        goto _L99;
-     /* No speficied LP basis is found. */
+     /* No specified LP basis is found. */
   }
 
   if (localdebug) {

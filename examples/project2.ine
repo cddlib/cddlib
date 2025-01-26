@@ -2,7 +2,7 @@
 * Project on the 3-space (x1, x2, x3) by eliminating the last
 * three variables (x4,x5,x6).  The result is project2res.ine .
 * This appears to be a very hard example to compute by
-* the straighforward Fourier or Block elimination because they
+* the straightforward Fourier or Block elimination because they
 * generate so many redundant inequalities.
 H-representation
 begin

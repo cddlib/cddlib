@@ -86,7 +86,7 @@ int main(int argc, char *argv[])
 /*  dd_WriteLPResult(writing, lp, err); */
 
 /* One can access the solutions by loading them.  See dd_WriteLPResult
-   for outputing the results correctly. */
+   for outputting the results correctly. */
   lps=dd_CopyLPSolution(lp);
   if (lps->LPS==dd_Optimal){
     printf("Optimal solution found:\n");

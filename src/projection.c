@@ -90,7 +90,7 @@ int main(int argc, char *argv[])
   d=M->colsize;
   set_initialize(&delset, d);
 
-  printf("How many variables to elminate? (max %ld): ",d-1);
+  printf("How many variables to eliminate? (max %ld): ",d-1);
   scanf("%ld",&s);
 
   for (j=1; j<=s; j++){

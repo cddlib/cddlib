@@ -416,7 +416,7 @@ dd_MatrixPtr dd_MatrixNormalizedSortedUniqueCopy(dd_MatrixPtr M,dd_rowindex *new
 
 dd_MatrixPtr dd_MatrixSortedUniqueCopy(dd_MatrixPtr M,dd_rowindex *newpos)  /* 094 */
 { 
-  /* Same as dd_MatrixNormalizedSortedUniqueCopy except that it returns a unnormalized origial data
+  /* Same as dd_MatrixNormalizedSortedUniqueCopy except that it returns a unnormalized original data
      with original ordering.
   */
   dd_MatrixPtr M1=NULL,M2=NULL;
@@ -1565,7 +1565,7 @@ void dd_WriteLPMode(FILE *f)
     default: break;
   }
   
-  fprintf(f, "* Redundancy cheking solver: ");
+  fprintf(f, "* Redundancy checking solver: ");
   switch (dd_choiceRedcheckAlgorithm) {
     case dd_DualSimplex:
       fprintf(f, "DualSimplex\n");
