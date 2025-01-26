@@ -118,7 +118,6 @@ _L99:
 int main(int argc, char *argv[])
 {
   dd_MatrixPtr M=NULL;
-  dd_rowrange m;
   dd_ErrorType err=dd_NoError;
   dd_rowset R, S;
   dd_DataFileType inputfile;
@@ -152,8 +151,6 @@ int main(int argc, char *argv[])
     if (ch!='y' && ch!='Y') goto _L99;
   }
 
-  m=M->rowsize;
-  
   set_initialize(&R, M->rowsize); 
   set_initialize(&S, M->rowsize); 
   
