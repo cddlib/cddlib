@@ -14,7 +14,7 @@
 #endif  /* __CDDTYPES_H */
 
 #define dd_COPYRIGHT   "Copyright (C) Komei Fukuda, fukuda@math.ethz.ch"
-#define dd_DDVERSION   "Version 0.94m"
+#define dd_DDVERSION   "Version 0.94n"
 #include <time.h>
 
 #define dd_wordlenmax    1024 
