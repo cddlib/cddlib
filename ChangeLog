@@ -4,6 +4,34 @@ cddlib Change Log
 
 .. current developments
 
+v0.94n
+====================
+
+**Added:**
+
+* Parameter names in function declarations.
+
+**Fixed:**
+
+* Fix potential dd_MatrixCanonicalize segfault.
+* The cddlib.pc file now has correct linkage to cddlib (the non-gmp version).
+  To link against the gmp version, you can use the new cddgmp.pc file.
+  For instance::
+
+    pkg-config cddlib --cflags --libs
+
+  will fetch all compiler and link flags for the non-gmp version of cddlib,
+  and::
+
+    pkg-config cddgmp --cflags --libs
+
+  will get them for the gmp version of cddlib.
+* Copy certificate and handle errors correctly in dd_SRedundant
+  for the V-representation code path
+* cddlib is now thread-safe. We protect static variables with `_Thread_local` directives in the implementation, as provided by the C11 standard of the C language and supported by all supported recent compilers without adding any extra flags.
+
+
+
 v0.94m
 ====================
 
