@@ -1,10 +1,11 @@
 % The name of this file: cddlibman.tex
 % written by by Komei Fukuda
 % created March 15, 1999
-% modified February 7, 2008
+% modified February 18, 2021
 %
 \documentclass[11pt]{article}
-\usepackage{html,amsmath,amssymb}
+%KF2021 add url and remove html
+\usepackage{url,amsmath,amssymb}
 \renewcommand{\baselinestretch}{1}
 \renewcommand{\arraystretch}{1}
 \setlength{\oddsidemargin}{0mm}
@@ -21,29 +22,32 @@
 \begin{document}
 \title{cddlib Reference Manual}
 \author{Komei Fukuda\\
-Institute for Operations Research\\
+%KF2021 update the affiliation
+%Institute for Operations Research\\
+Department of Mathematics\\
 and Institute of Theoretical Computer Science\\
 ETH Zentrum, CH-8092 Zurich, Switzerland\\
 }
-\date{ (cddlib ver. 0.94, manual ver. February 7, 2008)}
+%KF2021 date modified
+\date{ (cddlib ver. 0.94m, manual ver. February 18, 2021)}
 
 \maketitle
 
 \tableofcontents
 
 \begin{abstract}
-This is a reference manual for cddlib-094.  
-The manual describes the library functions and data types implemented 
-in the cddlib C-library which is to perform fundamental polyhedral 
+This is a reference manual for cddlib-094m.
+The manual describes the library functions and data types implemented
+in the cddlib C-library which is to perform fundamental polyhedral
 computations such as representation conversions and linear programming
 in both floating-point and GMP rational exact arithmetic.
-Please read the accompanying README file and test programs to 
+Please read the accompanying README file and test programs to
 complement the manual.
 
 The new functions added in this version include {\tt dd\_MatrixCanonicalize}
 to find a non-redundant proper H- or V-representation,
 {\tt dd\_FindRelativeInterior} to find a relative interior point
-of an H-polyhedron, and  {\tt dd\_ExistsRestrictedFace} (Farkas-type 
+of an H-polyhedron, and  {\tt dd\_ExistsRestrictedFace} (Farkas-type
 alternative theorem verifier)
 to check the existence of a point satisfying a specified system
 of linear inequalities possibly including multiple strict inequalities.
@@ -56,20 +60,20 @@ related software packages MinkSum (by Ch. Weibel) and Gfan
 
 \section{Introduction} \label{INTRODUCTION}
 
-The program  cddlib  is an efficient implementation \cite{fp-ddmr-96}  of 
+The program  cddlib  is an efficient implementation \cite{fp-ddmr-96}  of
 the double description Method~\cite{mrtt-ddm-53}
 for generating  all vertices (i.e. extreme points)
-and extreme rays of a general 
-convex polyhedron given by 
+and extreme rays of a general
+convex polyhedron given by
 a system of linear inequalities:
 \[
-   P = \{ x=(x_1, x_2, \ldots, x_d)^T \in R^{d}:  b - A  x  \ge 0 \}
+   P = \{ x=(x_1, x_2, \ldots, x_d)^T \in \R^{d}:  b - A  x  \ge 0 \}
 \]
-where $A$ is a given $m \times d$ real matrix and 
+where $A$ is a given $m \times d$ real matrix and
 $b$ is a given real $m$-vector.   In the mathematical
 language, the computation is the transformation
 of an {\em H-representation\/} of a convex polytope
-to an {\em V-representation}.  
+to an {\em V-representation}.
 
 cddlib is a C-library version of the previously released C-code cdd/cdd+.
 In order to make this library version, a large part of the cdd source
@@ -81,24 +85,24 @@ Furthermore,  additional functions have been written to extend its functionality
 One useful feature of  cddlib/cdd/cdd+ is its capability
 of handling the dual (reverse)  problem without any transformation
 of data.  The dual transformation problem of a V-representation
-to a minimal H-representation and is often called the 
+to a minimal H-representation and is often called the
 {\em (convex) hull problem\/}.  More explicitly,
 is to obtain a linear inequality representation
-of a convex polyhedron given as the Minkowski sum of 
+of a convex polyhedron given as the Minkowski sum of
 the convex hull of a finite set of points and the nonnegative
-hull of a finite set of points in $R^{d}$: 
+hull of a finite set of points in $R^{d}$:
 \[
-P = conv(v_1,\ldots,v_n) +  nonneg(r_{n+1},\ldots,r_{n+s}), 
+P = conv(v_1,\ldots,v_n) +  nonneg(r_{n+1},\ldots,r_{n+s}),
 \]
 where
  the {\em Minkowski sum of two subsets $S$ and $T$} of $R^{d}$ is defined
-as 
+as
 \[
 S + T = \{ s + t \; |  s \in S \mbox{ and } t \in T \}.
 \]
 As we see in this manual, the computation can be done
 in straightforward manner.  Unlike the earlier versions of
-cdd/cdd+ that assume certain regularity conditions for input, 
+cdd/cdd+ that assume certain regularity conditions for input,
 cddlib is designed to do a correct transformation for any general input.
 The user must be aware of the fact that in certain cases the
 transformation is not unique and there are polyhedra with
@@ -110,16 +114,16 @@ merely one minimal representation.
 
 cddlib comes with an LP code to solve the general
 linear programming (LP) problem to maximize (or minimize) a linear
-function over polyhedron $P$.   It is useful mainly for solving 
-dense LP's with large $m$ (say, up to few hundred thousands) and small $d$ 
+function over polyhedron $P$.   It is useful mainly for solving
+dense LP's with large $m$ (say, up to few hundred thousands) and small $d$
 (say, up to 100).  It implements a revised dual simplex method that
 updates $(d+1)\times (d+1)$ matrix for a pivot operation.
 
-The program cddlib has an I/O routines that read and write files in 
+The program cddlib has an I/O routines that read and write files in
 {\em Polyhedra format\/} which was defined by David Avis and
-the author in 1993, and has been updated in 1997 and 1999.  
+the author in 1993, and has been updated in 1997 and 1999.
 The program called lrs and lrslib \cite{a-lrshome-01} developed by David Avis is
-a C-implementation of the reverse search algorithm~\cite{af-pachv-92} 
+a C-implementation of the reverse search algorithm~\cite{af-pachv-92}
 for the same enumeration purpose, and it conforms to Polyhedra format as well.
 Hopefully, this compatibility of the two programs
 enables users to use both programs for the same input files
@@ -132,11 +136,11 @@ tends to be efficient for nondegenerate or slightly
 degenerate problems.
 
 Although the program can be used for nondegenerate inputs,
-it might not be very efficient.  For nondegenerate inputs, 
+it might not be very efficient.  For nondegenerate inputs,
 other available programs, such as the reverse search code lrs or
 qhull (developed by the Geometry Center),
-might be more efficient.  See Section~\ref{CODES} 
-for pointers to these codes.  
+might be more efficient.  See Section~\ref{CODES}
+for pointers to these codes.
 The paper \cite{abs-hgach-97} contains many interesting results on polyhedral
 computation and experimental results on cdd+, lrs, qhull and porta.
 
@@ -145,8 +149,8 @@ Please read the file COPYING carefully before using.
 
 I will not take any responsibility of any problems you might have
 with this program.  But I will be glad to receive bug reports or suggestions
-at the e-mail addresses above. If cddlib turns out to be useful, 
-please kindly inform  me of  what purposes cdd has been used for. 
+at the e-mail addresses above. If cddlib turns out to be useful,
+please kindly inform  me of  what purposes cdd has been used for.
 I will be happy to include a list of applications in future
 distribution  if I receive  enough replies.
 The most powerful support for free software development
@@ -159,8 +163,11 @@ the intersection of finite halfspaces and the other
 as Minkowski sum of the convex hull of finite points
 and the nonnegative hull of finite directions.  These are
 called H-representation and V-representation, respectively.
+%KF2021 one sentence added
+The underlying theory is the Minkowski-Weyl theorem, 
+see \cite[Section 2.5]{f-pc-20}.
 
-Naturally there are two basic Polyhedra formats, 
+Naturally there are two basic Polyhedra formats,
 H-format for  H-representation and V-format for
 V-representation.    These two formats are designed
 to be almost indistinguishable, and in fact, one can
@@ -169,7 +176,7 @@ arising from the asymmetry of two representations.
 
 First we start with the H-representation.
 Let $A$ be an $m \times d$ matrix, and let $b$ be a column $m$-vector.
-The Polyhedra format  ({\em  H-format} )  of 
+The Polyhedra format  ({\em  H-format} )  of
 the system  $\; b - A x \ge \0\;$ of $m$ inequalities in $d$ variables
 $x =(x_1, x_2, \ldots, x_d)^T$ is
 
@@ -189,19 +196,19 @@ $x =(x_1, x_2, \ldots, x_d)^T$ is
 \noindent
 where numbertype can be one of integer, rational or real.
 When rational type is selected, each component
-of $b$ and $A$ can be specified by the usual integer expression 
+of $b$ and $A$ can be specified by the usual integer expression
 or by the rational expression ``$p / q$''  or  ``$-p / q$'' where
 $p$ and $q$ are arbitrary long positive integers (see the example
 input file rational.ine).  In the 1997 format,
 we introduced ``H-representation'' which must appear
-before ``begin''. 
-There was one restriction in the old polyhedra format 
+before ``begin''.
+There was one restriction in the old polyhedra format
 (before 1997):  the last $d$ rows must determine
 a vertex of $P$.  This is obsolete now.
 
 In the new 1999 format, we added the possibility of specifying {\bf linearity\/}.
 This means that
-for H-representation, some of the input rows can be specified as  {\bf equalities}:  
+for H-representation, some of the input rows can be specified as  {\bf equalities}:
 $b_{i_j} - A_{i_j} x = 0 \;$ for all $j=1,2, \ldots, t$.
 The linearity line may be omitted if there are no equalities.
 
@@ -210,10 +217,10 @@ In particular both cdd and lrs use the option lines to represent
 a linear objective function.  See the attached LP files, samplelp*.ine.
 
 \bigskip
-Next we define Polyhedra  {\em V-format}.  Let $P$ be 
+Next we define Polyhedra  {\em V-format}.  Let $P$ be
 represented by $n$ generating points and $s$ generating directions (rays) as
 $P = conv(v_1,\ldots,v_n) +  nonneg(r_{n+1},\ldots,r_{n+s})$.
-Then the Polyhedra V-format for $P$ is 
+Then the Polyhedra V-format for $P$ is
 
 \begin{tabular}{cll}
 \\ \hline
@@ -241,11 +248,11 @@ order.
 
 Linearity for V-representation specifies a subset of generators
 whose coefficients are relaxed
-to be {\bf free}:  for all $j=1,2, \ldots, t$, the $k=i_j$th generator ($v_{k}$ or $r_k$ whichever is the $i_j$th generator) is a free generator. 
-This means for each such a ray $r_k$, 
+to be {\bf free}:  for all $j=1,2, \ldots, t$, the $k=i_j$th generator ($v_{k}$ or $r_k$ whichever is the $i_j$th generator) is a free generator.
+This means for each such a ray $r_k$,
 the line generated by $r_k$ is in the polyhedron,
 and for each such a vertex $v_k$, its coefficient is no longer nonnegative
-but still the coefficients for all $v_i$'s must sum up to one. 
+but still the coefficients for all $v_i$'s must sum up to one.
 It is highly unlikely that one needs to
 use linearity for vertex generators, and it is defined mostly
 for formality.
@@ -255,34 +262,34 @@ or ``V-representation'', is omitted, the former
 ``H-representation'' is assumed.
 
 It is strongly suggested to use the following rule for naming
-H-format files and V-format files:   
+H-format files and V-format files:
 \begin{description}
-\item[(a)] use the filename  extension ``.ine'' for H-files (where ine stands for inequalities), and 
-\item[(b)]  use the filename  extension ``.ext'' for V-files (where ext stands for extreme points/rays). 
+\item[(a)] use the filename  extension ``.ine'' for H-files (where ine stands for inequalities), and
+\item[(b)]  use the filename  extension ``.ext'' for V-files (where ext stands for extreme points/rays).
 \end{description}
 
 
 \section{Basic Object Types (Structures) in cddlib}  \label{DATASTR}
 
-Here are the types (defined in cddtypes.h) that are 
-important for the cddlib user.  The most important one, 
+Here are the types (defined in cddtypes.h) that are
+important for the cddlib user.  The most important one,
 {\tt dd\_MatrixType},
 is to store a Polyhedra data in a straightforward manner.
 Once the user sets up a (pointer to)  {\tt dd\_MatrixType} data,
 he/she can load the data to an internal data type ({\tt dd\_PolyhedraType})
 by using functions described in the next section, and apply
-the double description method to get another representation.
+the double descrition method to get another representation.
 As an option  {\tt dd\_MatrixType} can save a linear objective function
 to be used by a linear programming solver.
 
 The two dimensional array data in the structure {\tt dd\_MatrixType} is
 {\tt dd\_Amatrix} whose components are of type {\tt mytype\/}.
-The type mytype is set to be either the rational type {\tt mpq\_t} of 
+The type mytype is set to be either the rational type {\tt mpq\_t} of
 the GNU MP Library or the C double array of size $1$.
 This abstract type allows us to write a single program that can
 be compiled with the two or more different arithmetics, see example
-programs such as simplecdd.c, testlp*.c and testcdd*.c
-in the {\tt src} and {\tt src-gmp} subdirectories of the source
+programs such as scdd.c, testlp*.c and testcdd*.c
+in the {\tt src} subdirectory of the source
 distribution.
 
 There is another data type that is used very often, {\tt dd\_SetFamilyType}.
@@ -307,8 +314,8 @@ typedef long dd_bigrange;
 
 typedef set_type dd_rowset;   /* set_type defined in setoper.h */
 typedef set_type dd_colset;
-typedef long *dd_rowindex;   
-typedef int *dd_rowflag;   
+typedef long *dd_rowindex;
+typedef int *dd_rowflag;
 typedef long *dd_colindex;
 typedef mytype **dd_Amatrix;  /* mytype is either GMP mpq_t or 1-dim double array. */
 typedef mytype *dd_Arow;
@@ -332,9 +339,9 @@ typedef enum {
 } dd_CompStatusType;
 
 typedef enum {
-  dd_DimensionTooLarge, dd_ImproperInputFormat, 
+  dd_DimensionTooLarge, dd_ImproperInputFormat,
   dd_NegativeMatrixSize, dd_EmptyVrepresentation,
-  dd_IFileNotFound, dd_OFileNotOpen, dd_NoLPObjective, 
+  dd_IFileNotFound, dd_OFileNotOpen, dd_NoLPObjective,
   dd_NoRealNumberSupport, dd_NoError
 } dd_ErrorType;
 
@@ -351,7 +358,7 @@ typedef enum {
 typedef struct matrixdata *dd_MatrixPtr;
 typedef struct matrixdata {
   dd_rowrange rowsize;
-  dd_rowset linset; 
+  dd_rowset linset;
     /*  a subset of rows of linearity (ie, generators of
         linearity space for V-representation, and equations
         for H-representation. */
@@ -367,14 +374,14 @@ typedef struct setfamily *dd_SetFamilyPtr;
 typedef struct setfamily {
   dd_bigrange famsize;
   dd_bigrange setsize;
-  dd_SetVector set;  
+  dd_SetVector set;
 } dd_SetFamilyType;
 
 typedef struct lpsolution *dd_LPSolutionPtr;
 typedef struct lpsolution {
   dd_DataFileType filename;
   dd_LPObjectiveType objective;
-  dd_LPSolverType solver; 
+  dd_LPSolverType solver;
   dd_rowrange m;
   dd_colrange d;
   dd_NumberType numbtype;
@@ -386,7 +393,7 @@ typedef struct lpsolution {
   dd_colindex nbindex;  /* current basis represented by nonbasic indices */
   dd_rowrange re;  /* row index as a certificate in the case of inconsistency */
   dd_colrange se;  /* col index as a certificate in the case of dual inconsistency */
-  long pivots[5]; 
+  long pivots[5];
    /* pivots[0]=setup (to find a basis), pivots[1]=PhaseI or Criss-Cross,
       pivots[2]=Phase II, pivots[3]=Anticycling, pivots[4]=GMP postopt  */
   long total_pivots;
@@ -396,18 +403,18 @@ typedef struct lpsolution {
 
 \section{Library Functions}  \label{LIBRARY}
 
-Here we list some of the most important library functions/procedures. 
-We use the following convention: 
+Here we list some of the most important library functions/procedures.
+We use the following convention:
 {\tt poly} is of type {\tt dd\_PolyhedraPtr},
 {\tt matrix}, {\tt matrix1} and {\tt matrix2} are of type {\tt dd\_MatrixPtr},
 {\tt matrixP}, of type {\tt dd\_MatrixPtr*},
-{\tt err} is of type {\tt dd\_ErrorType*}, 
+{\tt err} is of type {\tt dd\_ErrorType*},
 {\tt ifile} and {\tt ofile} are of type {\tt char*},
 {\tt A} is of type {\tt dd\_Amatrix},
 {\tt point} and {\tt vector} are of type {\tt dd\_Arow},
-{\tt d} is of type {\tt dd\_colrange}, 
+{\tt d} is of type {\tt dd\_colrange},
 {\tt m} and {\tt i} are of type {\tt dd\_rowrange},
-{\tt x} is of type {\tt mytype}, 
+{\tt x} is of type {\tt mytype},
 {\tt a} is of type {\tt signed long integer},
 {\tt b} is of type {\tt double},
 {\tt set} is of type {\tt set\_type}.
@@ -443,20 +450,20 @@ There are two types of core functions in cddlib.  The first type
 runs the double description (DD) algorithm and does a representation
 conversion of a specified polyhedron.  The standard header
 for this type is {\tt dd\_DD*}.  The second type solves
-one or more linear programs with no special headers.   
+one or more linear programs with no special headers.
 Both types of computations are nontrivial
 and the users (especially for the DD algorithm) must
 know that there is a serous limit in the sizes of problems
-that can be practically solved. 
+that can be practically solved.
 Please check *.ext and *.ine files that come with cddlib to get
-ideas of tractable problems. 
+ideas of tractable problems.
 
 In addition to previously defined objects, the symbol  {\tt roworder} is
-of {\tt dd\_RowOrderType}. The symbol {\tt matrixP} is 
+of {\tt dd\_RowOrderType}. The symbol {\tt matrixP} is
 a pointer to {\bf dd\_MatrixType}.
-the arguments {\tt impl\_lin} and {\tt redset} are both a pointer 
-to {\tt dd\_rowset} type, and {\tt newpos} is a pointer to 
-{\tt dd\_rowindex} type. 
+the arguments {\tt impl\_lin} and {\tt redset} are both a pointer
+to {\tt dd\_rowset} type, and {\tt newpos} is a pointer to
+{\tt dd\_rowindex} type.
 
 
 \begin{description}
@@ -473,7 +480,7 @@ order is specified by the user.  The argument {\tt roworder} is of {\tt dd\_RowO
 and takes one of the values:
   {\tt dd\_MaxIndex}, {\tt dd\_MinIndex}, {\tt dd\_MinCutoff}, {\tt dd\_MaxCutoff}, {\tt dd\_MixCutoff},
    {\tt dd\_LexMin}, {\tt dd\_LexMax}, {\tt dd\_RandomRow}.   In general, {\tt dd\_LexMin} is
-the best choice which is in fact chosen in {\tt dd\_DDMatrix2Poly}.  If you know that 
+the best choice which is in fact chosen in {\tt dd\_DDMatrix2Poly}.  If you know that
 the input is already sorted in the order you like, use  {\tt dd\_MinIndex} or  {\tt dd\_MaxIndex}.
 If the input contains many redundant rows (say more than $80\%$ redundant),
 you might want to try {\tt dd\_MaxCutoff} which might result in much faster termination,
@@ -494,9 +501,9 @@ hand sides.   It is recommended that {\tt solver} is
 that updates a $d\times d$ dual basis matrix in each pivot (where
 $d$ is the column size of lp).
 
-The revised dual simplex method is ideal for dense LPs in small number of variables 
+The revised dual simplex method is ideal for dense LPs in small number of variables
 (i.e. small column size, typically less than $100$)
-and many inequality constraints (i.e. large row size, can be a few ten thousands).  
+and many inequality constraints (i.e. large row size, can be a few ten thousands).
 If your LP has many variables but only few constraints, solve the dual LP by
 this function.
 
@@ -506,38 +513,54 @@ floating-point arithmetic and verifies whether the output
 basis is correct with GMP.  If so, the correct solution is
 computed with GMP.  Otherwise, it (re)solves the LP
 from scratch with GMP.   This is newly implemented
-in the version 093.  The original (non-crossover) version of 
+in the version 093.  The original (non-crossover) version of
 the same function is still  available as {\tt boolean dd\_LPSolve0}.
 
 \item[{\tt dd\_boolean dd\_Redundant(matrix, i, point, err)}]:\\
 Check whether $i$th data in {\tt matrix} is redundant for the representation.
 If it is nonredundant, it returns a certificate.  For H-representation,
-it is a {\tt point} in $R^d$ which satisfies
+it is a {\tt point} in $\R^d$ which satisfies
 all inequalities except for the $i$th inequality.  If $i$ is a linearity,
 it does nothing and always returns {\tt dd\_FALSE}.
 
 \item[{\tt dd\_rowset dd\_RedundantRows(matrix, err)}]:\\
 Returns a maximal set of row indices such that the associated rows
-can be eliminated without changing the polyhedron.  
+can be eliminated without changing the polyhedron.
 The function works for both V- and H-representations.
+
+%KF2021 This function works now, and is documented.
+\item[{\tt dd\_rowset dd\_RedundantRowsViaShooting(matrix, err) }]:\\
+Returns a maximal set of row indices such that the associated rows
+can be eliminated without changing the polyhedron.  It implements
+an efficient algorithm due to Clarkson, see \cite[Chapter 7]{f-pc-20}.
+At the moment, Clarkson's algorithm is applied only when the input is 
+a full-dimensional H-polyhedron.  When the H-polyhedron is not full-dimensional,
+ it calls a slower {\tt dd\_RedundantRows}.
+Experimental comparisons reported at\\
+\url{https://people.inf.ethz.ch/fukudak/ClarksonExp/ExperimentCube.html}\\
+indicate a huge acceleration for highly redundant cases. \\When the input is V-representation,
+this function treats it as if it was an H-representation.  Thus, it may not work correctly, but 
+it might work for some cases,
+for example, when the input is a homogeneous cone.
+
 
 \item[{\tt dd\_boolean dd\_SRedundant(matrix, i, point, err)}]:\\
 Check whether $i$th data in {\tt matrix} is strongly redundant for the representation.
 If $i$ is a linearity, it does nothing and always returns {\tt dd\_FALSE}.
-Here,  $i$th inequality in H-representation is {\em strongly redundant\/} if it is redundant 
+Here,  $i$th inequality in H-representation is {\em strongly redundant\/} if it is redundant
 and there is no point in the polyhedron satisfying the inequality with equality.
-In V-representation,  $i$th point is {\em strongly redundant\/} if it is redundant 
+In V-representation,  $i$th point is {\em strongly redundant\/} if it is redundant
 and it is in the relative interior of the polyhedron. If it is not strongly redundant, it returns a certificate.
- 
+
 \item[{\tt dd\_boolean dd\_ImplicitLinearity(matrix, i, err)}]:\\
 Check whether $i$th row
-in the input is forced to be linearity (equality 
+in the input is forced to be linearity (equality
 for H-representation).
-If $i$ is linearity itself, 
+If $i$ is linearity itself,
 it does nothing and always returns {\tt dd\_FALSE}.
 
 \item[{\tt dd\_rowset dd\_ImplicitLinearityRows(matrix, err)}]:\\
-Returns the set of indices of rows that are 
+Returns the set of indices of rows that are
 implicitly linearity.  It simply calls the library function
 {\tt dd\_ImplicitLinearity} for each inequality and collects
 the row indices for which the answer is {\tt dd\_TRUE}.
@@ -548,7 +571,7 @@ modifies the matrix by putting a maximally linear independent linearities (basis
 at the top of the matrix, and removing all redundant data.
 All implicit linearities and all (removed) redundant rows
 in the original matrix will be returned in the corresponding row sets.
-The new positions of the original rows are returned by 
+The new positions of the original rows are returned by
 the array {\tt newpos}.
 
 The cardinality of the new linearity set {\tt  (*matrixP)->linset} is the codimension
@@ -558,16 +581,16 @@ if it is V-polyhedron.
 Note that the present version should not be called a canonicalization
 because it may generate two different representations of the same
 polyhedron.  In the future, this function is expected to be correctly
-implemented. 
+implemented.
 
 \item[{\tt dd\_boolean dd\_MatrixCanonicalizeLinearity(matrixP, impl\_linset, newpos, err)}]:\\
 It does only the first half of {\tt dd\_boolean dd\_MatrixCanonicalize}, namely, it detects all
 implicit linearities and puts a maximally independent linearities
-at the top of the matrix.  For example, this function can be 
+at the top of the matrix.  For example, this function can be
 used to detect the dimension of an H-polyhedron.
 
 \item[{\tt dd\_boolean dd\_MatrixRedundancyRemove(matrixP, redset, newpos, err)}]:\\
-It does essentially the second half of {\tt dd\_boolean dd\_MatrixCanonicalize}, 
+It does essentially the second half of {\tt dd\_boolean dd\_MatrixCanonicalize},
 namely, it detects all
 redundancies.  This function should be used after {\tt dd\_MatrixCanonicalizeLinearity}
 has been called.
@@ -607,7 +630,7 @@ as if it were inequality representation.
 \item[{\tt dd\_boolean dd\_ExistsRestrictedFace2(matrix, R, S, lps, err)}]:\\
 It is the same as the function {\tt dd\_ExistsRestrictedFace} except that
 it returns also a certificate for the answer.  The certificate is a solution
-to the bounded LP: 
+to the bounded LP:
 \[
 \begin{array}{lllllll}
 \mbox{(P)} &\max  z  &\mbox{ subject to } & b_r - A_r x  &   & = 0, \; \forall r \in R\cup L \\
@@ -618,7 +641,7 @@ to the bounded LP:
 \]
 where $L$ is the set of linearity rows of {\tt matrix}, and $T$ represents
 the set of rows that are not in $R\cup L \cup S$.
-The answer for the decision problem is YES if and only if the LP attains 
+The answer for the decision problem is YES if and only if the LP attains
 an optimal and the optimal value is positive.  The dual solution (either
 an optimal solution or a dual unbounded direction) can be considered
 as a certificate for the NO answer, if the answer is NO.
@@ -634,7 +657,7 @@ the input is H-representation, it gives the facet graph of the polyhedron.
 For V-representation, it gives the (vertex) graph of the polyhedron.
 It is required that the input matrix is a minimal representation.
 Run redundancy removal functions before calling this function,
-see the sample code adjacency.c. 
+see the sample code adjacency.c.
 
 
 \item[{\tt dd\_SetFamilyPtr dd\_Matrix2WeakAdjacency(matrix, err)}]:\\
@@ -648,11 +671,11 @@ and two nodes are adjacent if and only if the associated vertices
 are on a common facet.
 It is required that the input matrix is a minimal representation.
 Run redundancy removal functions before calling this function,
-see the sample code adjacency.c. 
+see the sample code adjacency.c.
 
 \item[{\tt dd\_MatrixPtr dd\_FourierElimination(matrix, err)}]:\\
 Eliminate the last variable from a system of linear inequalities
-given by matrix by using the Fourier's Elimination.  If the 
+given by matrix by using the Fourier's Elimination.  If the
 input matrix is V-representation, {\tt  *err} returns
 {\tt dd\_NotAvailForV}.   This function does not
 remove redundancy  and one might want to call
@@ -663,7 +686,7 @@ Eliminate a set of variables from a system of linear inequalities
 given by matrix by using the extreme rays of the dual linear system.
 See comments in the code cddproj.c for details.  This might be
 a faster way to eliminate variables than the repeated FourierElimination when
-the number of variables to eliminate is large. 
+the number of variables to eliminate is large.
 If the input matrix is V-representation, {\tt  *err}  returns {\tt dd\_NotAvailForV}.
 This function does not remove redundancy  and one might want to call
 redundancy removal functions afterwards. See the sample code projection.c.
@@ -682,8 +705,8 @@ by {\tt point} will be simply ignored.
 
 \subsubsection{Number Assignments}
 For number assignments, one cannot use such expressions as {\tt x=(mytype)a}.
-This is because cddlib uses an abstract number type ({\tt mytype}) 
-so that it can compute with various 
+This is because cddlib uses an abstract number type ({\tt mytype})
+so that it can compute with various
 number types such as C double and GMP rational.
 User can easily add a new number type by redefining
 arithmetic operations in cddmp.h and cddmp.c.
@@ -701,13 +724,13 @@ This is to free the space allocated to a {\tt mytype} variable {\tt x}.
 
 \item[{\tt void dd\_set\_si(x, a)}]:\\
 This is to set a {\tt mytype} variable {\tt x} to the
-value of signed long integer {\tt a}.  
+value of signed long integer {\tt a}.
 
 \item[{\tt void dd\_set\_si2(x, a, b)}]:\\
 This is to set a {\tt mytype} variable {\tt x} to the
 value of  the rational expression {\tt a/b}, where
 {\tt a} is signed long and  {\tt b} is unsigned long
-integers.  
+integers.
 
 \item[{\tt void dd\_set\_d(x, b)}]:\\
 This is to set a {\tt mytype} variable {\tt x} to the
@@ -728,7 +751,7 @@ Below  {\tt x}, {\tt y}, {\tt z}  are of type {\tt mytype}.
 Set {\tt x} to be the sum of  {\tt y} and  {\tt z}.
 
 \item[{\tt void dd\_sub(x, y, z)}]:\\
-Set {\tt x} to be the subtraction of  {\tt z}  from  {\tt y}.
+Set {\tt x} to be the substraction of  {\tt z}  from  {\tt y}.
 
 \item[{\tt void dd\_mul(x, y, z)}]:\\
 Set {\tt x} to be the multiplication of  {\tt y}  and  {\tt z}.
@@ -737,7 +760,7 @@ Set {\tt x} to be the multiplication of  {\tt y}  and  {\tt z}.
 Set {\tt x} to be the division of  {\tt y}  over  {\tt z}.
 
 \item[{\tt void dd\_inv(x, y)}]:\\
-Set {\tt x} to be the reciprocal of  {\tt y}.
+Set {\tt x} to be the reciplocal of  {\tt y}.
 
 \end{description}
 
@@ -745,7 +768,7 @@ Set {\tt x} to be the reciprocal of  {\tt y}.
 \subsubsection{Predefined  Constants} \label{constants}
 
 There are several {\tt mytype} constants defined when {\tt dd\_set\_global\_constants(void)} is called.
-Some constants depend on the double constant {\tt dd\_almostzero} which is normally set to $10^{-7}$ in cdd.h. 
+Some constants depend on the double constant {\tt dd\_almostzero} which is normally set to $10^{-7}$ in cdd.h.
 This value can be modified depending on how numerically delicate your problems are but an extra
 caution should be taken.
 
@@ -769,7 +792,7 @@ This represents the mathematical one $1$.
 
 \subsubsection{Sign Evaluation and Comparison for {\tt mytype} Numbers}
 
-Below {\tt x}, {\tt y}, {\tt z} are of type {\tt mytype}.  
+Below {\tt x}, {\tt y}, {\tt z} are of type {\tt mytype}.
 
 \begin{description}
 
@@ -786,7 +809,7 @@ Returns the negation of {\tt dd\_Positive(x)}.   {\tt dd\_Nonnegative(x)} works 
 \item[{\tt dd\_boolean dd\_EqualToZero(x)}]:\\
 Returns {\tt dd\_TRUE} if {\tt x} is considered zero,  and  {\tt dd\_FALSE} otherwise.
 In the GMPRATIONAL mode, the zero recognition is exact.  In the C double mode,
-this means the value is between {\tt dd\_minuszero} and  {\tt dd\_zero}
+this means the value is inbetween {\tt dd\_minuszero} and  {\tt dd\_zero}
 inclusive.
 
 \item[{\tt dd\_boolean dd\_Larger(x, y)}]:\\
@@ -814,28 +837,28 @@ and return a pointer to the data.
 Copy the inequality representation pointed by poly to {\tt matrixdata}
 and return {\tt dd\_MatrixPtr}.
 
-\item[{\tt dd\_MatrixPtr dd\_CopyGenerators(poly)}]:\\ 
+\item[{\tt dd\_MatrixPtr dd\_CopyGenerators(poly)}]:\\
 Copy the generator representation pointed by poly to {\tt matrixdata}
 and return {\tt dd\_MatrixPtr}.
 
-\item[{\tt dd\_SetFamilyPtr dd\_CopyIncidence(poly)}]:\\ 
+\item[{\tt dd\_SetFamilyPtr dd\_CopyIncidence(poly)}]:\\
 Copy the incidence representation of the computed representation
 pointed by poly to {\tt setfamily}
 and return {\tt dd\_SetFamilyPtr}.  The computed representation is
 {\tt Inequality} if the input is {\tt Generator}, and the vice visa.
 
-\item[{\tt dd\_SetFamilyPtr dd\_CopyAdjacency(poly)}]:\\ 
+\item[{\tt dd\_SetFamilyPtr dd\_CopyAdjacency(poly)}]:\\
 Copy the adjacency representation of the computed representation
 pointed by poly to {\tt setfamily}
 and return {\tt dd\_SetFamilyPtr}.  The computed representation is
 {\tt Inequality} if the input is {\tt Generator}, and the vice visa.
 
-\item[{\tt dd\_SetFamilyPtr dd\_CopyInputIncidence(poly)}]:\\ 
+\item[{\tt dd\_SetFamilyPtr dd\_CopyInputIncidence(poly)}]:\\
 Copy the incidence representation of the input representation
 pointed by poly to {\tt setfamily}
 and return {\tt d\_SetFamilyPtr}.
 
-\item[{\tt dd\_SetFamilyPtr dd\_CopyInputAdjacency(poly)}]:\\ 
+\item[{\tt dd\_SetFamilyPtr dd\_CopyInputAdjacency(poly)}]:\\
 Copy the adjacency representation of the input representation
 pointed by poly to {\tt setfamily}
 and return {\tt d\_SetFamilyPtr}.
@@ -888,7 +911,7 @@ Its {\tt rowsize} is set to
 the sum of the rowsizes of {\tt matrix1} and {\tt matrix2}.
  The new matrixdata inherits everything else
 (i.e. numbertype, representation, etc)
-from the first matrix. 
+from the first matrix.
 
 \item[{\tt int dd\_MatrixAppendTo(\& matrix1, matrix2)}]:\\
 Same as {\tt dd\_AppendMatrix} except that the first matrix
@@ -904,7 +927,7 @@ rows indexed by {\tt set} and return a matrixdata pointer.
 \item[{\tt  dd\_SetFamilyPtr dd\_Matrix2Adjacency(matrix, err)}]:\\
 Return the adjacency list of the representation given by {\tt matrix}.
 The computation is done by the built-in LP solver.  The representation
-should be free of redundancy when this function is called. 
+should be free of redundancy when this function is called.
 See the function  {\tt dd\_rowset dd\_RedundantRows}
 and the example program adjacency.c.
 
@@ -952,7 +975,7 @@ negative of the cardinality, a colon ``:''
 Whenever it outputs the complements, the cardinality is negated
 so that there is no ambiguity.
 This will be considered standard for
-outputting incidence (*.icd, *ecd) and adjacency
+outputing incidence (*.icd, *ecd) and adjacency
 (*.iad, *.ead) data in cddlib.   But there is some minor incompatibility
 with cdd/cdd+ standalone codes.
 
@@ -967,14 +990,14 @@ Write the representation conversion time information on {\tt poly}
 
 \subsection{Obsolete Functions}  \label{ObsoleteFunctions}
 \begin{description}
-\item[{\tt boolean dd\_DoubleDescription(poly, err)}]: 
+\item[{\tt boolean dd\_DoubleDescription(poly, err)}]:
 (removed in Version 0.90c)\\
 The new function
-{\tt dd\_DDMatrix2Poly(matrix, err)} (see Section~\ref{CoreLibrary}) 
-replaces (and actually combines) both this and 
+{\tt dd\_DDMatrix2Poly(matrix, err)} (see Section~\ref{CoreLibrary})
+replaces (and actually combines) both this and
 {\tt dd\_Matrix2Poly(matrix, err)}.
 
-\item[{\tt dd\_PolyhedraPtr dd\_Matrix2Poly(matrix, err)}]: 
+\item[{\tt dd\_PolyhedraPtr dd\_Matrix2Poly(matrix, err)}]:
 (removed in Version 0.90c)\\
 See above for the reason for removal.
 
@@ -1009,14 +1032,14 @@ Free the  {\tt set\_type} space allocated for {\tt a}.
 
 \item[{\tt void set\_copy(a, b))}]:\\
 Set {\tt a} to be {\tt b}.   The set {\tt a} must be pre-initialized
-with the same maximum cardinality as that of {\tt b}.  
+with the same maximum cardinality as that of {\tt b}.
 
 \item[{\tt void set\_addelem(a, t))}]:\\
 Add an element  {\tt t} to a set {\tt a}.    The set  {\tt a} stays unchanged
 if it contains the element {\tt t}.
 
 \item[{\tt long set\_card(a))}]:\\
-Return the cardinality of set {\tt a}. 
+Return the cardinality of set {\tt a}.
 
 \item[{\tt int set\_member(t, a))}]:\\
 Return $1$ if  {\tt t} is a member of set {\tt a}, and $0$ otherwise.
@@ -1032,7 +1055,7 @@ to stream {\tt f}.
 
 Starting from the version 093, the GMP version of cddlib, {\tt libcddgmp.a}, contains
 all cdd library functions in two arithmetics.   All functions with the standard prefix {\tt dd\_}
-are computed with the GMP rational arithmetic as before.  The same functions with
+are computed with the GMP rational arithmetic as before.  The same fuctions with
 the new prefix {\tt ddf\_} are now added to the library  {\tt libcddgmp.a} that are based
 on the C  double floating-point arithmetic.  Thus these functions are equivalent to
  {\tt libcdd.a} functions, except that all functions and  variable types are with prefix  {\tt ddf\_} and
@@ -1045,13 +1068,17 @@ cddlp.c.
 
 \section{Examples}  \label{EXAMPLES}
 
-See example codes such as testcdd*.c , testlp*.c, redcheck.c, adjacency.c, allfaces,c
-and simplecdd.c 
-in the {\tt src} and {\tt src-gmp} subdirectories of the source
-distribution.
+See example codes such as testcdd*.c , testlp*.c, redcheck.c, adjacency.c, allfaces.c,
+%KF2021 updates
+%simplecdd.c
+cddexec.c, scdd.c, lcdd.c, redundancies.c and redundancies\_clarkson.c
+in the {\tt src}
+%KF2021 delete this line
+%and {\tt src-gmp} subdirectories 
+subdirectory of the source distribution.
 
 \section{Numerical Accuracy}  \label{accuracy}
- A little caution is in order.  Many people have observed 
+ A little caution is in order.  Many people have observed
 numerical problems of cddlib when the floating version of cddlib
 is used.   As we all know, floating-point computation
 might not give a correct answer, especially when an input
@@ -1064,14 +1091,14 @@ to see what a correct behavior should be.  Whenever the time
 is not important, it is safer to use gmp rational arithmetic.
 
 If you need speedy computation with floating-point arithmetic,
-you might want to ``play with'' the constant {\tt dd\_almostzero} 
+you might want to ``play with'' the constant {\tt dd\_almostzero}
 defined in cdd.h:
 
 \begin{verbatim}
    #define dd_almostzero  1.0E-7
 \end{verbatim}
 \noindent
-This number is used to recognize whether a number is zero:  
+This number is used to recognize whether a number is zero:
 a number whose absolute value is smaller
 than {\tt dd\_almostzero} is considered zero, and nonzero otherwise.
 You can change this to modify the behavior of cddlib.  One might
@@ -1081,20 +1108,126 @@ to deal with highly degenerate data and it works better
 to treat a relatively large ``epsilon'' as zero.
 
 Another thing one can do is scaling.  If the values in one column of
-an input is of smaller magnitude than those in another column, 
+an input is of smaller magnitude than those in another column,
 scale one so that they become comparable.
+
+%KF2021 s newly added section
+\section{A Little Philosophy behind Cddlib}  \label{PHILOSOPHY}
+
+Whenever I write a computer program, my most important goal is
+to write a code that is mathematically correct, humanly readable, and
+computationally effective,
+in this order.  This might sound like an easy thing to do, and I think it is actually true if you could
+find simple and beautiful algorithms for whatever problems you need to solve.
+
+Because of my strong interest in general convex polyhedra
+in higher dimensions, I have been searching for algorithms for 
+structural analysis (or understanding) of convex polyhedra that
+work without assuming any regularity assumptions like non-degeneracy.  
+Furthermore, I would like any algorithm to be both simple to describe 
+and simple to implement, to ensure the correctness and the implementability.
+The two textbooks I released in 2020,
+(1) Introduction to Optimization \cite{f-io-20} and 
+(2) Polyhedral Computation \cite{f-pc-20}, are in fact the theoretical and practical bases
+for developing the library cddlib.
+
+One of the most important facts on polyhedra is that the basic theory of
+convex polyhedra is often much simpler and more beautiful when one specializes 
+the theory to the homogeneous case.    
+Let $C$ be a homogeneous cone 
+$\{x : A x \ge 0\}$ for some $n\times d$ matrix $A$.  For a $d\times m$ matrix $R$, 
+we say that a pair of matrices $(A, R)$  is a {\em double-description pair\/} or 
+simply a {\em DD-pair\/} if
+\[
+  A x \ge 0 \hspace{5mm} \mbox{if and only if} \hspace{5mm} x = R \lambda,  
+  \mbox{ for some }\lambda \ge 0 .
+  \]
+ The left hand side says the matrix $A$ is an H-representation of the homogenous cone $C$,
+ and the right hand side says the matrix $R$ is a V-representation of $C$.  The most useful fact
+ about DD-pairs is the following lemma (see \cite[Section 2.5]{f-pc-20}):
+ \begin{quote}
+   $(A, R)$ is a DD-pair \hspace{3mm}  if and only if \hspace{3mm}  $(R^T, A^T)$ is a DD-pair.
+ \end{quote}
+This lemma implies that once you implement an algorithm to
+ compute $R$ from a given matrix $A$ so that $(A, R)$ is a DD-pair, 
+ the same algorithm works for the reverse conversion, namely, to compute a matrix $A$ for a given $R$
+ so that $(A, R)$ is a DD-pair.  The cddlib fully relies on this fact.
+ 
+For the non-homogeneous case, cddlib applies the standard homogenization,
+executes the representation conversion for the associated homogeneous cone,
+and then interprets the result for the input polyhedron.
+
+For example, consider the general H-format input:
+\begin{verbatim}
+H-representation
+begin
+n  d+1  <numbtype>
+b  -A
+end
+\end{verbatim}
+The associated H-cone is $C_h((b, -\!A)) = \{ (x_0, x_1, \ldots, x_d)^T\in \R^{d+1}:  b x_0 - A x >=0 \}$,
+where $x$ denotes the $d$-dimensional vector $(x_1, \ldots, x_d)^T$.
+The input H-polyhedron is the cut section of $C_h((b, -\!A))$ by 
+the hyperplane $x_0 =1$, which is a polyhedron in $\R^d$.  When cddlib does
+the conversion from H to V, it does the conversion for $C_h((b, -\!A))$,
+and then converts the V-representation of the cone for the input polyhedron.
+
+Similarly, for the general V-format input, 
+\begin{verbatim}
+V-representation
+begin
+m  d+1 <numbtype>
+q  R
+end
+\end{verbatim}
+where $q$ is an $m$-dimensional vector and $R$ is an $m \times d$ matrix,
+the associated V-cone $C_v((q, R)) = \left\{ 
+\begin{pmatrix}x_0 \\ x \end{pmatrix} \in \R^{d+1}:  \begin{pmatrix}x_0 \\ x \end{pmatrix} = 
+\begin{pmatrix}q^T \\ R^T\end{pmatrix}  y, \; y >=0 \right\}$,
+and the input polyhedron is the cone 
+restricted to the hyperplane $x_0 =1$.  It is a polyhedron in $\R^d$.
+
+Notice that in the explanation of V-format in Section \ref{FORMAT}, each component of 
+the column vector $q$ is either $0$ or $1$.  While such restricted format is sufficient to
+represent any polyhedron, cddlib can accept the general V-format input.
+
+There is one problem with the explanation above, in particular,
+for the homogeneous case when $q$ is a totally zero vector.  In fact, V-format
+\begin{verbatim}
+V-representation
+begin
+s   d+1  <numbtype>
+0 r_1
+...
+0 r_s
+end
+\end{verbatim}
+where $r_j$ is a $d$-dimensional row vector for each $j$,
+must be identified with a more correct
+representation of generators of a homogeneous cone:
+\begin{verbatim}
+V-representation
+begin
+s+1   d+1  <numbtype>
+1 0 ... 0
+0 r_1
+...
+0 r_s
+end
+\end{verbatim}
+Within cddlib, this identification is explicitly done.
 
 \section{Other Useful Codes}  \label{CODES}
 There are several other useful codes available for vertex enumeration and/or
 convex hull computation  such as lrs, qhull, porta and irisa-polylib.
 The pointers to these codes are available at
 \begin{enumerate}
-\item lrs by D. Avis \cite{a-lrshome-01} (C implementation of the reverse search algorithm 
-\cite{af-pachv-92}). 
+\item lrs by D. Avis \cite{a-lrshome-01} (C implementation of the reverse search algorithm
+\cite{af-pachv-92}).
 
 \item qhull by C.B. Barber \cite{bdh-qach-03} (C implementation of
 the beneath-beyond method, see \cite{e-acg-87,m-cg-94},
-which is the dual of the dd method). 
+which is the dual of the dd method).
 
 \item porta by T. Christof and A. L{\"o}bel \cite{cl-porta-97} (C implementation
 of the Fourier-Motzkin elimination).
@@ -1106,8 +1239,8 @@ of a variation of the dd algorithm).
 \item PPL: the Parma Polyhedra Library \cite{b-pplhome} by R. Bagnara (C++ implementation of
 a variation of the dd algorithm).
 
-\item {\tt pd} by A. Marzetta \cite{m-pdcip-97} (C implementation of the primal-dual algorithm 
-\cite{bfm-pdmvf-97}). 
+\item {\tt pd} by A. Marzetta \cite{m-pdcip-97} (C implementation of the primal-dual algorithm
+\cite{bfm-pdmvf-97}).
 
  \item Geometry Center Software List by N. Amenta \cite{a-dcg}.
 
@@ -1115,17 +1248,15 @@ a variation of the dd algorithm).
 
  \item Linear Programming FAQ by R. Fourer and J. Gregory \cite{fg-lpfaq}.
 
- \item ZIB Berlin polyhedral software list:\\
- \htmladdnormallink{ftp://elib.zib-berlin.de/pub/mathprog/polyth/index.html}
-{ftp://elib.zib-berlin.de/pub/mathprog/polyth/index.html}.
-
+%KF2021 delete the next item as it does not seem to exist.
+% \item ZIB Berlin polyhedral software list: \url{ftp://elib.zib-berlin.de/pub/mathprog/polyth/index.html}.
 
 \item Polyhedral Computation FAQ \cite{f-pcfaq-98}.
 \end{enumerate}
 
 \section{Codes Using Cddlib}  \label{USERCODES}
 
-There are quite a few nice programs using some functions of cddlib.  
+There are quite a few nice programs using some functions of cddlib.
 Here are some of them.
 
 
@@ -1134,16 +1265,19 @@ Here are some of them.
 \item {\tt LattE} \cite{dhhhty-latte-05} computes the number of lattice points
 in a convex polytope.
 
-\item {\tt Minksum} \cite{w-msv-05} is a program to compute the V-representation
+%KF2021 update the reference of Minksum
+\item {\tt Minksum} \cite{w-msv} is a program to compute the V-representation
 (i.e. the set of vertices) of the Minkowski addition of several convex polytopes
-given by their V-representation in $\R^d$.  It is an implementation in C++ language 
+given by their V-representation in $\R^d$.  It is an implementation in C++ language
 of the reverse search algorithm \cite{f-fzctmacp-04} whose time complexity is
 polynomially bounded by the sizes of input and output.
 
-\item {\tt Gfan} \cite{j-gvum-05} is a program to list all reduced Gr\"obner
+%KF2021 update the reference of Gfan
+\item {\tt Gfan} \cite{j-gvum} is a program to list all reduced Gr\"obner
 bases of a general polynomial ideal given by a set of generating polynomials
-in $n$-variables.   It is an implementation in C++ language 
-of the reverse search algorithm \cite{fjt-cgf-05}.
+in $n$-variables.   It is an implementation in C++ language
+%KF2021 update the citatioon fjt-cgf-05 with fjt-cgf-07
+of the reverse search algorithm \cite{fjt-cgf-07}.
 
 
 \item {\tt TOPCOM} \cite{r-topcom-05} computes the combinatorial structure
@@ -1153,28 +1287,29 @@ of a point set.   It detects the regularity of a triangulation using cddlib.
 \end{enumerate}
 
 
-\section*{Acknowledgements.} 
+\section*{Acknowledgements.}
 I am  grateful to Tom  Liebling who
 provided me with an ideal opportunity to visit EPFL
-for the academic year 1993-1994.  Later, Hans-Jakob L\"uthi (ETHZ) and 
-Emo Welzl  (ETHZ) joined to support the 
+for the academic year 1993-1994.  Later, Hans-Jakob L\"uthi (ETHZ) and
+Emo Welzl  (ETHZ) joined to support the
 the development of cdd codes (cdd, cdd+, cddlib).
-Without their generous and continuing support, the present form of 
+Without their generous and continuing support, the present form of
 this program would not have existed.
 
 There are many other people who helped me to improve cdd, in particular,
-I am indebted to  David Avis, 
-Alexander Bockmayr, David Bremner, Henry Crapo, Istvan Csabai, 
+I am indebted to  David Avis,
+Alexander Bockmayr, David Bremner, Henry Crapo, Istvan Csabai,
 Francois Margot, Marc Pfetsch, Alain Prodon, J\"org Rambau, Dima Pasechnik,
 Shawn Rusaw, Matthew Saltzman, Masanori Sato, Anders Jensen,
-Ruriko Yoshida, Charles Geyer, Michal Kvasnica, Sven Verdoolaege
- (listed in arbitrary order) and those listed
+Ruriko Yoshida, Charles Geyer, Michal Kvasnica, Sven Verdoolaege, 
+%KF2021 one added
+Mathieu Dutour Sikiri\'c (listed in arbitrary order) and those listed
 in the HISTORY file.
 
 \bibliographystyle{plain}
 
-\bibliography{fukuda1,fukuda2}
+%KF2021 +2 edited below
+%\bibliography{fukuda1,fukuda2}
+\bibliography{cddlib}
 
 \end{document}
-
-
