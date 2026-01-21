@@ -2027,4 +2027,3 @@ void dd_fread_rational_value (FILE *f, mytype value)
 
 
 /* end of cddio.c */
-

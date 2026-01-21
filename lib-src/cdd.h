@@ -134,7 +134,6 @@ dd_MatrixPtr dd_MatrixAppend(dd_MatrixPtr M1, dd_MatrixPtr M2);  /* a name for d
 dd_MatrixPtr dd_AppendMatrix(dd_MatrixPtr M1, dd_MatrixPtr M2);  /* 090c, kept for compatibility */
 
 int dd_MatrixAppendTo(dd_MatrixPtr* M1, dd_MatrixPtr M2);  /* 092 */
-int dd_Remove(dd_MatrixPtr*, dd_rowrange);  /* 092 */
 dd_MatrixPtr dd_MatrixSubmatrix(dd_MatrixPtr M, dd_rowset delset); /* 092 */
 dd_MatrixPtr dd_MatrixSubmatrix2(dd_MatrixPtr M, dd_rowset delset,dd_rowindex* newpos); /* 094.  It returns new row positions. */
 dd_MatrixPtr dd_MatrixSubmatrix2L(dd_MatrixPtr M, dd_rowset delset,dd_rowindex* newpos); /* 094.  Linearity shifted up. */
