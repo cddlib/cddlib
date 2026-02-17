@@ -57,15 +57,18 @@ become comparable.
 
 ## Build the Latest Released Version
 
+Building cddlib from source requires ``gmp`` and ``autoconf-archive`` to be installed.
+These are packaged by all major distributions.
+
 Download the most recent tarball from our [Releases
 page](https://github.com/cddlib/cddlib/releases) and build cddlib with
-
 ```
 tar zxf cddlib-*.tar.gz
 cd cddlib-*
 ./configure
 make
 ```
+If ``./configure`` fails, double check that you have ``autoconf-archive`` installed.
 
 To install cddlib to `/usr/local` type
 ```
