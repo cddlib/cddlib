@@ -37,7 +37,14 @@ esac
 dnl Add -std:c11 flag for MSVC
 case $host_os in
     *cygwin*|*mingw*)
-    AX_CHECK_COMPILE_FLAG([-std:c11], [AX_APPEND_FLAG([-std:c11])])
+    AC_MSG_CHECKING([whether $CC supports -std:c11])
+    cddlib_save_CFLAGS="$CFLAGS"
+    CFLAGS="$CFLAGS -std:c11"
+    AC_COMPILE_IFELSE(
+      [AC_LANG_PROGRAM([], [])],
+      [AC_MSG_RESULT([yes])],
+      [AC_MSG_RESULT([no])
+       CFLAGS="$cddlib_save_CFLAGS"])
 ;;
 esac
 
